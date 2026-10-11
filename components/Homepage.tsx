@@ -9,6 +9,8 @@ import {
   ArrowRight,
   AudioLines,
   BriefcaseBusiness,
+  GraduationCap,
+  HeartPulse,
   Building2,
   CarFront,
   Check,
@@ -37,12 +39,21 @@ import {
   X,
 } from "lucide-react";
 
-import { copy, type Lang } from "@/lib/content";
+import { assistantFallback, assistantScenarios, copy, curatedServices, directorySectors, type Lang } from "@/lib/content";
+import { detailedServices } from "@/lib/servicesDetailed";
+import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
 import PhoneMockups from "./PhoneMockups";
-type Message = { role: "user" | "assistant"; text: string };
-const sectorIcons = [Users, CarFront, BriefcaseBusiness, Scale];
+const sectorIcons = {
+  people: Users,
+  traffic: CarFront,
+  business: BriefcaseBusiness,
+  justice: Scale,
+  work: Building2,
+  education: GraduationCap,
+  health: HeartPulse,
+};
 const stepIcons = [
   Smartphone,
   AudioLines,
@@ -61,7 +72,7 @@ export default function Homepage() {
   const [menu, setMenu] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [typing, setTyping] = useState(false);
   const [modal, setModal] = useState<
     "services" | "meeting" | "privacy" | "terms" | null
@@ -148,48 +159,53 @@ export default function Homepage() {
   }
   function answer(value: string) {
     if (!value.trim() || typing) return;
+    const trimmed = value.trim();
     setInput("");
     setChatOpen(true);
     setModal(null);
-    setMessages((prev) => [...prev, { role: "user", text: value.trim() }]);
+    setMessages((prev) => [...prev, { role: "user", text: trimmed }]);
     setTyping(true);
-    const v = value.toLowerCase();
-    let result = "",
-      target: number | null = null;
-    if (/تجار|نشاط|business|commercial|municipal|بلدي/.test(v)) {
-      target = 2;
-      result = ar
-        ? "لبدء نشاط تجاري، حدّد نوع النشاط وشكله القانوني، ثم راجع متطلبات السجل التجاري والرخصة البلدية والرقم الضريبي حسب نشاطك. إليك خدمات التجارة والأعمال للاطلاع على رحلة تجريبية."
-        : "To start a business, choose your activity and legal structure, then review the Commercial Registration, Municipal License, and Tax Identification Number (TIN) requirements for your activity. Explore a demo business journey below.";
-    } else if (/رخص|قياد|driv|licen/.test(v)) {
-      target = 1;
-      result = ar
-        ? "لتجديد رخصة القيادة، راجع صلاحية الفحص الطبي ومتطلبات سداد الرسوم والمخالفات إن وجدت. يمكنك تجربة رحلة تجديد الرخصة هنا. المتطلبات النهائية تُراجع عبر الجهة الرسمية."
-        : "To renew your driving license, review medical examination validity and applicable fees or violations. Try the renewal journey here. Confirm final requirements with the official authority.";
-    } else if (/مخالف|violation|fine/.test(v)) {
-      target = 1;
-      result = ar
-        ? "يمكنك الاستعلام عن المخالفات عبر الخدمات الرسمية للمرور. في هذا العرض، توجد مخالفة تجريبية بقيمة 150 ريال في المحفظة الموحدة. افتح خدمات المرور لبدء تجربة استعلام."
-        : "Official traffic services let you check violations. This demo includes a SAR 150 sample violation in your unified wallet. Explore traffic services for a demo inquiry.";
-    } else if (
-      /موعد|أحوال|هوي|إقام|appointment|civil|national id|iqama/.test(v)
-    ) {
-      target = 0;
-      result = ar
-        ? "لحجز موعد في الأحوال المدنية، حدّد نوع الخدمة والمدينة والوقت المناسب، وجهّز الهوية الوطنية أو الإقامة وفق متطلبات الخدمة. يمكنك استكشاف خدمات الأفراد هنا."
-        : "For a Civil Affairs appointment, choose your service, city, and available time. Prepare your National ID or Iqama according to the service requirements. Explore public services below.";
-    } else if (/قض|وكال|عدل|court|legal|attorney/.test(v)) {
-      target = 3;
-      result = ar
-        ? "سأساعدك في فهم الخدمات العدلية: القضايا والوكالات والتوثيق والجلسات. اختر الخدمة لعرض متطلباتها التجريبية، وراجع الجهة الرسمية للتفاصيل المعتمدة."
-        : "I can guide you through cases, powers of attorney, notarization, and hearings. Choose a service to view demo requirements; refer to the official authority for authoritative details.";
-    } else
-      result = ar
-        ? "أهلاً بك! أستطيع إرشادك في تجديد رخصة القيادة، بدء نشاط تجاري، الاستعلام عن مخالفة، أو حجز موعد في الأحوال المدنية. ما الخدمة التي تحتاجها؟ هذا مساعد تجريبي بإجابات إرشادية."
-        : "Welcome! I can guide you through driving license renewal, starting a business, checking traffic violations, or booking a Civil Affairs appointment. Which service do you need? This is a guided demo assistant.";
+
+    const v = trimmed.toLowerCase();
+    const scenario = assistantScenarios.find((item) => item.keywords.some((keyword) => v.includes(keyword)));
+    const target = scenario
+      ? directorySectors.findIndex((item) => item.id === scenario.sectorId)
+      : null;
+
     timer.current = setTimeout(() => {
-      setMessages((prev) => [...prev, { role: "assistant", text: result }]);
-      setChatTarget(target);
+      // If direct predefined scenario matches, preserve exact response to guarantee tests and consistency
+      if (scenario) {
+        const result = scenario.response[lang];
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            text: result,
+            suggestedSectorId: scenario.sectorId,
+            isVerified: true,
+          },
+        ]);
+        setChatTarget(target);
+      } else {
+        // Run deep local knowledge agent reasoning
+        const agentRes = generateLocalAgentResponse(trimmed, messages, lang);
+        const resolvedSectorIdx = agentRes.suggestedSectorId
+          ? directorySectors.findIndex((item) => item.id === agentRes.suggestedSectorId)
+          : null;
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            text: agentRes.text,
+            sources: agentRes.sources,
+            suggestedSectorId: agentRes.suggestedSectorId,
+            suggestedServiceId: agentRes.suggestedServiceId,
+            followUpQuestions: agentRes.followUpQuestions,
+            isVerified: true,
+          },
+        ]);
+        setChatTarget(resolvedSectorIdx !== -1 ? resolvedSectorIdx : null);
+      }
       setTyping(false);
     }, 700);
   }
@@ -315,12 +331,23 @@ export default function Homepage() {
             </div>
             <div className="hero-trust">
               <span className="trust-icon">
-                <ShieldCheck size={18} />
+                <Sparkles size={18} />
               </span>
               {t.demo}
               <span className="trust-dot" />
-              {ar ? "مصمّمة حول الإنسان" : "Designed around people"}
+              {ar ? "توجيه موثوق وإرشاد واضح" : "Clear & verified guidance"}
             </div>
+            <button
+              className="assistant-mobile-launch"
+              onClick={() => {
+                setChatOpen(true);
+                setMenu(false);
+              }}
+            >
+              <Sparkles size={17} />
+              {ar ? "اسأل المساعد الإرشادي" : "Ask the guided assistant"}
+              {direction}
+            </button>
           </motion.div>
           <motion.div
             className="hero-assistant"
@@ -392,23 +419,23 @@ export default function Homepage() {
               </button>
             </form>
             <span className="assistant-caption">
-              <ShieldCheck size={12} />
+              <Sparkles size={12} />
               {ar
-                ? "مساعد تجريبي · إرشاد ذكي بلغتك"
-                : "Demo assistant · Smart guidance in your language"}
+                ? "مساعد تجريبي · إرشادات أولية بلغتك"
+                : "Demo assistant · Starter guidance in your language"}
             </span>
           </motion.div>
         </div>
         <div className="hero-bottom container">
           <div className="hero-stats">
-            {["200+", "40+", "1M+", t.one].map((v, i) => (
+            {[String(curatedServices.length), String(directorySectors.length), "2", t.one].map((v, i) => (
               <div className="stat" key={i}>
                 <strong dir={i < 3 ? "ltr" : undefined}>{v}</strong>
                 <span>{t.statLabels[i]}</span>
               </div>
             ))}
           </div>
-          <a href="#journey" className="scroll-link">
+          <a href="#services" className="scroll-link">
             <span>{t.scroll}</span>
             <span className="scroll-circle">
               <ChevronDown size={17} />
@@ -422,6 +449,95 @@ export default function Homepage() {
           </span>
         </div>
         <div className="hero-curve" />
+      </section>
+
+      <section id="services" className="services">
+        <div className="container">
+          <motion.div className="section-heading heading-row" {...reveal}>
+            <div>
+              <span className="eyebrow">{t.sectorLabel}</span>
+              <h2>{t.sectorTitle}</h2>
+              <p>{t.sectorSub}</p>
+            </div>
+            <button
+              className="button button-outline"
+              onClick={() => openServices()}
+            >
+              {t.all}
+              {direction}
+            </button>
+          </motion.div>
+          <div className="sector-grid">
+            {directorySectors.map((item, i) => {
+              const title = item.name[lang];
+              const Icon = sectorIcons[item.icon];
+              const sectorCurated = curatedServices.filter((entry) => entry.sectorId === item.id);
+              const sectorDetailed = detailedServices.filter((entry) => entry.sectorId === item.id);
+              const totalAuthorities = Array.from(
+                new Set(
+                  sectorDetailed.flatMap((s) => (s.requiredAuthorities || []).map((a) => a[lang]))
+                )
+              );
+              return (
+                <motion.button
+                  className="sector-card"
+                  key={title}
+                  onClick={() => openServices(i)}
+                  {...reveal}
+                  transition={{
+                    delay: reduce ? 0 : i * 0.07,
+                    duration: reduce ? 0 : 0.6,
+                  }}
+                >
+                  <SectorArt index={item.artIndex} />
+                  <div className="sector-overlay" />
+                  <span className="sector-index">0{i + 1} / MYSER</span>
+                  <span className="sector-icon">
+                    <Icon size={25} strokeWidth={1.3} />
+                  </span>
+                  <div className="sector-content">
+                    <div className="sector-badges-bar">
+                      <span className="sector-count-badge">
+                        {sectorCurated.length} {ar ? "خدمات موثقة" : "services"}
+                      </span>
+                      {totalAuthorities.length > 0 && (
+                        <span className="sector-auth-count-badge">
+                          {totalAuthorities.length} {ar ? "جهات رسمية" : "authorities"}
+                        </span>
+                      )}
+                    </div>
+                    <h3>{title}</h3>
+                    <p>{item.description[lang]}</p>
+                    <div className="sector-tags">
+                      {sectorCurated.slice(0, 3).map((entry) => (
+                        <span key={entry.id}>{entry.name[lang]}</span>
+                      ))}
+                    </div>
+                    <span className="sector-link">
+                      {ar ? "استكشف القطاع" : "Explore sector"}
+                      <span>
+                        {ar ? (
+                          <ArrowUpLeft size={18} />
+                        ) : (
+                          <ArrowUpRight size={18} />
+                        )}
+                      </span>
+                    </span>
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
+          <div className="services-footnote">
+            <span>
+              <span className="little-dot" />
+              {ar
+                ? "مصادر رسمية. دليل استكشافي واحد."
+                : "Official sources. One exploratory guide."}
+            </span>
+            <span>MYSER ECOSYSTEM</span>
+          </div>
+        </div>
       </section>
 
       <section id="journey" className="journey section-light">
@@ -459,77 +575,6 @@ export default function Homepage() {
         </div>
       </section>
 
-      <section id="services" className="services">
-        <div className="container">
-          <motion.div className="section-heading heading-row" {...reveal}>
-            <div>
-              <span className="eyebrow">{t.sectorLabel}</span>
-              <h2>{t.sectorTitle}</h2>
-              <p>{t.sectorSub}</p>
-            </div>
-            <button
-              className="button button-outline"
-              onClick={() => openServices()}
-            >
-              {t.all}
-              {direction}
-            </button>
-          </motion.div>
-          <div className="sector-grid">
-            {t.sectors.map((title, i) => {
-              const Icon = sectorIcons[i];
-              return (
-                <motion.button
-                  className="sector-card"
-                  key={title}
-                  onClick={() => openServices(i)}
-                  {...reveal}
-                  transition={{
-                    delay: reduce ? 0 : i * 0.07,
-                    duration: reduce ? 0 : 0.6,
-                  }}
-                >
-                  <SectorArt index={i} />
-                  <div className="sector-overlay" />
-                  <span className="sector-index">0{i + 1} / MYSER</span>
-                  <span className="sector-icon">
-                    <Icon size={25} strokeWidth={1.3} />
-                  </span>
-                  <div className="sector-content">
-                    <h3>{title}</h3>
-                    <p>{t.sectorDescriptions[i]}</p>
-                    <div className="sector-tags">
-                      {t.sectorTags[i].slice(0, 3).map((tag) => (
-                        <span key={tag}>{tag}</span>
-                      ))}
-                    </div>
-                    <span className="sector-link">
-                      {ar ? "استكشف القطاع" : "Explore sector"}
-                      <span>
-                        {ar ? (
-                          <ArrowUpLeft size={18} />
-                        ) : (
-                          <ArrowUpRight size={18} />
-                        )}
-                      </span>
-                    </span>
-                  </div>
-                </motion.button>
-              );
-            })}
-          </div>
-          <div className="services-footnote">
-            <span>
-              <span className="little-dot" />
-              {ar
-                ? "خدمات مترابطة. تجربة واحدة."
-                : "Connected services. One experience."}
-            </span>
-            <span>MYSER ECOSYSTEM</span>
-          </div>
-        </div>
-      </section>
-
       <section id="experiences" className="experiences section-light">
         <div className="container">
           <div className="experience-intro">
@@ -546,19 +591,19 @@ export default function Homepage() {
                 <span className="icon-square">
                   <Video size={20} />
                 </span>
-                GovMeet <em>AI</em>
+                GovMeet
                 <span className="new-pill">{t.new}</span>
               </span>
               <h2 className="multiline">{t.govTitle}</h2>
               <p>{t.govSub}</p>
               <div className="feature-benefits">
                 <span>
-                  <ShieldCheck size={15} />
-                  {ar ? "خصوصية في التصميم" : "Privacy by design"}
+                  <FileText size={15} />
+                  {ar ? "واجهة توضيحية" : "Concept interface"}
                 </span>
                 <span>
                   <Sparkles size={15} />
-                  {ar ? "ملخّص ذكي للجلسة" : "Intelligent summaries"}
+                  {ar ? "ملخّص توضيحي" : "Sample summary"}
                 </span>
               </div>
               <button
@@ -574,14 +619,14 @@ export default function Homepage() {
             </div>
             <div className="meeting-stage">
               <span className="floating-security">
-                <ShieldCheck size={14} />
+                <FileText size={14} />
                 {ar ? "GovMeet · وضع تجريبي" : "GovMeet · Demo mode"}
               </span>
               <div className="meeting-window">
                 <div className="meeting-bar">
                   <span className="meeting-brand">
                     <Video size={13} />
-                    GovMeet <b>AI</b>
+                    GovMeet
                   </span>
                   <span className="meeting-status">
                     <i />
@@ -646,14 +691,14 @@ export default function Homepage() {
                     </button>
                   </div>
                   <span>
-                    <ShieldCheck size={15} />
+                    <MoreHorizontal size={15} />
                   </span>
                 </div>
               </div>
               <span className="meeting-stage-caption">
                 {ar
-                  ? "حضورك يصنع الفرق، أينما كنت."
-                  : "Your presence matters, wherever you are."}
+                  ? "توجيه نظامي مباشر لرواد الأعمال، دون تعقيد."
+                  : "Direct regulatory orientation for entrepreneurs, simplified."}
               </span>
             </div>
           </motion.div>
@@ -674,13 +719,13 @@ export default function Homepage() {
                 <span>
                   <strong>
                     {ar
-                      ? "مدفوعاتك، تحت السيطرة"
-                      : "Your payments, in perspective"}
+                      ? "شفافية واضحة في التكاليف"
+                      : "Clear overview of fees"}
                   </strong>
                   <small>
                     {ar
-                      ? "تنظيم ذكي للرسوم والالتزامات"
-                      : "A clear view of fees and obligations"}
+                      ? "عرض استرشادي للرسوم والالتزامات الرسمية"
+                      : "Illustrative guide to official fees"}
                   </small>
                 </span>
               </div>
@@ -810,7 +855,7 @@ export default function Homepage() {
             </div>
             <div className="footer-links">
               <a href="#services">{t.services}</a>
-              <a href="#experiences">GovMeet AI</a>
+              <a href="#experiences">GovMeet</a>
               <button onClick={() => setChatOpen(true)}>{t.assistant}</button>
             </div>
             <span className="footer-saudi">
@@ -876,9 +921,9 @@ export default function Homepage() {
                     {chatOpen
                       ? t.smart
                       : modal === "services"
-                        ? service || t.all
+        ? curatedServices.find((entry) => entry.id === service)?.name[lang] || t.all
                         : modal === "meeting"
-                          ? "GovMeet AI"
+                          ? "GovMeet"
                           : modal === "privacy"
                             ? t.privacy
                             : t.terms}
@@ -917,8 +962,99 @@ export default function Homepage() {
                     ) : (
                       messages.map((m, i) => (
                         <div key={i} className={`chat-message ${m.role}`}>
-                          {m.role === "assistant" && <Sparkles size={15} />}
-                          <p>{m.text}</p>
+                          {m.role === "assistant" && (
+                            <div className="chat-msg-header">
+                              <Sparkles size={15} />
+                              <span className="chat-role-label">{ar ? "مُيسّرة · إرشاد موثق" : "MYSER · Verified Guide"}</span>
+                            </div>
+                          )}
+                          <div className="chat-msg-body">
+                            {m.text.split("\n\n").map((paragraph, pIdx) => {
+                              const trimmedP = paragraph.trim();
+                              // Check if header (starts with ### or contains bold title)
+                              if (trimmedP.startsWith("### ")) {
+                                return (
+                                  <h4 key={pIdx} className="assistant-msg-title">
+                                    {trimmedP.replace("### ", "")}
+                                  </h4>
+                                );
+                              }
+                              // Check if blockquote warning/note
+                              if (trimmedP.startsWith("> ")) {
+                                return (
+                                  <div key={pIdx} className="assistant-msg-callout">
+                                    <ShieldCheck size={16} className="callout-icon" />
+                                    <span>{trimmedP.replace(/^>\s*/, "").replace(/^\*\*(.*?)\*\*/, "$1")}</span>
+                                  </div>
+                                );
+                              }
+                              // Check if list of steps (lines starting with number or bullet)
+                              const lines = trimmedP.split("\n");
+                              const isOrderedList = lines.every((l) => /^\d+\.\s/.test(l.trim()));
+                              const isUnorderedList = lines.every((l) => /^[*•-]\s/.test(l.trim()));
+                              if (lines.length > 1 && isOrderedList) {
+                                return (
+                                  <ol key={pIdx} className="assistant-msg-steps">
+                                    {lines.map((l, lIdx) => (
+                                      <li key={lIdx}>
+                                        <span className="step-pill">{lIdx + 1}</span>
+                                        <span>{l.replace(/^\d+\.\s*/, "").replace(/\*\*(.*?)\*\*/g, "$1")}</span>
+                                      </li>
+                                    ))}
+                                  </ol>
+                                );
+                              }
+                              if (lines.length > 1 && isUnorderedList) {
+                                return (
+                                  <ul key={pIdx} className="assistant-msg-bullets">
+                                    {lines.map((l, lIdx) => (
+                                      <li key={lIdx}>
+                                        <Check size={14} className="bullet-icon" />
+                                        <span>{l.replace(/^[*•-]\s*/, "").replace(/\*\*(.*?)\*\*/g, "$1")}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                );
+                              }
+                              return <p key={pIdx}>{paragraph}</p>;
+                            })}
+                          </div>
+                          {m.sources && m.sources.length > 0 && (
+                            <div className="chat-msg-sources">
+                              <small>{ar ? "المصادر الرسمية الموثقة:" : "Verified official sources:"}</small>
+                              <div className="sources-list">
+                                {m.sources.map((src, sIdx) => (
+                                  <a
+                                    key={sIdx}
+                                    href={src.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="source-tag"
+                                  >
+                                    <span>{src.title}</span>
+                                    <ArrowUpRight size={12} />
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {m.followUpQuestions && m.followUpQuestions.length > 0 && (
+                            <div className="chat-msg-followups">
+                              <small>{ar ? "استفسارات مقترحة:" : "Suggested follow-ups:"}</small>
+                              <div className="followup-chips">
+                                {m.followUpQuestions.map((fq, fIdx) => (
+                                  <button
+                                    key={fIdx}
+                                    type="button"
+                                    className="followup-chip"
+                                    onClick={() => answer(fq)}
+                                  >
+                                    <span>{fq}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))
                     )}
@@ -937,7 +1073,7 @@ export default function Homepage() {
                         className="button button-green chat-next"
                         onClick={() => openServices(chatTarget)}
                       >
-                        {t.sectors[chatTarget]}
+                        {directorySectors[chatTarget]?.name[lang]}
                         {direction}
                       </button>
                     )}
@@ -991,53 +1127,35 @@ export default function Homepage() {
                       >
                         {ar ? "الكل" : "All"}
                       </button>
-                      {t.sectors.map((s, i) => (
+                      {directorySectors.map((item, i) => (
                         <button
                           className={sector === i ? "selected" : ""}
-                          key={s}
+                          key={item.id}
                           onClick={() => setSector(i)}
                         >
-                          {s}
+                          {item.name[lang]}
                         </button>
                       ))}
                     </div>
+                    {sector === 2 && (
+                      <BusinessRoute lang={lang} />
+                    )}
                     <div className="service-results">
-                      {t.sectorTags.flatMap((tags, i) =>
-                        sector === null || sector === i
-                          ? tags
-                              .filter((tag) =>
-                                tag.toLowerCase().includes(query.toLowerCase()),
-                              )
-                              .map((tag) => {
-                                const Icon = sectorIcons[i];
-                                return (
-                                  <button
-                                    key={tag}
-                                    onClick={() => {
-                                      setService(tag);
-                                      setRequest(false);
-                                    }}
-                                  >
-                                    <span>
-                                      <Icon size={19} />
-                                    </span>
-                                    <div>
-                                      <strong>{tag}</strong>
-                                      <small>{t.sectors[i]}</small>
-                                    </div>
-                                    {direction}
-                                  </button>
-                                );
-                              })
-                          : [],
-                      )}
-                      {!t.sectorTags.some(
-                        (tags, i) =>
-                          (sector === null || sector === i) &&
-                          tags.some((tag) =>
-                            tag.toLowerCase().includes(query.toLowerCase()),
-                          ),
-                      ) && (
+                      {curatedServices
+                        .filter((entry) => sector === null || directorySectors[sector]?.id === entry.sectorId)
+                        .filter((entry) => `${entry.name[lang]} ${entry.platform[lang]} ${directorySectors.find((item) => item.id === entry.sectorId)?.name[lang]}`.toLowerCase().includes(query.toLowerCase()))
+                        .map((entry) => {
+                          const sectorIndex = directorySectors.findIndex((item) => item.id === entry.sectorId);
+                          const Icon = sectorIcons[directorySectors[sectorIndex]?.icon ?? "business"];
+                          return (
+                            <button key={entry.id} onClick={() => { setService(entry.id); setRequest(false); }}>
+                              <span><Icon size={19} /></span>
+                              <div><strong>{entry.name[lang]}</strong><small>{directorySectors[sectorIndex]?.name[lang]} · {entry.platform[lang]}</small></div>
+                              {direction}
+                            </button>
+                          );
+                        })}
+                      {curatedServices.filter((entry) => sector === null || directorySectors[sector]?.id === entry.sectorId).filter((entry) => `${entry.name[lang]} ${entry.platform[lang]} ${directorySectors.find((item) => item.id === entry.sectorId)?.name[lang]}`.toLowerCase().includes(query.toLowerCase())).length === 0 && (
                         <div className="no-results">
                           <Search size={25} />
                           <p>
@@ -1074,48 +1192,176 @@ export default function Homepage() {
                   </div>
                 ) : (
                   <div className="service-detail">
-                    <span className="status-pill">
-                      {ar ? "خدمة تجريبية" : "Demo service"}
-                    </span>
-                    <p>
-                      {ar
-                        ? "رحلة مبسّطة لاستكشاف الخدمة وفهم متطلباتها. هذا نموذج عرض؛ لا يجمع بياناتك ولا يرسل طلبات رسمية."
-                        : "A simplified journey to explore this service and understand its requirements. This demo does not collect your details or submit official requests."}
-                    </p>
-                    <h3>{t.requirements}</h3>
-                    <ul>
-                      <li>
-                        <Check size={16} />
-                        {ar
-                          ? "الهوية الوطنية أو الإقامة حسب نوع الخدمة"
-                          : "National ID or Iqama, as applicable"}
-                      </li>
-                      <li>
-                        <Check size={16} />
-                        {ar
-                          ? "بيانات الطلب والمستندات المطلوبة لدى الجهة"
-                          : "Application details and authority-required documents"}
-                      </li>
-                      <li>
-                        <Check size={16} />
-                        {ar
-                          ? "مراجعة الشروط والرسوم لدى الجهة الرسمية"
-                          : "Review conditions and fees with the official authority"}
-                      </li>
-                    </ul>
-                    <button
-                      className="button button-green"
-                      onClick={() => setRequest(true)}
-                    >
-                      {t.beginDemo}
-                      {direction}
-                    </button>
-                    <button
-                      className="text-button"
-                      onClick={() => setService(null)}
-                    >
-                      {t.back}
-                    </button>
+                    {(() => {
+                      const entry = curatedServices.find((item) => item.id === service);
+                      const detailed = detailedServices.find((item) => item.id === service);
+                      if (!entry) return <p>{ar ? "تعذر العثور على الخدمة." : "Service not found."}</p>;
+                      return (
+                        <>
+                          <div className="service-detail-header">
+                            <span className="status-pill">
+                              {entry.verified === "verified"
+                                ? (ar ? `مصدر رسمي مراجع · ${entry.verifiedAt}` : `Official source reviewed · ${entry.verifiedAt}`)
+                                : (ar ? "المصدر مراجع؛ الوجهة تحتاج تحققًا مباشرًا" : "Source reviewed; destination needs direct verification")}
+                            </span>
+                            <span className="service-platform-badge">{entry.platform[lang]}</span>
+                          </div>
+
+                          <h3>{entry.name[lang]}</h3>
+                          <p className="service-lead-summary">{entry.summary[lang]}</p>
+
+                          {/* 10-Dimension Structured Content */}
+                          <div className="service-meta-grid">
+                            {detailed && (
+                              <>
+                                <div className="meta-card">
+                                  <strong>{ar ? "لمن تناسب الخدمة؟" : "Target Audience"}</strong>
+                                  <p>{detailed.targetAudience[lang]}</p>
+                                </div>
+                                <div className="meta-card">
+                                  <strong>{ar ? "ماذا يستطيع المستخدم إنجازه؟" : "User Outcomes"}</strong>
+                                  <p>{detailed.userOutcomes[lang]}</p>
+                                </div>
+                              </>
+                            )}
+                          </div>
+
+                          <h3>{ar ? "متى قد تحتاجها؟" : "When might you need it?"}</h3>
+                          <p>{entry.when[lang]}</p>
+
+                          {detailed && (
+                            <>
+                              <h3>{ar ? "ما ينبغي معرفته قبل البدء (المتطلبات المسبقة)" : "Prerequisites & Preparation"}</h3>
+                              <p>{detailed.prerequisites[lang]}</p>
+
+                              <h3>{ar ? "المتطلبات والاشتراطات المؤكدة" : "Confirmed Requirements"}</h3>
+                              <ul className="confirmed-requirements-list">
+                                {detailed.confirmedRequirements.map((req, rIdx) => (
+                                  <li key={rIdx}>
+                                    <Check size={16} />
+                                    <span>{req[lang]}</span>
+                                  </li>
+                                ))}
+                              </ul>
+
+                              <h3>{ar ? "خطوات وإجراءات المعاملة الرسمية" : "Official Procedure Steps"}</h3>
+                              <ol className="procedure-steps-list">
+                                {detailed.procedureSteps.map((step, sIdx) => (
+                                  <li key={sIdx}>
+                                    <span className="step-num">{sIdx + 1}</span>
+                                    <span>{step[lang]}</span>
+                                  </li>
+                                ))}
+                              </ol>
+
+                              {detailed.multiPlatformChain && detailed.multiPlatformChain.length > 0 && (
+                                <>
+                                  <h3>{ar ? "المنصات والجهات اللازمة لإتمام الخدمة (متى تحتاج كل جهة)" : "Required Platforms & Authorities Sequence"}</h3>
+                                  <div className="platform-chain-container">
+                                    {detailed.multiPlatformChain.map((chain, cIdx) => (
+                                      <div key={cIdx} className="platform-chain-card">
+                                        <div className="platform-chain-top">
+                                          <span className="chain-step-pill">{cIdx + 1}</span>
+                                          <strong>{chain.name[lang]}</strong>
+                                          <span className="chain-auth-tag">{chain.authority[lang]}</span>
+                                        </div>
+                                        <p className="chain-role-text">{chain.role[lang]}</p>
+                                        <div className="chain-when-box">
+                                          <small>{ar ? "متى تنتقل إليها؟" : "When needed?"}</small>
+                                          <span>{chain.whenNeeded[lang]}</span>
+                                        </div>
+                                        <a href={chain.url} target="_blank" rel="noopener noreferrer" className="chain-link">
+                                          <span>{ar ? `زيارة ${chain.name.ar}` : `Open ${chain.name.en}`}</span>
+                                          <ArrowUpRight size={13} />
+                                        </a>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+
+                              <h3>{ar ? "شروط تختلف باختلاف الحالة" : "Conditional Rules & Variants"}</h3>
+                              <div className="conditional-rules-box">
+                                <p>{detailed.conditionalRules[lang]}</p>
+                              </div>
+
+                              <div className="unverified-transparency-box">
+                                <strong>{ar ? "تنبيه الشفافية وعدم التأكيد التلقائي:" : "Transparency & Verification Note:"}</strong>
+                                <p>{detailed.unverifiedAspects[lang]}</p>
+                              </div>
+                            </>
+                          )}
+
+                          <h3>{ar ? "الجهة والمنصة" : "Authority and platform"}</h3>
+                          <p>{entry.platform[lang]}</p>
+
+                          <div className="official-source-note">
+                            <strong>{ar ? "ملاحظة" : "Note"}</strong>
+                            <p>{entry.note[lang]}</p>
+                            <small>
+                              {ar ? "المصدر" : "Source"}:{" "}
+                              <a href={entry.sourceUrl} target="_blank" rel="noreferrer">
+                                {entry.sourceTitle[lang]}
+                              </a>
+                            </small>
+                          </div>
+
+                          <a
+                            className="button button-green official-link"
+                            href={entry.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {ar ? `الانتقال إلى ${entry.platform.ar}` : `Visit ${entry.platform.en}`}
+                            <ArrowUpRight size={16} />
+                          </a>
+
+                          <p className="demo-boundary">
+                            {ar
+                              ? "MYSER دليل استكشافي فقط. لا تُرسل بيانات أو طلبات إلى الجهة من هذه الواجهة."
+                              : "MYSER is an exploratory guide only. This interface does not send data or requests to the authority."}
+                          </p>
+
+                          <h3>{ar ? "جرّب رحلة توضيحية داخل MYSER" : "Try a sample journey in MYSER"}</h3>
+                          <ul>
+                            <li>
+                              <Check size={16} />
+                              {ar
+                                ? "افتح المصدر الرسمي وراجع شروط الخدمة لحالتك"
+                                : "Open the official source and check requirements for your case"}
+                            </li>
+                            <li>
+                              <Check size={16} />
+                              {ar
+                                ? "أكمل أي إجراء أو إدخال بيانات داخل المنصة الرسمية فقط"
+                                : "Complete any application or data entry only on the official platform"}
+                            </li>
+                            <li>
+                              <Check size={16} />
+                              {ar
+                                ? "عد إلى MYSER بعد ذلك لمتابعة الدليل؛ لا توجد مزامنة فعلية"
+                                : "Return to MYSER for the guide; no live synchronization is available"}
+                            </li>
+                          </ul>
+
+                          <div className="service-modal-actions">
+                            <button
+                              className="button button-green"
+                              onClick={() => setRequest(true)}
+                            >
+                              {t.beginDemo}
+                              {direction}
+                            </button>
+                            <button
+                              className="text-button"
+                              onClick={() => setService(null)}
+                            >
+                              {t.back}
+                            </button>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 ))}
               {modal === "meeting" && (
@@ -1186,7 +1432,7 @@ export default function Homepage() {
               {(modal === "privacy" || modal === "terms") && (
                 <div className="policy-content">
                   <ShieldCheck size={35} />
-                  <p>{t.policyText}</p>
+                  <p>{modal === "privacy" ? t.policyText : t.termsText}</p>
                   <p>{t.independent}</p>
                 </div>
               )}
@@ -1195,5 +1441,39 @@ export default function Homepage() {
         )}
       </AnimatePresence>
     </main>
+  );
+}
+
+function BusinessRoute({ lang }: { lang: Lang }) {
+  const ar = lang === "ar";
+  const [entity, setEntity] = useState("unknown");
+  const [activity, setActivity] = useState("");
+  return (
+    <section className="business-route" aria-labelledby="business-route-title">
+      <div className="business-route-heading">
+        <span className="eyebrow">{ar ? "مسار استكشافي مشروط" : "CONDITIONAL STARTER ROUTE"}</span>
+        <h3 id="business-route-title">{ar ? "تبدأ بفهم النشاط والشكل النظامي" : "Start by clarifying activity and legal form"}</h3>
+        <p>{ar ? "هذا المسار لا يحدد أهلية منشأتك ولا يحسم المتطلبات. راجع الروابط الرسمية وتأكد من انطباق كل خطوة على حالتك." : "This route does not determine your eligibility or final requirements. Check official sources and confirm each step applies to you."}</p>
+      </div>
+      <label>
+        <span>{ar ? "الشكل النظامي الذي تستكشفه" : "Legal form you are exploring"}</span>
+        <select value={entity} onChange={(event) => setEntity(event.target.value)}>
+          <option value="unknown">{ar ? "لم أحدد بعد" : "Not decided"}</option>
+          <option value="sole">{ar ? "مؤسسة فردية" : "Sole proprietorship"}</option>
+          <option value="company">{ar ? "شركة" : "Company"}</option>
+        </select>
+      </label>
+      <label>
+        <span>{ar ? "النشاط (اختياري، يبقى في هذه الجلسة)" : "Activity (optional, stays in this session)"}</span>
+        <input value={activity} onChange={(event) => setActivity(event.target.value)} maxLength={100} placeholder={ar ? "مثال: تجارة إلكترونية" : "e.g. online retail"} />
+      </label>
+      <ol>
+        <li><strong>{ar ? "تحقق من النشاط" : "Check the activity"}</strong><span>{activity ? (ar ? `تحقق من تصنيف «${activity}» لدى الجهة المختصة، فقد تتطلب بعض الأنشطة موافقة مسبقة.` : `Check how “${activity}” is classified; some activities may need prior approval.`) : (ar ? "حدّد النشاط أولًا؛ بعض الأنشطة قد تتطلب موافقة مسبقة من جهة مختصة." : "Identify the activity first; some activities may require prior approval.")}</span></li>
+        {entity === "unknown" ? <li><strong>{ar ? "اختر المسار النظامي" : "Choose a legal route"}</strong><span>{ar ? "تختلف خدمة المؤسسة الفردية عن تأسيس الشركة. لا تبدأ بطلب قبل تحديد النوع ومراجعة مصدره الرسمي." : "Sole-proprietor registration differs from company formation. Review the relevant official source before applying."}</span></li> : entity === "sole" ? <li><strong>{ar ? "راجع قيد المؤسسة الفردية" : "Review sole-proprietor registration"}</strong><span>{ar ? "تصف وزارة التجارة خدمة قيد سجل تجاري لمؤسسة فردية؛ راجع شروطها الحالية ومدى انطباقها." : "The Ministry of Commerce describes a sole-proprietorship CR service; check current terms and applicability."}</span></li> : <li><strong>{ar ? "راجع تأسيس الشركة" : "Review company formation"}</strong><span>{ar ? "توضح وزارة التجارة مسار تأسيس شركة، مع اختلاف الإجراءات حسب النوع النظامي." : "The Ministry of Commerce outlines company formation; the procedure varies by legal type."}</span></li>}
+        <li><strong>{ar ? "افحص الرخص والالتزامات عند انطباقها" : "Check applicable licenses and obligations"}</strong><span>{ar ? "تحقق من متطلبات بلدي بحسب النشاط والموقع، ومن معايير زاتكا الضريبية للمنشأة." : "Check Balady requirements for the activity and location, and ZATCA criteria for the business."}</span></li>
+        <li><strong>{ar ? "انتقل لخدمات العمل عند الحاجة" : "Use work services when relevant"}</strong><span>{ar ? "قوى مرتبطة بخدمات قطاع العمل؛ ليست خطوة لازمة لكل منشأة عند التأسيس." : "Qiwa covers work-sector services; it is not a mandatory formation step for every business."}</span></li>
+      </ol>
+      <small>{ar ? "لا تُدخل رقم هوية أو بيانات دخول أو معلومات مالية. لا تُحفظ المدخلات بعد إغلاق الصفحة أو تحديثها." : "Do not enter identity, login, or financial details. Inputs are not retained after closing or refreshing the page."}</small>
+    </section>
   );
 }

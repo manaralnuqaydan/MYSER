@@ -11,10 +11,11 @@ import {
   Users,
   BriefcaseBusiness,
   Scale,
+  Building2 as WorkIcon,
 } from "lucide-react";
 import Brand from "./Brand";
-import { copy, type Lang } from "@/lib/content";
-const sectorIcons = [Users, CarFront, BriefcaseBusiness, Scale];
+import { copy, directorySectors, type Lang } from "@/lib/content";
+const sectorIcons = [Users, CarFront, BriefcaseBusiness, WorkIcon];
 export default function PhoneMockups({ lang }: { lang: Lang }) {
   const t = copy[lang];
   const ar = lang === "ar";
@@ -40,7 +41,7 @@ export default function PhoneMockups({ lang }: { lang: Lang }) {
           <div className="phone-chat-action">
             <span>
               <Check size={12} />
-              {ar ? "رحلتك تبدأ هنا" : "Your journey starts here"}
+              {ar ? "الانتقال إلى منصة أبشر" : "Proceed to Absher"}
             </span>
           </div>
           <span className="phone-input">
@@ -67,7 +68,7 @@ export default function PhoneMockups({ lang }: { lang: Lang }) {
               مُيسّرة
               <br />
               <small>
-                {ar ? "عالم من الإمكانيات" : "A world of possibilities"}
+                {ar ? "دليل المنصات الرسمية" : "Official Services Directory"}
               </small>
             </span>
           </div>
@@ -76,16 +77,13 @@ export default function PhoneMockups({ lang }: { lang: Lang }) {
             {t.appSearch}
           </div>
           <div className="phone-categories">
-            {t.sectors.map((s, i) => {
+            {directorySectors.slice(0, 4).map((sector, i) => {
               const Icon = sectorIcons[i];
+              const s = sector.name[lang];
               return (
                 <span key={s}>
                   <Icon size={21} />
-                  <small>
-                    {ar
-                      ? ["الأفراد", "المرور", "الأعمال", "العدل"][i]
-                      : ["People", "Traffic", "Business", "Legal"][i]}
-                  </small>
+                  <small>{s}</small>
                 </span>
               );
             })}
