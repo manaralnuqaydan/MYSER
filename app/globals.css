@@ -347,6 +347,24 @@ button:disabled {
   background: none;
   color: white;
 }
+.account-button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #f7f6e9;
+  background: rgba(8, 46, 40, 0.35);
+  border: 1px solid rgba(217, 191, 134, 0.5);
+  transition: background 0.2s, border-color 0.2s;
+}
+.account-button:hover {
+  background: rgba(217, 191, 134, 0.14);
+  border-color: rgba(217, 191, 134, 0.8);
+}
+.nav .nav-login {
+  display: none;
+}
 .hero-body {
   position: relative;
   display: grid;
@@ -3276,6 +3294,14 @@ html[dir="ltr"] .nav .active:after {
   .nav {
     display: none;
   }
+  .account-button {
+    display: none;
+  }
+  .nav.open .nav-login {
+    display: block;
+    color: #e7d3a2;
+    font-weight: 600;
+  }
   .menu-button {
     display: block;
     padding: 5px;
@@ -4224,3 +4250,73 @@ html[dir="ltr"] .nav .active:after {
 .service-results small { line-height: 1.6; }
 .sector-card:focus-visible, .service-results > button:focus-visible, .sector-filters button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
+
+.auth-panel {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  max-width: 440px;
+  margin-inline: auto;
+}
+.auth-panel label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.auth-panel input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d6dcc8;
+  border-radius: 10px;
+  background: #fffdf5;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: #214833;
+  outline: 0;
+}
+.auth-panel input:focus {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px #bf995026;
+}
+.auth-panel .button {
+  width: 100%;
+  justify-content: center;
+  min-height: 48px;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.auth-divider:before,
+.auth-divider:after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.auth-panel .auth-alt {
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid #c9d2b8;
+  backdrop-filter: none;
+}
+.auth-panel .auth-alt:hover {
+  background: #eef1e4;
+}
+.auth-panel .auth-nafath {
+  gap: 10px;
+  color: #0b3d32;
+  background: linear-gradient(135deg, #f4e8cb, #d6bc82);
+}
+.auth-note {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+  text-align: center;
+}

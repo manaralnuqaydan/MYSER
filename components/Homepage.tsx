@@ -111,8 +111,9 @@ export default function Homepage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [typing, setTyping] = useState(false);
   const [modal, setModal] = useState<
-    "services" | "meeting" | "privacy" | "terms" | null
+    "services" | "meeting" | "privacy" | "terms" | "login" | null
   >(null);
+  const [authView, setAuthView] = useState<"signin" | "signup">("signin");
   const [sector, setSector] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [service, setService] = useState<string | null>(null);
@@ -190,6 +191,12 @@ export default function Homepage() {
     setRequest(false);
     setQuery("");
     setModal("services");
+    setMenu(false);
+    setChatOpen(false);
+  }
+  function openLogin() {
+    setAuthView("signin");
+    setModal("login");
     setMenu(false);
     setChatOpen(false);
   }
@@ -306,6 +313,9 @@ export default function Homepage() {
             <a href="#about" onClick={() => setMenu(false)}>
               {t.about}
             </a>
+            <button className="nav-login" onClick={openLogin}>
+              {ar ? "تسجيل الدخول / إنشاء حساب" : "Sign in / Create account"}
+            </button>
           </nav>
           <div className="header-actions">
             <button
@@ -317,11 +327,11 @@ export default function Homepage() {
               <span>{ar ? "English" : "العربية"}</span>
             </button>
             <button
-              className="button button-gold header-cta"
-              onClick={() => openServices()}
+              className="account-button"
+              onClick={openLogin}
+              aria-label={ar ? "تسجيل الدخول" : "Sign in"}
             >
-              {t.start}
-              {direction}
+              <Menu size={22} />
             </button>
             <button
               className="menu-button"
@@ -927,9 +937,13 @@ export default function Homepage() {
         ? curatedServices.find((entry) => entry.id === service)?.name[lang] || t.all
                         : modal === "meeting"
                           ? "GovMeet"
-                          : modal === "privacy"
-                            ? t.privacy
-                            : t.terms}
+                          : modal === "login"
+                            ? authView === "signin"
+                              ? ar ? "تسجيل الدخول" : "Sign in"
+                              : ar ? "إنشاء حساب جديد" : "Create a new account"
+                            : modal === "privacy"
+                              ? t.privacy
+                              : t.terms}
                   </h2>
                 </div>
                 <button
@@ -1455,6 +1469,72 @@ export default function Homepage() {
                     </div>
                   )}
                 </div>
+              )}
+              {modal === "login" && (
+                <form
+                  className="auth-panel"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setModal(null);
+                    setToast(
+                      ar
+                        ? "هذه نسخة تجريبية: لم تُرسل أو تُحفظ أي بيانات."
+                        : "Demo only: no data was sent or stored.",
+                    );
+                  }}
+                >
+                  {authView === "signup" && (
+                    <label>
+                      <span>{ar ? "الاسم الكامل" : "Full name"}</span>
+                      <input required autoComplete="off" maxLength={80} />
+                    </label>
+                  )}
+                  <label>
+                    <span>{ar ? "البريد الإلكتروني أو رقم الجوال" : "Email or mobile number"}</span>
+                    <input required autoComplete="off" maxLength={80} dir="ltr" />
+                  </label>
+                  <label>
+                    <span>{ar ? "كلمة المرور" : "Password"}</span>
+                    <input required type="password" autoComplete="off" maxLength={64} dir="ltr" />
+                  </label>
+                  <button type="submit" className="button button-green auth-submit">
+                    {authView === "signin"
+                      ? ar ? "تسجيل الدخول" : "Sign in"
+                      : ar ? "إنشاء الحساب" : "Create account"}
+                  </button>
+                  <div className="auth-divider">
+                    <span>{ar ? "أو" : "or"}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="button button-outline auth-alt"
+                    onClick={() => setAuthView(authView === "signin" ? "signup" : "signin")}
+                  >
+                    {authView === "signin"
+                      ? ar ? "إنشاء حساب جديد" : "Create a new account"
+                      : ar ? "لديك حساب؟ تسجيل الدخول" : "Have an account? Sign in"}
+                  </button>
+                  <button
+                    type="button"
+                    className="button auth-nafath"
+                    onClick={() => {
+                      setModal(null);
+                      setToast(
+                        ar
+                          ? "الدخول عبر نفاذ غير مفعّل في النسخة التجريبية."
+                          : "Nafath sign-in is not active in this demo.",
+                      );
+                    }}
+                  >
+                    <ShieldCheck size={18} />
+                    {ar ? "الدخول عبر النفاذ الوطني الموحد (نفاذ)" : "Sign in with Nafath"}
+                  </button>
+                  <p className="auth-note">
+                    {ar
+                      ? "نموذج تجريبي: لا يتصل مُيسّر بنفاذ أو بأي جهة حكومية، ولا تُرسل البيانات المدخلة إلى أي مكان."
+                      : "Demo only: MYSER is not connected to Nafath or any government system, and nothing you type is sent anywhere."}
+                  </p>
+                </form>
               )}
               {(modal === "privacy" || modal === "terms") && (
                 <div className="policy-content">
