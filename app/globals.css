@@ -207,14 +207,14 @@ button:disabled {
   color: #eef6e9;
 }
 .brand-symbol {
-  width: 37px;
+  width: 28px;
   display: block;
   transform: rotate(-4deg);
 }
 .brand-symbol svg {
   display: block;
   width: 100%;
-  height: 43px;
+  height: 32px;
 }
 .brand-name {
   display: flex;
@@ -223,15 +223,15 @@ button:disabled {
   line-height: 1.3;
 }
 .brand-name strong {
-  font-size: 25px;
+  font-size: 20px;
   letter-spacing: -1px;
   font-weight: 800;
 }
 .brand-name > span {
   font-family: "DM Sans", sans-serif;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
-  margin-top: 6px;
+  margin-top: 3px;
   letter-spacing: 2px;
 }
 .hero {
@@ -1858,10 +1858,10 @@ footer {
   padding-bottom: 32px;
 }
 .footer-main .brand-symbol {
-  width: 29px;
+  width: 24px;
 }
 .footer-main .brand-name strong {
-  font-size: 22px;
+  font-size: 18px;
 }
 .footer-main .brand-name > span {
   font-size: 10px;
@@ -3132,10 +3132,10 @@ html[dir="ltr"] .nav .active:after {
     padding: 8px 13px;
   }
   .brand-symbol {
-    width: 30px;
+    width: 24px;
   }
   .brand-name strong {
-    font-size: 23px;
+    font-size: 18px;
   }
   .hero {
     min-height: 0;

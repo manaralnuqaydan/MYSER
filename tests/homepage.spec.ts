@@ -37,7 +37,7 @@ test("service search leads to a demo request and modal closes with Escape", asyn
   );
   await dialog.getByRole("button", { name: "بدء الطلب التجريبي" }).click();
   await expect(dialog.getByText("تم إنشاء طلبك التجريبي")).toBeVisible();
-  await expect(dialog.getByText("WSL-2026-001")).toBeVisible();
+  await expect(dialog.getByText("MAB-2026-001")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
   await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");

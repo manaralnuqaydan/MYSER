@@ -36,14 +36,14 @@ export const directorySectors: SectorDefinition[] = [
 export const curatedServices: CuratedService[] = [
   { id: "civil-appointments", sectorId: "public", name: { ar: "مواعيد الأحوال المدنية", en: "Civil Affairs appointments" }, platform: { ar: "أبشر", en: "Absher" }, summary: { ar: "إنشاء المواعيد أو تعديلها لخدمات الأحوال المدنية.", en: "Create or update appointments for Civil Affairs services." }, when: { ar: "عند الحاجة إلى موعد لخدمة أحوال مدنية؛ تحقق من الخدمة والموعد المتاحين في أبشر.", en: "When you need a Civil Affairs appointment; confirm the service and availability in Absher." }, url: "https://www.absher.sa/", sourceTitle: { ar: "دليل خدمات أبشر للأفراد", en: "Absher Individuals service guide" }, sourceUrl: "https://www.absher.sa/", verifiedAt: "2026-10-11", verified: "destination-limited", note: { ar: "الرابط يفتح المدخل العام؛ لم نثبت رابطًا عميقًا ثابتًا للخدمة.", en: "This opens the portal home; a stable deep link was not verified." } },
   { id: "license-renewal", sectorId: "traffic", name: { ar: "تجديد رخصة القيادة", en: "Driving license renewal" }, platform: { ar: "أبشر", en: "Absher" }, summary: { ar: "تتيح أبشر تجديد بعض أنواع رخص القيادة إلكترونيًا وفق شروط الخدمة.", en: "Absher offers online renewal for certain driving license types subject to service conditions." }, when: { ar: "إذا أردت تجديد رخصة قيادة؛ تحقق من نوع الرخصة وأهليتك والمتطلبات في أبشر.", en: "For a driving license renewal; check license type, eligibility, and requirements in Absher." }, url: "https://www.absher.sa/wps/portal/individuals/static/guide/service-contents/%21ut/p/z1/rVRdk5owFP0r7oOPTG4ICeERgQVFq6LYlRcG-bBpFV1F2_33javT1nVFnWme4OZ-nntyUIReUFQmezFPKrEqk4X8n0YsxtjmnupCF77YJjAfqDMxuhgwRV_PHTi1CQwtx_ds7JJhCCiS10ztWtjjqg8TZsPQUQecPmMVfHKKhyvHPMbfXx-CoQXMMh3a1yak72u36k9QhKJ1KjI0JXzGdE5BoTxLFI2nTEkKLVd4kcwIpgZPsvzgnZbVuvqGpumqrPKy2jZBlJnYi2yXLLaNZNOEfJtv9iLNt42d_GrMdyLL_7E2odokRSFS5cISnyz4NNifzvtj24Chr-vQUwdYQnMOjNsZUmB9bBq9Xp9wzD4F1oRWoLYIgNtXz4G5TH-MbwE4RgubAGFAoa2PJPjqM9bG6n2LrXG4qz61Blab9wh2B6EuK-tax2K-OwH9QWJwP5D1rQHDY88jvEUfJdaFQ1TP2w_xlwuK6turx6_Nbu8_ql3RIcOHHi7f7q0h6zPY-NMM5yx8d3AxNo9zuIEqM5iY6GYL8wPM7w51PLiF5FQiqV-nmqTqXuQ_UViuNkspeaO_ipAVWqZlmCugqVIRGM2kIswyRZ8ZhZ4XYMyYgTxAnVtkljIqvr--RqZUj4Nq_KrQy3X5KDZ5nq2W8aqIRVkcujqocbxeLUT6Fieb00TXuOmx6xPdpXGdW2_jsXH-hxqO8hKtl2EYLjl5E6ej_AicwCl6DtGiGZ0v417Fzaen38qihhs%21/dz/d5/L0lHSkovd0RNQVBrQUVnQSEhLzROVkUvYXI%21", sourceTitle: { ar: "أبشر: تجديد رخصة القيادة", en: "Absher: Driving license renewal" }, sourceUrl: "https://www.absher.sa/wps/portal/individuals/static/guide/service-contents/%21ut/p/z1/rVRdk5owFP0r7oOPTG4ICeERgQVFq6LYlRcG-bBpFV1F2_33javT1nVFnWme4OZ-nntyUIReUFQmezFPKrEqk4X8n0YsxtjmnupCF77YJjAfqDMxuhgwRV_PHTi1CQwtx_ds7JJhCCiS10ztWtjjqg8TZsPQUQecPmMVfHKKhyvHPMbfXx-CoQXMMh3a1yak72u36k9QhKJ1KjI0JXzGdE5BoTxLFI2nTEkKLVd4kcwIpgZPsvzgnZbVuvqGpumqrPKy2jZBlJnYi2yXLLaNZNOEfJtv9iLNt42d_GrMdyLL_7E2odokRSFS5cISnyz4NNifzvtj24Chr-vQUwdYQnMOjNsZUmB9bBq9Xp9wzD4F1oRWoLYIgNtXz4G5TH-MbwE4RgubAGFAoa2PJPjqM9bG6n2LrXG4qz61Blab9wh2B6EuK-tax2K-OwH9QWJwP5D1rQHDY88jvEUfJdaFQ1TP2w_xlwuK6turx6_Nbu8_ql3RIcOHHi7f7q0h6zPY-NMM5yx8d3AxNo9zuIEqM5iY6GYL8wPM7w51PLiF5FQiqV-nmqTqXuQ_UViuNkspeaO_ipAVWqZlmCugqVIRGM2kIswyRZ8ZhZ4XYMyYgTxAnVtkljIqvr--RqZUj4Nq_KrQy3X5KDZ5nq2W8aqIRVkcujqocbxeLUT6Fieb00TXuOmx6xPdpXGdW2_jsXH-hxqO8hKtl2EYLjl5E6ej_AicwCl6DtGiGZ0v417Fzaen38qihhs%21/dz/d5/L0lHSkovd0RNQVBrQUVnQSEhLzROVkUvYXI%21", verifiedAt: "2026-10-11", verified: "verified", note: { ar: "دليل أبشر يذكر أن التجديد يقتصر على أنواع محددة؛ راجع الشروط الحالية مباشرة.", en: "Absher's guide limits renewal to specified license types; check current conditions directly." } },
-  { id: "traffic-violations", sectorId: "traffic", name: { ar: "الاستعلام عن المخالفات المرورية", en: "Traffic violation inquiry" }, platform: { ar: "أبشر", en: "Absher" }, summary: { ar: "خدمة للاستعلام عن المخالفات المرورية عبر الجهة الرسمية.", en: "Check traffic violations through the official portal." }, when: { ar: "إذا أردت الاستعلام عن مخالفة؛ لا تدخل رقم الهوية أو بيانات الدخول في وصل.", en: "For a violation inquiry; do not enter identity or sign-in details in WASL." }, url: "https://www.absher.sa/wps/vanityurl/ar/querytrafficviolationinquiry", sourceTitle: { ar: "أبشر: الاستعلام عن المخالفات المرورية", en: "Absher: Traffic violation inquiry" }, sourceUrl: "https://www.absher.sa/wps/vanityurl/ar/querytrafficviolationinquiry", verifiedAt: "2026-10-11", verified: "verified", note: { ar: "تختلف متطلبات الدخول والبيانات حسب الخدمة الرسمية.", en: "Sign-in and data requirements are set by the official service." } },
+  { id: "traffic-violations", sectorId: "traffic", name: { ar: "الاستعلام عن المخالفات المرورية", en: "Traffic violation inquiry" }, platform: { ar: "أبشر", en: "Absher" }, summary: { ar: "خدمة للاستعلام عن المخالفات المرورية عبر الجهة الرسمية.", en: "Check traffic violations through the official portal." }, when: { ar: "إذا أردت الاستعلام عن مخالفة؛ لا تدخل رقم الهوية أو بيانات الدخول في معبر.", en: "For a violation inquiry; do not enter identity or sign-in details in MAABAR." }, url: "https://www.absher.sa/wps/vanityurl/ar/querytrafficviolationinquiry", sourceTitle: { ar: "أبشر: الاستعلام عن المخالفات المرورية", en: "Absher: Traffic violation inquiry" }, sourceUrl: "https://www.absher.sa/wps/vanityurl/ar/querytrafficviolationinquiry", verifiedAt: "2026-10-11", verified: "verified", note: { ar: "تختلف متطلبات الدخول والبيانات حسب الخدمة الرسمية.", en: "Sign-in and data requirements are set by the official service." } },
   { id: "sole-proprietorship-cr", sectorId: "business", name: { ar: "قيد سجل تجاري لمؤسسة فردية", en: "Register a sole proprietorship CR" }, platform: { ar: "وزارة التجارة / المركز السعودي للأعمال", en: "Ministry of Commerce / Saudi Business Center" }, summary: { ar: "خدمة قيد سجل تجاري لمؤسسة فردية؛ لا تنطبق تلقائيًا على جميع الأشكال القانونية.", en: "A Commercial Registration service for a sole proprietorship; it does not automatically apply to every legal form." }, when: { ar: "بعد تحديد النشاط والشكل القانوني. قد يتطلب النشاط موافقة مسبقة من جهة مختصة.", en: "After identifying activity and legal form. Some activities may require prior approval." }, url: "https://mc.gov.sa/ar/eservices/pages/ServiceDetails.aspx?sID=38", sourceTitle: { ar: "وزارة التجارة: قيد سجل تجاري لمؤسسة فردية", en: "Ministry of Commerce: Sole proprietorship CR" }, sourceUrl: "https://mc.gov.sa/ar/eservices/pages/ServiceDetails.aspx?sID=38", verifiedAt: "2026-10-11", verified: "verified", note: { ar: "تحقق من الأهلية والمتطلبات والرسوم الحالية في المصدر الرسمي.", en: "Confirm eligibility, requirements, and current fees at the official source." } },
   { id: "company-formation", sectorId: "business", name: { ar: "تأسيس شركة", en: "Company formation" }, platform: { ar: "وزارة التجارة / المركز السعودي للأعمال", en: "Ministry of Commerce / Saudi Business Center" }, summary: { ar: "إرشاد عام لبدء تأسيس شركة؛ يختلف المسار بحسب النوع النظامي والشركاء.", en: "General orientation for company formation; the route varies by legal type and partners." }, when: { ar: "إذا كان خيارك شركة؛ راجع النوع النظامي المناسب ومتطلباته قبل التقديم.", en: "If you are forming a company, review the applicable legal type and requirements before applying." }, url: "https://mc.gov.sa/ar/FAQ/pages/default.aspx", sourceTitle: { ar: "وزارة التجارة: إجراء تأسيس شركة", en: "Ministry of Commerce: Company formation procedure" }, sourceUrl: "https://mc.gov.sa/ar/FAQ/pages/default.aspx", verifiedAt: "2026-10-11", verified: "verified", note: { ar: "هذه الصفحة إرشاد من الأسئلة الشائعة، وليست تحققًا من أهليتك القانونية.", en: "This FAQ is general guidance, not a determination of legal eligibility." } },
   { id: "balady-license", sectorId: "business", name: { ar: "إصدار رخصة تجارية", en: "Commercial license" }, platform: { ar: "بلدي", en: "Balady" }, summary: { ar: "خدمة إصدار رخصة لممارسة نشاط تجاري وفق متطلبات النشاط والموقع.", en: "A license service for commercial activities, subject to activity and location requirements." }, when: { ar: "تحقق من انطباق الرخصة والاشتراطات على نشاطك وموقعك لدى بلدي.", en: "Check with Balady whether this license and its requirements apply to your activity and location." }, url: "https://balady.gov.sa/ar/services?id=159", sourceTitle: { ar: "بلدي: إصدار رخصة تجارية", en: "Balady: Commercial license issuance" }, sourceUrl: "https://balady.gov.sa/ar/services?id=159", verifiedAt: "2026-10-11", verified: "destination-limited", note: { ar: "أعاد رابط الخدمة التوجيه إلى فهرس الخدمات أثناء التحقق؛ راجع المسار الحالي لدى بلدي.", en: "The service URL redirected to the service index during review; confirm the current route with Balady." } },
   { id: "vat-registration", sectorId: "business", name: { ar: "التسجيل في ضريبة القيمة المضافة للمنشآت", en: "Business VAT registration" }, platform: { ar: "هيئة الزكاة والضريبة والجمارك", en: "Zakat, Tax and Customs Authority" }, summary: { ar: "تسجيل للمنشآت التي تنطبق عليها معايير التسجيل الإلزامي أو الاختياري.", en: "Registration for businesses meeting mandatory or voluntary registration criteria." }, when: { ar: "عند انطباق معايير التسجيل على منشأتك؛ تحقق من القواعد الحالية لدى الهيئة.", en: "When your business meets registration criteria; verify current rules with ZATCA." }, url: "https://zatca.gov.sa/ar/eServices/Pages/eServices-001.aspx", sourceTitle: { ar: "زاتكا: التسجيل في ضريبة القيمة المضافة للمنشآت", en: "ZATCA: Business VAT registration" }, sourceUrl: "https://zatca.gov.sa/ar/eServices/Pages/eServices-001.aspx", verifiedAt: "2026-10-11", verified: "verified", note: { ar: "لا يعني تأسيس كل منشأة أنها ملزمة بالتسجيل؛ لم نعرض حدودًا رقمية.", en: "Formation alone does not mean every business must register; no numeric thresholds are shown here." } },
   { id: "qiwa", sectorId: "work", name: { ar: "خدمات قوى لقطاع العمل", en: "Qiwa work-sector services" }, platform: { ar: "قوى — وزارة الموارد البشرية والتنمية الاجتماعية", en: "Qiwa — Ministry of Human Resources and Social Development" }, summary: { ar: "منصة لخدمات قطاع العمل؛ ليست خطوة تأسيس لازمة لكل منشأة.", en: "A work-sector services platform; not a required formation step for every business." }, when: { ar: "عند الحاجة إلى خدمات العمل وإدارة القوى العاملة.", en: "When you need work-sector or workforce services." }, url: "https://www.qiwa.sa/", sourceTitle: { ar: "وزارة الموارد البشرية: منصات الوزارة", en: "HRSD: Ministry platforms" }, sourceUrl: "https://www.hrsd.gov.sa/ministry-platforms", verifiedAt: "2026-10-11", verified: "destination-limited", note: { ar: "المصدر الوزاري يعرّف المنصة؛ تعذر فتح وجهة قوى مباشرة أثناء التحقق.", en: "The ministry source identifies the platform; its destination could not be opened directly during review." } },
   { id: "noor", sectorId: "education", name: { ar: "نظام نور", en: "Noor education system" }, platform: { ar: "وزارة التعليم", en: "Ministry of Education" }, summary: { ar: "نظام معلومات تعليمي لمتابعة خدمات الطلاب وأولياء الأمور.", en: "An education information system supporting student and guardian services." }, when: { ar: "للوصول إلى خدمات التعليم المتاحة بحسب دور المستخدم.", en: "For education services available to the relevant user role." }, url: "https://noor.moe.gov.sa/Noor/", sourceTitle: { ar: "وزارة التعليم: نظام نور", en: "Ministry of Education: Noor" }, sourceUrl: "https://www.moe.gov.sa/ar/aboutus/Portal/Application/Pages/Noor.aspx/statements/ar.html", verifiedAt: "2026-10-11", verified: "verified", note: { ar: "قد يعيد النظام التوجيه إلى صفحة تسجيل/تعريف بحسب حالته.", en: "The system may redirect to a login or landing page depending on availability." } },
-  { id: "sehhaty", sectorId: "health", name: { ar: "خدمات صحتي", en: "Sehhaty services" }, platform: { ar: "وزارة الصحة", en: "Ministry of Health" }, summary: { ar: "معلومات وخدمات صحية مثل المواعيد والاستشارات وفق ما تتيحه الوزارة.", en: "Health information and services such as appointments and consultations as provided by the ministry." }, when: { ar: "لمراجعة الخدمات الصحية الرقمية المنشورة من وزارة الصحة.", en: "To explore digital health services published by the Ministry of Health." }, url: "https://www.moh.gov.sa/support/pages/sehhatyapp.aspx", sourceTitle: { ar: "وزارة الصحة: تطبيق صحتي", en: "Ministry of Health: Sehhaty" }, sourceUrl: "https://www.moh.gov.sa/support/pages/sehhatyapp.aspx", verifiedAt: "2026-10-11", verified: "verified", note: { ar: "لا تُدخل بيانات صحية في وصل؛ انتقل إلى قناة الوزارة الرسمية.", en: "Do not enter health information in WASL; use the ministry's official channel." } },
+  { id: "sehhaty", sectorId: "health", name: { ar: "خدمات صحتي", en: "Sehhaty services" }, platform: { ar: "وزارة الصحة", en: "Ministry of Health" }, summary: { ar: "معلومات وخدمات صحية مثل المواعيد والاستشارات وفق ما تتيحه الوزارة.", en: "Health information and services such as appointments and consultations as provided by the ministry." }, when: { ar: "لمراجعة الخدمات الصحية الرقمية المنشورة من وزارة الصحة.", en: "To explore digital health services published by the Ministry of Health." }, url: "https://www.moh.gov.sa/support/pages/sehhatyapp.aspx", sourceTitle: { ar: "وزارة الصحة: تطبيق صحتي", en: "Ministry of Health: Sehhaty" }, sourceUrl: "https://www.moh.gov.sa/support/pages/sehhatyapp.aspx", verifiedAt: "2026-10-11", verified: "verified", note: { ar: "لا تُدخل بيانات صحية في معبر؛ انتقل إلى قناة الوزارة الرسمية.", en: "Do not enter health information in MAABAR; use the ministry's official channel." } },
   { id: "najiz", sectorId: "justice", name: { ar: "منصة ناجز للخدمات العدلية", en: "Najiz justice services" }, platform: { ar: "وزارة العدل", en: "Ministry of Justice" }, summary: { ar: "بوابة الوزارة للخدمات العدلية الإلكترونية.", en: "The ministry's portal for electronic justice services." }, when: { ar: "للوصول إلى خدمة عدلية منشورة؛ استشر مختصًا عند الحاجة إلى رأي قانوني.", en: "To access a published justice service; consult a qualified professional for legal advice." }, url: "https://new.najiz.sa/", sourceTitle: { ar: "وزارة العدل: بوابة الوزارة وروابط ناجز", en: "Ministry of Justice: Ministry portal and Najiz links" }, sourceUrl: "https://www.moj.gov.sa/ar/pages/default.aspx/", verifiedAt: "2026-10-11", verified: "destination-limited", note: { ar: "موقع الوزارة يربط بناجز؛ تعذر فتح وجهة المنصة مباشرة أثناء التحقق.", en: "The ministry site links to Najiz; the platform destination could not be opened directly during review." } },
 ];
 
@@ -58,9 +58,9 @@ export type AssistantScenario = {
 export const assistantScenarios: AssistantScenario[] = [
   { id: "business-start", keywords: ["تجار", "نشاط", "business", "commercial", "بلدي"], sectorId: "business", response: { ar: "لبدء استكشاف نشاط تجاري، ابدأ بتحديد النشاط والشكل القانوني. تختلف الخطوات والموافقات بحسب الحالة؛ راجع المصادر الرسمية ولا تعتبر كل خطوة شرطًا عامًا.", en: "To explore starting a business, first identify the activity and legal form. Steps and approvals vary; review official sources and do not treat every step as a universal requirement." } },
   { id: "license-renewal", keywords: ["رخص", "قياد", "driv", "licen"], sectorId: "traffic", response: { ar: "راجع خدمة تجديد رخصة القيادة في أبشر. تتغير الأهلية والمتطلبات حسب نوع الرخصة؛ تحقق منها لدى المصدر الرسمي قبل المتابعة.", en: "Review the driving license renewal service in Absher. Eligibility and requirements depend on license type; confirm them with the official source before proceeding." } },
-  { id: "traffic-violations", keywords: ["مخالف", "violation", "fine"], sectorId: "traffic", response: { ar: "يمكنك الاستعلام عن المخالفات عبر خدمة أبشر الرسمية. لا تدخل رقم الهوية أو بيانات الدخول في وصل؛ المثال في المحفظة تجريبي فقط.", en: "Use the official Absher service to check traffic violations. Do not enter identity or sign-in details in WASL; the wallet example is only a demo." } },
-  { id: "civil-appointment", keywords: ["موعد", "أحوال", "هوي", "إقام", "appointment", "civil", "national id", "iqama"], sectorId: "public", response: { ar: "استكشف خدمة مواعيد الأحوال المدنية من مدخل أبشر الرسمي، ثم تحقق من نوع الموعد وشروطه المتاحة هناك. لا تُدخل بيانات الهوية في وصل.", en: "Open the official Absher portal to explore Civil Affairs appointments, then confirm the appointment type and current requirements there. Do not enter identity details in WASL." } },
-  { id: "justice", keywords: ["قض", "وكال", "عدل", "court", "legal", "attorney"], sectorId: "justice", response: { ar: "استكشف منصة ناجز للخدمات العدلية عبر الرابط الرسمي. يقتصر دور وصل على الدليل، ولا يقدم استشارة قانونية أو معاملة.", en: "Explore justice services through the official Najiz link. WASL is a guide only and does not provide legal advice or process transactions." } },
+  { id: "traffic-violations", keywords: ["مخالف", "violation", "fine"], sectorId: "traffic", response: { ar: "يمكنك الاستعلام عن المخالفات عبر خدمة أبشر الرسمية. لا تدخل رقم الهوية أو بيانات الدخول في معبر؛ المثال في المحفظة تجريبي فقط.", en: "Use the official Absher service to check traffic violations. Do not enter identity or sign-in details in MAABAR; the wallet example is only a demo." } },
+  { id: "civil-appointment", keywords: ["موعد", "أحوال", "هوي", "إقام", "appointment", "civil", "national id", "iqama"], sectorId: "public", response: { ar: "استكشف خدمة مواعيد الأحوال المدنية من مدخل أبشر الرسمي، ثم تحقق من نوع الموعد وشروطه المتاحة هناك. لا تُدخل بيانات الهوية في معبر.", en: "Open the official Absher portal to explore Civil Affairs appointments, then confirm the appointment type and current requirements there. Do not enter identity details in MAABAR." } },
+  { id: "justice", keywords: ["قض", "وكال", "عدل", "court", "legal", "attorney"], sectorId: "justice", response: { ar: "استكشف منصة ناجز للخدمات العدلية عبر الرابط الرسمي. يقتصر دور معبر على الدليل، ولا يقدم استشارة قانونية أو معاملة.", en: "Explore justice services through the official Najiz link. MAABAR is a guide only and does not provide legal advice or process transactions." } },
 ];
 
 export const assistantFallback: Localized = {
@@ -73,16 +73,16 @@ export const copy = {
     home: "الرئيسية",
     services: "الخدمات",
     experiences: "التجارب الرقمية",
-    assistant: "مساعد وصل الإرشادي",
-    about: "عن وصل",
+    assistant: "مساعد معبر الإرشادي",
+    about: "عن معبر",
     start: "ابدأ الآن",
     explore: "استكشف المنصة",
     eyebrow: "دليلك الميسّر للخدمات والمنصات الرسمية",
     headline1: "دليلك الميسّر",
-    headline2: "والمنصات الرسمية.",
+    headline2: "للمنصات الحكومية.",
     sub: "منصة إرشادية سعودية مستقلة تساعدك على فهم الإجراءات والوصول المباشر إلى المنصات والخدمات الحكومية الرسمية.",
     demo: "منتج استرشادي سعودي · مستقل",
-    welcome: "مرحباً بك في وصل",
+    welcome: "مرحباً بك في معبر",
     help: "ما المنصة التي تحتاج الوصول إليها؟ أنا هنا لتيسير رحلتك.",
     input: "اكتب ما تبحث عنه (مثال: تجديد رخصة، سجل تجاري)...",
     smart: "المساعد الإرشادي",
@@ -107,7 +107,7 @@ export const copy = {
     journeySub: "خطوات مدروسة توضح لك المتطلبات والمسار النظامي قبل الانتقال إلى بوابة الجهة المعنية.",
     sectorLabel: "القطاعات المتاحة",
     sectorTitle: "اختر القطاع للوصول إلى خدماته ومنصاته.",
-    sectorSub: "معلومات موثقة وروابط مباشرة للمنصات الرسمية، دون إدخال بيانات حساسة داخل وصل.",
+    sectorSub: "معلومات موثقة وروابط مباشرة للمنصات الرسمية، دون إدخال بيانات حساسة داخل معبر.",
     all: "استعراض جميع الخدمات",
     govTitle: "حضور الجلسات القضائية\nوالتوجيه العدلي عن بُعد.",
     govSub:
@@ -151,7 +151,7 @@ export const copy = {
     footer: "منتج استرشادي سعودي يربط المستفيدين بالخدمات والمنصات الحكومية الرسمية.",
     independent:
       "منصة توجيهية مستقلة غير تابعة لأي جهة حكومية. تهدف إلى تيسير المعرفة والربط بالمصادر الرسمية المعتمدة.",
-    rights: "© 2026 وصل. جميع الحقوق محفوظة.",
+    rights: "© 2026 معبر. جميع الحقوق محفوظة.",
     privacy: "الخصوصية",
     terms: "الشروط والأحكام",
     close: "إغلاق",
@@ -173,7 +173,7 @@ export const copy = {
     policyText:
       "هذا نموذج عرض مستقل. تبقى تفاعلاتك ضمن جلسة المتصفح، ولا تُرسل البيانات إلى جهات حكومية أو مزوّدي دفع. لا تدخل معلومات شخصية أو بيانات مالية حقيقية.",
     termsText:
-      "وصل في هذه النسخة تصور واجهة مستقل لاستكشاف الخدمات الرقمية. بيانات الخدمات والرسوم والطلبات والاجتماعات أمثلة توضيحية، ولا تنفذ هذه التجربة طلبًا رسميًا أو معاملة مالية.",
+      "معبر في هذه النسخة تصور واجهة مستقل لاستكشاف الخدمات الرقمية. بيانات الخدمات والرسوم والطلبات والاجتماعات أمثلة توضيحية، ولا تنفذ هذه التجربة طلبًا رسميًا أو معاملة مالية.",
     stepTitles: [
       "تحديد نوع الاحتياج",
       "استشارة المساعد الإرشادي",
@@ -201,19 +201,19 @@ export const copy = {
     home: "Home",
     services: "Services",
     experiences: "Digital experiences",
-    assistant: "Wasl guided assistant",
+    assistant: "Maabar guided assistant",
     about: "About",
     start: "Get started",
-    explore: "Explore Wasl",
+    explore: "Explore Maabar",
     eyebrow: "A simpler life. A smarter future.",
     headline1: "Your simple guide",
-    headline2: "to official platforms.",
+    headline2: "to government platforms.",
     sub: "An independent Saudi concept for exploring digital services and understanding their steps through one clear, bilingual experience.",
     demo: "Saudi vision · Independent concept",
-    welcome: "Welcome to Wasl",
+    welcome: "Welcome to Maabar",
     help: "Which platform do you need to reach? I’m here to make your journey easier.",
     input: "Tell us what you need...",
-    smart: "Wasl guided assistant",
+    smart: "Maabar guided assistant",
     online: "A guided demo in your preferred language",
     suggested: "Try asking",
     chips: [
@@ -235,7 +235,7 @@ export const copy = {
     journeySub: "An exploratory guide to where you might start and when to use the official service.",
     sectorLabel: "A world of services",
     sectorTitle: "Explore a focused service guide.",
-    sectorSub: "Official sources and starter guidance; WASL does not submit transactions.",
+    sectorSub: "Official sources and starter guidance; MAABAR does not submit transactions.",
     all: "Explore services",
     govTitle: "Virtual judicial sessions\nand court guidance.",
     govSub:
@@ -259,8 +259,8 @@ export const copy = {
     pay: "Demo pay",
     paid: "Paid",
     walletDemo: "Demo data · No real financial transactions",
-    appLabel: "Wasl, wherever you are",
-    appTitle: "Life moves.\nWasl moves with you.",
+    appLabel: "Maabar, wherever you are",
+    appTitle: "Life moves.\nMaabar moves with you.",
     appSub:
       "A phone interface concept for exploring services, viewing a demo request, and finding guidance.",
     soon: "Coming soon to",
@@ -280,7 +280,7 @@ export const copy = {
     footer: "An independent Saudi concept for exploring digital services with clarity.",
     independent:
       "An independent concept, unaffiliated with any government entity. Services and figures are for demonstration only.",
-    rights: "© 2026 Wasl. All rights reserved.",
+    rights: "© 2026 Maabar. All rights reserved.",
     privacy: "Privacy",
     terms: "Terms",
     close: "Close",
@@ -303,7 +303,7 @@ export const copy = {
     policyText:
       "This is an independent demonstration. Interactions remain in your browser session and are not sent to government entities or payment providers. Do not enter real personal or financial information.",
     termsText:
-      "This version of Wasl is an independent interface concept for exploring digital services. Service, fee, request, and meeting details are illustrative; the demo does not submit official requests or make financial transactions.",
+      "This version of Maabar is an independent interface concept for exploring digital services. Service, fee, request, and meeting details are illustrative; the demo does not submit official requests or make financial transactions.",
     stepTitles: [
       "Start with your need",
       "Ask the guided assistant",
