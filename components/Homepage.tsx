@@ -548,9 +548,7 @@ export default function Homepage() {
         <div className="container">
           <motion.div className="section-heading heading-row" {...reveal}>
             <div>
-              <span className="eyebrow">{t.sectorLabel}</span>
-              <h2>{t.sectorTitle}</h2>
-              <p>{t.sectorSub}</p>
+              <h2 className="eyebrow">{t.sectorLabel}</h2>
             </div>
           </motion.div>
           <div className="sector-grid">
