@@ -352,9 +352,6 @@ export default function Homepage() {
             <a href="#services" onClick={() => setMenu(false)}>
               {t.services}
             </a>
-            <a href="#experiences" onClick={() => setMenu(false)}>
-              {t.experiences}
-            </a>
             <button
               onClick={() => {
                 setChatOpen(true);
@@ -661,225 +658,6 @@ export default function Homepage() {
 
       <section id="experiences" className="experiences section-light">
         <div className="container">
-          <div className="experience-intro">
-            <span className="eyebrow">
-              {ar
-                ? "الجيل القادم من التجارب الرقمية"
-                : "The next generation of digital experiences"}
-            </span>
-            <h2>{ar ? "تجربة تتجاوز التوقعات." : "Beyond expectations."}</h2>
-          </div>
-          <motion.div className="govmeet feature-grid" {...reveal}>
-            <div className="feature-copy">
-              <span className="feature-brand">
-                <span className="icon-square">
-                  <Video size={20} />
-                </span>
-                GovMeet
-                <span className="new-pill">{t.new}</span>
-              </span>
-              <h2 className="multiline">{t.govTitle}</h2>
-              <p>{t.govSub}</p>
-              <div className="feature-benefits">
-                <span>
-                  <FileText size={15} />
-                  {ar ? "واجهة توضيحية" : "Concept interface"}
-                </span>
-                <span>
-                  <Sparkles size={15} />
-                  {ar ? "ملخّص توضيحي" : "Sample summary"}
-                </span>
-              </div>
-              <button
-                className="button button-green"
-                onClick={() => {
-                  setJoined(false);
-                  setModal("meeting");
-                }}
-              >
-                {t.govButton}
-                {direction}
-              </button>
-            </div>
-            <div className="meeting-stage">
-              <span className="floating-security">
-                <FileText size={14} />
-                {ar ? "GovMeet · وضع تجريبي" : "GovMeet · Demo mode"}
-              </span>
-              <div className="meeting-window">
-                <div className="meeting-bar">
-                  <span className="meeting-brand">
-                    <Video size={13} />
-                    GovMeet
-                  </span>
-                  <span className="meeting-status">
-                    <i />
-                    {t.live}
-                  </span>
-                  <MoreHorizontal size={18} />
-                </div>
-                <div className="meeting-main">
-                  <div className="meeting-person">
-                    <div
-                      className="advisor-photo"
-                      role="img"
-                      aria-label={
-                        ar
-                          ? "مستشار سعودي في جلسة تجريبية"
-                          : "Saudi advisor in a demo meeting"
-                      }
-                    />
-                    <span className="person-name">
-                      {t.participant}
-                      <span>
-                        <Mic size={12} />
-                      </span>
-                    </span>
-                    <span className="meeting-topic">{t.meetingTitle}</span>
-                  </div>
-                  <div className="meeting-side">
-                    <div className="mini-participant">
-                      <span>ع م</span>
-                      <small>{t.you}</small>
-                    </div>
-                    <div className="meeting-summary">
-                      <Sparkles size={16} />
-                      <strong>{t.notes}</strong>
-                      {[t.note1, t.note2, t.note3].map((n) => (
-                        <p key={n}>
-                          <Check size={10} />
-                          {n}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="meeting-controls">
-                  <span>12:48</span>
-                  <div>
-                    <span>
-                      <Mic size={15} />
-                    </span>
-                    <span>
-                      <Video size={15} />
-                    </span>
-                    <span>
-                      <Users size={15} />
-                    </span>
-                    <button
-                      className="call-button"
-                      onClick={() => setModal("meeting")}
-                      aria-label={t.govButton}
-                    >
-                      <ArrowUpRight size={15} />
-                    </button>
-                  </div>
-                  <span>
-                    <MoreHorizontal size={15} />
-                  </span>
-                </div>
-              </div>
-              <span className="meeting-stage-caption">
-                {ar
-                  ? "توجيه نظامي مباشر لرواد الأعمال، دون تعقيد."
-                  : "Direct regulatory orientation for entrepreneurs, simplified."}
-              </span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            id="wallet"
-            className="wallet-section feature-grid"
-            {...reveal}
-          >
-            <div className="feature-copy">
-              <span className="eyebrow">{t.walletLabel}</span>
-              <h2 className="multiline">{t.walletTitle}</h2>
-              <p>{t.walletSub}</p>
-              <div className="wallet-badge">
-                <span className="icon-square">
-                  <Wallet size={22} />
-                </span>
-                <span>
-                  <strong>
-                    {ar
-                      ? "شفافية واضحة في التكاليف"
-                      : "Clear overview of fees"}
-                  </strong>
-                  <small>
-                    {ar
-                      ? "عرض استرشادي للرسوم والالتزامات الرسمية"
-                      : "Illustrative guide to official fees"}
-                  </small>
-                </span>
-              </div>
-            </div>
-            <div className="wallet-card">
-              <div className="wallet-top">
-                <div>
-                  <span>{t.total}</span>
-                  <strong>
-                    {amounts
-                      .reduce((s, a, i) => s + (paid.includes(i) ? 0 : a), 0)
-                      .toLocaleString(ar ? "ar-SA" : "en-US")}{" "}
-                    <small>{t.currency}</small>
-                  </strong>
-                </div>
-                <span className="wallet-emblem">
-                  <Wallet size={25} />
-                </span>
-              </div>
-              <div className="bill-list">
-                {t.bills.map((bill, i) => (
-                  <div
-                    className={`bill ${paid.includes(i) ? "bill-paid" : ""}`}
-                    key={bill}
-                  >
-                    <span className="bill-icon">
-                      {paid.includes(i) ? (
-                        <CheckCheck size={19} />
-                      ) : i === 2 ? (
-                        <Building2 size={19} />
-                      ) : (
-                        <CarFront size={19} />
-                      )}
-                    </span>
-                    <div>
-                      <strong>{bill}</strong>
-                      <small>{t.agencies[i]}</small>
-                    </div>
-                    <span className="bill-amount">
-                      {amounts[i]} <small>{t.currency}</small>
-                    </span>
-                    <button
-                      disabled={paid.includes(i)}
-                      onClick={() => {
-                        setPaid((prev) => [...prev, i]);
-                        setToast(t.paymentSuccess);
-                      }}
-                    >
-                      {paid.includes(i) ? (
-                        <>
-                          <Check size={13} />
-                          {t.paid}
-                        </>
-                      ) : (
-                        <>
-                          {t.pay}
-                          <ArrowUpLeft size={12} />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <span className="wallet-disclaimer">
-                <ShieldCheck size={12} />
-                {t.walletDemo}
-              </span>
-            </div>
-          </motion.div>
-
           <motion.div id="app" className="app-section feature-grid" {...reveal}>
             <div className="feature-copy">
               <span className="eyebrow">{t.appLabel}</span>
@@ -939,7 +717,6 @@ export default function Homepage() {
             </div>
             <div className="footer-links">
               <a href="#services">{t.services}</a>
-              <a href="#experiences">GovMeet</a>
               <button onClick={() => setChatOpen(true)}>{t.assistant}</button>
             </div>
             <span className="footer-saudi">
@@ -1254,6 +1031,21 @@ export default function Homepage() {
                             </button>
                           );
                         })}
+                      {directorySectors[sector ?? -1]?.id === "justice" && (
+                        <button
+                          onClick={() => {
+                            setJoined(false);
+                            setModal("meeting");
+                          }}
+                        >
+                          <span><Video size={19} /></span>
+                          <div>
+                            <strong>{ar ? "جلسة مرئية تجريبية (GovMeet)" : "Demo video session (GovMeet)"}</strong>
+                            <small>{directorySectors[sector ?? -1]?.name[lang]} · {ar ? "تجربة توضيحية" : "Concept demo"}</small>
+                          </div>
+                          {direction}
+                        </button>
+                      )}
                       {curatedServices.filter((entry) => sector === null || directorySectors[sector]?.id === entry.sectorId).filter((entry) => `${entry.name[lang]} ${entry.platform[lang]} ${directorySectors.find((item) => item.id === entry.sectorId)?.name[lang]}`.toLowerCase().includes(query.toLowerCase())).length === 0 && (
                         <div className="no-results">
                           <Search size={25} />
