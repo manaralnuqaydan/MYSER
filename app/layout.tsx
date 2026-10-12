@@ -14,7 +14,7 @@ export default function RootLayout({
         <link rel="preload" href="/saudi-hero.webp" as="image" />
         <link
           rel="preload"
-          href="/fonts/noto-sans-arabic.woff2"
+          href="/fonts/alexandria-arabic.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
