@@ -1586,6 +1586,7 @@ const localLogos: Record<string, string> = {
   "www.absher.sa": "platforms/absher.png",
   "business.absher.sa": "platforms/absher.png",
   "www.iam.gov.sa": "nafath-logo.png",
+  "splonline.com.sa": "platforms/spl.png",
 };
 
 function PlatformLogo({ url, name }: { url: string; name: string }) {
