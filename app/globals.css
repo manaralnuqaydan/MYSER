@@ -4316,6 +4316,10 @@ html[dir="ltr"] .nav .active:after {
   color: #0b3d32;
   background: linear-gradient(135deg, #f4e8cb, #d6bc82);
 }
+.auth-panel .auth-nafath .nafath-logo {
+  height: 22px;
+  width: auto;
+}
 .auth-note {
   font-size: 12px;
   line-height: 1.8;

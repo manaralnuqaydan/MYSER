@@ -1644,7 +1644,11 @@ export default function Homepage() {
                       );
                     }}
                   >
-                    <ShieldCheck size={18} />
+                    {process.env.NEXT_PUBLIC_HIDE_OFFICIAL_LOGOS === "1" ? (
+                      <ShieldCheck size={18} />
+                    ) : (
+                      <img className="nafath-logo" src="/nafath-logo.png" alt="" width={56} height={22} />
+                    )}
                     {ar ? "الدخول عبر النفاذ الوطني الموحد (نفاذ)" : "Sign in with Nafath"}
                   </button>
                   <p className="auth-note">
