@@ -351,7 +351,7 @@ export default function Homepage() {
                 className="button button-gold"
                 onClick={() => openServices()}
               >
-                {t.start}
+                {t.all}
                 {direction}
               </button>
               <a className="button button-outline" href="#journey">
@@ -360,14 +360,6 @@ export default function Homepage() {
                 </span>
                 {t.explore}
               </a>
-            </div>
-            <div className="hero-trust">
-              <span className="trust-icon">
-                <Sparkles size={18} />
-              </span>
-              {t.demo}
-              <span className="trust-dot" />
-              {ar ? "توجيه موثوق وإرشاد واضح" : "Clear & verified guidance"}
             </div>
             <button
               className="assistant-mobile-launch"
