@@ -102,6 +102,9 @@ const stepIcons = [
   ShieldCheck,
 ];
 const amounts = [200, 150, 500];
+const platformLogos: Record<string, string> = {
+  "أبشر": "platforms/absher.png",
+};
 
 export default function Homepage() {
   const [lang, setLang] = useState<Lang>("ar");
@@ -1284,6 +1287,8 @@ export default function Homepage() {
                   <div className="service-detail">
                     {(() => {
                       const entry = curatedServices.find((item) => item.id === service);
+                      const detailed = detailedServices.find((item) => item.id === service);
+                      const logo = platformLogos[entry?.platform.ar ?? ""];
                       if (!entry) return <p>{ar ? "تعذر العثور على الخدمة." : "Service not found."}</p>;
                       return (
                         <>
@@ -1293,10 +1298,30 @@ export default function Homepage() {
                                 ? (ar ? `مصدر رسمي مراجع · ${entry.verifiedAt}` : `Official source reviewed · ${entry.verifiedAt}`)
                                 : (ar ? "المصدر مراجع؛ الوجهة تحتاج تحققًا مباشرًا" : "Source reviewed; destination needs direct verification")}
                             </span>
-                            <span className="service-platform-badge">{entry.platform[lang]}</span>
+                            {logo ? (
+                              <img className="service-platform-logo" src={logo} alt={entry.platform[lang]} />
+                            ) : (
+                              <span className="service-platform-badge">{entry.platform[lang]}</span>
+                            )}
                           </div>
 
                           <p className="service-lead-summary">{entry.summary[lang]}</p>
+                          {detailed && (
+                            <dl className="service-brief">
+                              <div>
+                                <dt>{ar ? "لمن الخدمة" : "Who it's for"}</dt>
+                                <dd>{detailed.targetAudience[lang]}</dd>
+                              </div>
+                              <div>
+                                <dt>{ar ? "ماذا تنجز" : "What you can do"}</dt>
+                                <dd>{detailed.userOutcomes[lang]}</dd>
+                              </div>
+                              <div>
+                                <dt>{ar ? "قبل أن تبدأ" : "Before you start"}</dt>
+                                <dd>{detailed.prerequisites[lang]}</dd>
+                              </div>
+                            </dl>
+                          )}
 
                           <a
                             className="button button-green official-link"

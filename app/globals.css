@@ -4393,3 +4393,34 @@ html[dir="ltr"] .nav .active:after {
   resize: vertical;
   font-family: inherit;
 }
+
+.service-platform-logo {
+  height: 56px;
+  width: auto;
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.service-brief {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+.service-brief > div {
+  padding: 12px 14px;
+  background: #fffdf5;
+  border: 1px solid #e3e7d8;
+  border-radius: 12px;
+}
+.service-brief dt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-strong);
+  margin-bottom: 4px;
+}
+.service-brief dd {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink);
+}
