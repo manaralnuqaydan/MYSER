@@ -24,7 +24,7 @@ test("service search leads to a demo request and modal closes with Escape", asyn
 }) => {
   await page.goto("/");
   await page
-    .getByRole("button", { name: "استعراض جميع الخدمات", exact: true })
+    .getByRole("button", { name: "ابدأ الآن", exact: true })
     .first()
     .click();
   const dialog = page.getByRole("dialog");

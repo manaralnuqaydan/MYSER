@@ -407,13 +407,10 @@ export default function Homepage() {
             </h1>
             <p className="hero-sub">{t.sub}</p>
             <div className="hero-buttons">
-              <button
-                className="button button-gold"
-                onClick={() => openServices()}
-              >
+              <a className="button button-gold" href="#services">
                 {t.all}
                 {direction}
-              </button>
+              </a>
               <a className="button button-outline" href="#journey">
                 <span className="play-circle">
                   <Play size={11} fill="currentColor" />

@@ -4314,7 +4314,11 @@ html[dir="ltr"] .nav .active:after {
 .auth-panel .auth-nafath {
   gap: 10px;
   color: #0b3d32;
-  background: linear-gradient(135deg, #f4e8cb, #d6bc82);
+  background: #ffffff;
+  border: 1px solid #c9d2b8;
+}
+.auth-panel .auth-nafath:hover {
+  background: #f6f8f2;
 }
 .auth-panel .auth-nafath .nafath-logo {
   height: 22px;
