@@ -1,5 +1,6 @@
 import { detailedServices, CuratedServiceDetailed } from "./servicesDetailed";
 import { directorySectors, Lang } from "./content";
+import type { JourneyState } from "./journeys";
 
 export type MessageRole = "user" | "assistant" | "system";
 
@@ -11,6 +12,7 @@ export type ChatMessage = {
   suggestedServiceId?: string;
   followUpQuestions?: string[];
   isVerified?: boolean;
+  journey?: JourneyState;
 };
 
 export type KnowledgeCategory =
@@ -119,7 +121,7 @@ export function retrieveRelevantKnowledge(
     // Category boost
     if (detectedCategory === "business_establishment" && service.sectorId === "business") score += 4;
     if (detectedCategory === "traffic_vehicles" && service.sectorId === "traffic") score += 4;
-    if (detectedCategory === "civil_affairs" && service.sectorId === "public") score += 4;
+    if (detectedCategory === "civil_affairs" && service.sectorId === "civil") score += 4;
     if (detectedCategory === "labor_regulations" && service.sectorId === "work") score += 4;
     if (detectedCategory === "health_services" && service.sectorId === "health") score += 4;
     if (detectedCategory === "education" && service.sectorId === "education") score += 4;
@@ -349,7 +351,7 @@ Traffic collision handling is not limited to a single platform like Absher; it i
 * إذا كان لديك اعتراض أو سداد سابق، يمكنك الضغط على «منازعة تنفيذ» داخل ناجز مع إرفاق الإثباتات.
 
 > **تنبيه نظامي وأمني مشدد:**
-> * مُيسّر دليل توجيهي ولا تطلع على قضاياك أو بياناتك الخاصة، ولا تُغني عن استشارة محامٍ مرخص.
+> * معبر دليل توجيهي لا يطّلع على قضاياك أو بياناتك الخاصة، ولا يُغني عن استشارة محامٍ مرخص.
 > * أي رسالة تطلب تحويل مبالغ لحسابات شخصية أو بطاقات بنكية خارج نظام «سداد» هي محاولة احتيال، ويجب الإبلاغ عنها عبر تطبيق **«كلنا أمن»**.`
       : `### Guidance on Judicial Notices & Court Subpoenas
 
@@ -370,7 +372,7 @@ Upon receiving an SMS regarding a judicial notice or court subpoena, follow this
 * Submit a procedural dispute within Najiz if the claim has been settled or contested.
 
 > **Crucial Legal & Privacy Notice:**
-> * MYSER is an advisory directory; it does not access court databases or replace licensed attorneys.
+> * MAABAR is an advisory directory; it does not access court databases or replace licensed attorneys.
 > * Any message soliciting funds to private bank accounts outside official SADAD is fraudulent; report it via **Kollona Amn**.`;
 
     return {
@@ -520,7 +522,7 @@ A unified national authentication framework governed by SDAIA, providing secure 
 
   // 4. UNKNOWN / GENERAL QUERY - Fallback with honest transparency
   const fallbackText = ar
-    ? `أهلاً بك في مُيسّر. 
+    ? `أهلاً بك في معبر. 
 فهمت استفسارك حول: «${userQuery}».
 
 لم يتم رصد هذا الموضوع بدقة في قاعدة الخدمات الحكومية الموثقة حاليًا في هذه الجلسة المحلية. 
@@ -529,7 +531,7 @@ A unified national authentication framework governed by SDAIA, providing secure 
 1. إذا كان استفسارك يتعلق بمعاملة حكومية عامة، يمكنك البحث المباشر في **المنصة الوطنية الموحدة (GOV.SA)**.
 2. إذا كان يتعلق بتأسيس أعمال، فإن **المركز السعودي للأعمال (business.sa)** يوفر الدليل الشامل لكافة القطاعات.
 3. يمكنك توضيح سؤالك أكثر بتحديد القطاع (مرور، تجارة، أحوال، صحة، عدل، تعليم) لأرشدك للجهة المعتمدة فورًا.`
-    : `Welcome to MYSER.
+    : `Welcome to MAABAR.
 Regarding your inquiry: "${userQuery}".
 
 This specific topic is not currently indexed in the verified local knowledge directory of this session.

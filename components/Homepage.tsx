@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
+  Headset,
+  Info,
+  LogIn,
   ArrowUpLeft,
   ArrowUpRight,
   ArrowLeft,
@@ -42,6 +45,7 @@ import {
 import { assistantFallback, assistantScenarios, copy, curatedServices, directorySectors, type Lang } from "@/lib/content";
 import { detailedServices } from "@/lib/servicesDetailed";
 import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
+import { runJourney } from "@/lib/journeys";
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
 import PhoneMockups from "./PhoneMockups";
@@ -99,6 +103,9 @@ const stepIcons = [
   ShieldCheck,
 ];
 const amounts = [200, 150, 500];
+const platformLogos: Record<string, string> = {
+  "أبشر": "platforms/absher.png",
+};
 
 export default function Homepage() {
   const [lang, setLang] = useState<Lang>("ar");
@@ -111,8 +118,11 @@ export default function Homepage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [typing, setTyping] = useState(false);
   const [modal, setModal] = useState<
-    "services" | "meeting" | "privacy" | "terms" | null
+    "services" | "meeting" | "privacy" | "terms" | "login" | "support" | null
   >(null);
+  const [authView, setAuthView] = useState<"signin" | "signup">("signin");
+  const [accountMenu, setAccountMenu] = useState(false);
+  const [supportView, setSupportView] = useState<"track" | "new">("track");
   const [sector, setSector] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [service, setService] = useState<string | null>(null);
@@ -193,6 +203,34 @@ export default function Homepage() {
     setMenu(false);
     setChatOpen(false);
   }
+  useEffect(() => {
+    if (!accountMenu) return;
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent && e.key !== "Escape") return;
+      if (e instanceof MouseEvent && (e.target as HTMLElement).closest(".account-wrap")) return;
+      setAccountMenu(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [accountMenu]);
+  function openSupport() {
+    setSupportView("track");
+    setModal("support");
+    setAccountMenu(false);
+    setMenu(false);
+    setChatOpen(false);
+  }
+  function openLogin() {
+    setAccountMenu(false);
+    setAuthView("signin");
+    setModal("login");
+    setMenu(false);
+    setChatOpen(false);
+  }
   function answer(value: string) {
     if (!value.trim() || typing) return;
     const trimmed = value.trim();
@@ -203,12 +241,34 @@ export default function Homepage() {
     setTyping(true);
 
     const v = trimmed.toLowerCase();
-    const scenario = assistantScenarios.find((item) => item.keywords.some((keyword) => v.includes(keyword)));
+    // Goal-to-action journeys come first: one question at a time, then an ordered roadmap
+    const journeyRes = runJourney(trimmed, messages, lang);
+    const scenario = journeyRes ? undefined : assistantScenarios.find((item) => item.keywords.some((keyword) => v.includes(keyword)));
     const target = scenario
       ? directorySectors.findIndex((item) => item.id === scenario.sectorId)
       : null;
 
     timer.current = setTimeout(() => {
+      if (journeyRes) {
+        const idx = journeyRes.suggestedSectorId
+          ? directorySectors.findIndex((item) => item.id === journeyRes.suggestedSectorId)
+          : -1;
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            text: journeyRes.text,
+            sources: journeyRes.sources,
+            suggestedSectorId: journeyRes.suggestedSectorId,
+            followUpQuestions: journeyRes.followUpQuestions,
+            journey: journeyRes.journey,
+            isVerified: true,
+          },
+        ]);
+        setChatTarget(idx !== -1 ? idx : null);
+        setTyping(false);
+        return;
+      }
       // If direct predefined scenario matches, preserve exact response to guarantee tests and consistency
       if (scenario) {
         const result = scenario.response[lang];
@@ -221,7 +281,7 @@ export default function Homepage() {
             isVerified: true,
           },
         ]);
-        setChatTarget(target);
+        setChatTarget(target !== null && target !== -1 ? target : null);
       } else {
         // Run deep local knowledge agent reasoning
         const agentRes = generateLocalAgentResponse(trimmed, messages, lang);
@@ -292,9 +352,6 @@ export default function Homepage() {
             <a href="#services" onClick={() => setMenu(false)}>
               {t.services}
             </a>
-            <a href="#experiences" onClick={() => setMenu(false)}>
-              {t.experiences}
-            </a>
             <button
               onClick={() => {
                 setChatOpen(true);
@@ -306,6 +363,12 @@ export default function Homepage() {
             <a href="#about" onClick={() => setMenu(false)}>
               {t.about}
             </a>
+            <button className="nav-login" onClick={openLogin}>
+              {ar ? "تسجيل الدخول / إنشاء حساب" : "Sign in / Create account"}
+            </button>
+            <button className="nav-login" onClick={openSupport}>
+              {ar ? "خدمة العملاء" : "Customer service"}
+            </button>
           </nav>
           <div className="header-actions">
             <button
@@ -316,13 +379,33 @@ export default function Homepage() {
               <Globe2 size={16} />
               <span>{ar ? "English" : "العربية"}</span>
             </button>
-            <button
-              className="button button-gold header-cta"
-              onClick={() => openServices()}
-            >
-              {t.start}
-              {direction}
-            </button>
+            <div className="account-wrap">
+              <button
+                className="account-button"
+                onClick={() => setAccountMenu(!accountMenu)}
+                aria-expanded={accountMenu}
+                aria-haspopup="menu"
+                aria-label={ar ? "قائمة الحساب" : "Account menu"}
+              >
+                {accountMenu ? <X size={22} /> : <Menu size={22} />}
+              </button>
+              {accountMenu && (
+                <div className="account-menu" role="menu">
+                  <button role="menuitem" onClick={openLogin}>
+                    <LogIn size={18} />
+                    {ar ? "تسجيل الدخول" : "Sign in"}
+                  </button>
+                  <button role="menuitem" onClick={openSupport}>
+                    <Headset size={18} />
+                    {ar ? "خدمة العملاء" : "Customer service"}
+                  </button>
+                  <a role="menuitem" href="#about" onClick={() => setAccountMenu(false)}>
+                    <Info size={18} />
+                    {ar ? "من نحن" : "About us"}
+                  </a>
+                </div>
+              )}
+            </div>
             <button
               className="menu-button"
               onClick={() => setMenu(!menu)}
@@ -340,10 +423,6 @@ export default function Homepage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reduce ? 0 : 0.9 }}
           >
-            <div className="eyebrow hero-eyebrow">
-              <span className="little-line" />
-              MYSER <span className="eyebrow-divider">/</span> {t.eyebrow}
-            </div>
             <h1>
               {t.headline1}
               <br />
@@ -351,27 +430,16 @@ export default function Homepage() {
             </h1>
             <p className="hero-sub">{t.sub}</p>
             <div className="hero-buttons">
-              <button
-                className="button button-gold"
-                onClick={() => openServices()}
-              >
-                {t.start}
+              <a className="button button-gold" href="#services">
+                {t.all}
                 {direction}
-              </button>
+              </a>
               <a className="button button-outline" href="#journey">
                 <span className="play-circle">
                   <Play size={11} fill="currentColor" />
                 </span>
                 {t.explore}
               </a>
-            </div>
-            <div className="hero-trust">
-              <span className="trust-icon">
-                <Sparkles size={18} />
-              </span>
-              {t.demo}
-              <span className="trust-dot" />
-              {ar ? "توجيه موثوق وإرشاد واضح" : "Clear & verified guidance"}
             </div>
             <button
               className="assistant-mobile-launch"
@@ -463,20 +531,6 @@ export default function Homepage() {
           </motion.div>
         </div>
         <div className="hero-bottom container">
-          <div className="hero-stats">
-            {[String(curatedServices.length), String(directorySectors.length), "2", t.one].map((v, i) => (
-              <div className="stat" key={i}>
-                <strong dir={i < 3 ? "ltr" : undefined}>{v}</strong>
-                <span>{t.statLabels[i]}</span>
-              </div>
-            ))}
-          </div>
-          <a href="#services" className="scroll-link">
-            <span>{t.scroll}</span>
-            <span className="scroll-circle">
-              <ChevronDown size={17} />
-            </span>
-          </a>
           <span className="hero-signature">
             {ar
               ? "لمستقبل أسهل،\nفي وطن أكبر."
@@ -491,17 +545,8 @@ export default function Homepage() {
         <div className="container">
           <motion.div className="section-heading heading-row" {...reveal}>
             <div>
-              <span className="eyebrow">{t.sectorLabel}</span>
-              <h2>{t.sectorTitle}</h2>
-              <p>{t.sectorSub}</p>
+              <h2 className="eyebrow">{t.sectorLabel}</h2>
             </div>
-            <button
-              className="button button-outline"
-              onClick={() => openServices()}
-            >
-              {t.all}
-              {direction}
-            </button>
           </motion.div>
           <div className="sector-grid">
             {directorySectors.map((item, i) => {
@@ -527,7 +572,7 @@ export default function Homepage() {
                 >
                   <SectorArt index={item.artIndex} />
                   <div className="sector-overlay" />
-                  <span className="sector-index">0{i + 1} / MYSER</span>
+                  <span className="sector-index">0{i + 1} / MAABAR</span>
                   <span className="sector-icon">
                     <Icon size={25} strokeWidth={1.3} />
                   </span>
@@ -571,7 +616,7 @@ export default function Homepage() {
                 ? "مصادر رسمية. دليل استكشافي واحد."
                 : "Official sources. One exploratory guide."}
             </span>
-            <span>MYSER ECOSYSTEM</span>
+            <span>MAABAR ECOSYSTEM</span>
           </div>
         </div>
       </section>
@@ -613,225 +658,6 @@ export default function Homepage() {
 
       <section id="experiences" className="experiences section-light">
         <div className="container">
-          <div className="experience-intro">
-            <span className="eyebrow">
-              {ar
-                ? "الجيل القادم من التجارب الرقمية"
-                : "The next generation of digital experiences"}
-            </span>
-            <h2>{ar ? "تجربة تتجاوز التوقعات." : "Beyond expectations."}</h2>
-          </div>
-          <motion.div className="govmeet feature-grid" {...reveal}>
-            <div className="feature-copy">
-              <span className="feature-brand">
-                <span className="icon-square">
-                  <Video size={20} />
-                </span>
-                GovMeet
-                <span className="new-pill">{t.new}</span>
-              </span>
-              <h2 className="multiline">{t.govTitle}</h2>
-              <p>{t.govSub}</p>
-              <div className="feature-benefits">
-                <span>
-                  <FileText size={15} />
-                  {ar ? "واجهة توضيحية" : "Concept interface"}
-                </span>
-                <span>
-                  <Sparkles size={15} />
-                  {ar ? "ملخّص توضيحي" : "Sample summary"}
-                </span>
-              </div>
-              <button
-                className="button button-green"
-                onClick={() => {
-                  setJoined(false);
-                  setModal("meeting");
-                }}
-              >
-                {t.govButton}
-                {direction}
-              </button>
-            </div>
-            <div className="meeting-stage">
-              <span className="floating-security">
-                <FileText size={14} />
-                {ar ? "GovMeet · وضع تجريبي" : "GovMeet · Demo mode"}
-              </span>
-              <div className="meeting-window">
-                <div className="meeting-bar">
-                  <span className="meeting-brand">
-                    <Video size={13} />
-                    GovMeet
-                  </span>
-                  <span className="meeting-status">
-                    <i />
-                    {t.live}
-                  </span>
-                  <MoreHorizontal size={18} />
-                </div>
-                <div className="meeting-main">
-                  <div className="meeting-person">
-                    <div
-                      className="advisor-photo"
-                      role="img"
-                      aria-label={
-                        ar
-                          ? "مستشار سعودي في جلسة تجريبية"
-                          : "Saudi advisor in a demo meeting"
-                      }
-                    />
-                    <span className="person-name">
-                      {t.participant}
-                      <span>
-                        <Mic size={12} />
-                      </span>
-                    </span>
-                    <span className="meeting-topic">{t.meetingTitle}</span>
-                  </div>
-                  <div className="meeting-side">
-                    <div className="mini-participant">
-                      <span>ع م</span>
-                      <small>{t.you}</small>
-                    </div>
-                    <div className="meeting-summary">
-                      <Sparkles size={16} />
-                      <strong>{t.notes}</strong>
-                      {[t.note1, t.note2, t.note3].map((n) => (
-                        <p key={n}>
-                          <Check size={10} />
-                          {n}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="meeting-controls">
-                  <span>12:48</span>
-                  <div>
-                    <span>
-                      <Mic size={15} />
-                    </span>
-                    <span>
-                      <Video size={15} />
-                    </span>
-                    <span>
-                      <Users size={15} />
-                    </span>
-                    <button
-                      className="call-button"
-                      onClick={() => setModal("meeting")}
-                      aria-label={t.govButton}
-                    >
-                      <ArrowUpRight size={15} />
-                    </button>
-                  </div>
-                  <span>
-                    <MoreHorizontal size={15} />
-                  </span>
-                </div>
-              </div>
-              <span className="meeting-stage-caption">
-                {ar
-                  ? "توجيه نظامي مباشر لرواد الأعمال، دون تعقيد."
-                  : "Direct regulatory orientation for entrepreneurs, simplified."}
-              </span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            id="wallet"
-            className="wallet-section feature-grid"
-            {...reveal}
-          >
-            <div className="feature-copy">
-              <span className="eyebrow">{t.walletLabel}</span>
-              <h2 className="multiline">{t.walletTitle}</h2>
-              <p>{t.walletSub}</p>
-              <div className="wallet-badge">
-                <span className="icon-square">
-                  <Wallet size={22} />
-                </span>
-                <span>
-                  <strong>
-                    {ar
-                      ? "شفافية واضحة في التكاليف"
-                      : "Clear overview of fees"}
-                  </strong>
-                  <small>
-                    {ar
-                      ? "عرض استرشادي للرسوم والالتزامات الرسمية"
-                      : "Illustrative guide to official fees"}
-                  </small>
-                </span>
-              </div>
-            </div>
-            <div className="wallet-card">
-              <div className="wallet-top">
-                <div>
-                  <span>{t.total}</span>
-                  <strong>
-                    {amounts
-                      .reduce((s, a, i) => s + (paid.includes(i) ? 0 : a), 0)
-                      .toLocaleString(ar ? "ar-SA" : "en-US")}{" "}
-                    <small>{t.currency}</small>
-                  </strong>
-                </div>
-                <span className="wallet-emblem">
-                  <Wallet size={25} />
-                </span>
-              </div>
-              <div className="bill-list">
-                {t.bills.map((bill, i) => (
-                  <div
-                    className={`bill ${paid.includes(i) ? "bill-paid" : ""}`}
-                    key={bill}
-                  >
-                    <span className="bill-icon">
-                      {paid.includes(i) ? (
-                        <CheckCheck size={19} />
-                      ) : i === 2 ? (
-                        <Building2 size={19} />
-                      ) : (
-                        <CarFront size={19} />
-                      )}
-                    </span>
-                    <div>
-                      <strong>{bill}</strong>
-                      <small>{t.agencies[i]}</small>
-                    </div>
-                    <span className="bill-amount">
-                      {amounts[i]} <small>{t.currency}</small>
-                    </span>
-                    <button
-                      disabled={paid.includes(i)}
-                      onClick={() => {
-                        setPaid((prev) => [...prev, i]);
-                        setToast(t.paymentSuccess);
-                      }}
-                    >
-                      {paid.includes(i) ? (
-                        <>
-                          <Check size={13} />
-                          {t.paid}
-                        </>
-                      ) : (
-                        <>
-                          {t.pay}
-                          <ArrowUpLeft size={12} />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <span className="wallet-disclaimer">
-                <ShieldCheck size={12} />
-                {t.walletDemo}
-              </span>
-            </div>
-          </motion.div>
-
           <motion.div id="app" className="app-section feature-grid" {...reveal}>
             <div className="feature-copy">
               <span className="eyebrow">{t.appLabel}</span>
@@ -870,7 +696,7 @@ export default function Homepage() {
       <section className="closing-banner">
         <div className="closing-pattern" />
         <div className="container">
-          <span className="eyebrow">MYSER / مُيسّر</span>
+          <span className="eyebrow">MAABAR / معبر</span>
           <h2 className="multiline">{t.ctaTitle}</h2>
           <p>{t.ctaSub}</p>
           <button className="button button-gold" onClick={() => openServices()}>
@@ -891,7 +717,6 @@ export default function Homepage() {
             </div>
             <div className="footer-links">
               <a href="#services">{t.services}</a>
-              <a href="#experiences">GovMeet</a>
               <button onClick={() => setChatOpen(true)}>{t.assistant}</button>
             </div>
             <span className="footer-saudi">
@@ -952,17 +777,25 @@ export default function Homepage() {
             >
               <div className="modal-heading">
                 <div>
-                  <span className="eyebrow">MYSER / مُيسّر</span>
+                  <span className="eyebrow">MAABAR / معبر</span>
                   <h2 id="dialog-title">
                     {chatOpen
                       ? t.smart
                       : modal === "services"
-        ? curatedServices.find((entry) => entry.id === service)?.name[lang] || t.all
+        ? curatedServices.find((entry) => entry.id === service)?.name[lang] ||
+          (sector !== null ? directorySectors[sector]?.name[lang] : undefined) ||
+          t.all
                         : modal === "meeting"
                           ? "GovMeet"
-                          : modal === "privacy"
-                            ? t.privacy
-                            : t.terms}
+                          : modal === "support"
+                            ? ar ? "خدمة العملاء" : "Customer service"
+                          : modal === "login"
+                            ? authView === "signin"
+                              ? ar ? "تسجيل الدخول" : "Sign in"
+                              : ar ? "إنشاء حساب جديد" : "Create a new account"
+                            : modal === "privacy"
+                              ? t.privacy
+                              : t.terms}
                   </h2>
                 </div>
                 <button
@@ -1006,7 +839,7 @@ export default function Homepage() {
                           <div className="chat-col">
                             {m.role === "assistant" && (
                               <div className="chat-msg-header">
-                                <span className="chat-role-label">{ar ? "مُيسّر" : "MYSER"}</span>
+                                <span className="chat-role-label">{ar ? "معبر" : "MAABAR"}</span>
                                 <span className="chat-verified">
                                   <ShieldCheck size={13} />
                                   {ar ? "إرشاد موثق" : "Verified guide"}
@@ -1180,24 +1013,7 @@ export default function Homepage() {
                         onChange={(e) => setQuery(e.target.value)}
                       />
                     </div>
-                    <div className="sector-filters">
-                      <button
-                        className={sector === null ? "selected" : ""}
-                        onClick={() => setSector(null)}
-                      >
-                        {ar ? "الكل" : "All"}
-                      </button>
-                      {directorySectors.map((item, i) => (
-                        <button
-                          className={sector === i ? "selected" : ""}
-                          key={item.id}
-                          onClick={() => setSector(i)}
-                        >
-                          {item.name[lang]}
-                        </button>
-                      ))}
-                    </div>
-                    {sector === 2 && (
+                    {directorySectors[sector ?? -1]?.id === "business" && (
                       <BusinessRoute lang={lang} />
                     )}
                     <div className="service-results">
@@ -1215,6 +1031,21 @@ export default function Homepage() {
                             </button>
                           );
                         })}
+                      {directorySectors[sector ?? -1]?.id === "justice" && (
+                        <button
+                          onClick={() => {
+                            setJoined(false);
+                            setModal("meeting");
+                          }}
+                        >
+                          <span><Video size={19} /></span>
+                          <div>
+                            <strong>{ar ? "جلسة مرئية تجريبية (GovMeet)" : "Demo video session (GovMeet)"}</strong>
+                            <small>{directorySectors[sector ?? -1]?.name[lang]} · {ar ? "تجربة توضيحية" : "Concept demo"}</small>
+                          </div>
+                          {direction}
+                        </button>
+                      )}
                       {curatedServices.filter((entry) => sector === null || directorySectors[sector]?.id === entry.sectorId).filter((entry) => `${entry.name[lang]} ${entry.platform[lang]} ${directorySectors.find((item) => item.id === entry.sectorId)?.name[lang]}`.toLowerCase().includes(query.toLowerCase())).length === 0 && (
                         <div className="no-results">
                           <Search size={25} />
@@ -1236,7 +1067,7 @@ export default function Homepage() {
                     <p>{t.requestHint}</p>
                     <div>
                       <small>{t.requestNumber}</small>
-                      <strong dir="ltr">MYS-2026-001</strong>
+                      <strong dir="ltr">MAB-2026-001</strong>
                       <span className="status-pill">{t.processing}</span>
                     </div>
                     <button
@@ -1255,6 +1086,7 @@ export default function Homepage() {
                     {(() => {
                       const entry = curatedServices.find((item) => item.id === service);
                       const detailed = detailedServices.find((item) => item.id === service);
+                      const logo = platformLogos[entry?.platform.ar ?? ""];
                       if (!entry) return <p>{ar ? "تعذر العثور على الخدمة." : "Service not found."}</p>;
                       return (
                         <>
@@ -1264,108 +1096,51 @@ export default function Homepage() {
                                 ? (ar ? `مصدر رسمي مراجع · ${entry.verifiedAt}` : `Official source reviewed · ${entry.verifiedAt}`)
                                 : (ar ? "المصدر مراجع؛ الوجهة تحتاج تحققًا مباشرًا" : "Source reviewed; destination needs direct verification")}
                             </span>
-                            <span className="service-platform-badge">{entry.platform[lang]}</span>
-                          </div>
-
-                          <h3>{entry.name[lang]}</h3>
-                          <p className="service-lead-summary">{entry.summary[lang]}</p>
-
-                          {/* 10-Dimension Structured Content */}
-                          <div className="service-meta-grid">
-                            {detailed && (
-                              <>
-                                <div className="meta-card">
-                                  <strong>{ar ? "لمن تناسب الخدمة؟" : "Target Audience"}</strong>
-                                  <p>{detailed.targetAudience[lang]}</p>
-                                </div>
-                                <div className="meta-card">
-                                  <strong>{ar ? "ماذا يستطيع المستخدم إنجازه؟" : "User Outcomes"}</strong>
-                                  <p>{detailed.userOutcomes[lang]}</p>
-                                </div>
-                              </>
+                            {logo ? (
+                              <img className="service-platform-logo" src={logo} alt={entry.platform[lang]} />
+                            ) : (
+                              <span className="service-platform-badge">{entry.platform[lang]}</span>
                             )}
                           </div>
 
-                          <h3>{ar ? "متى قد تحتاجها؟" : "When might you need it?"}</h3>
-                          <p>{entry.when[lang]}</p>
-
+                          <p className="service-lead-summary">{entry.summary[lang]}</p>
                           {detailed && (
+                            <dl className="service-brief">
+                              <div>
+                                <dt>{ar ? "لمن الخدمة" : "Who it's for"}</dt>
+                                <dd>{detailed.targetAudience[lang]}</dd>
+                              </div>
+                              <div>
+                                <dt>{ar ? "ماذا تنجز" : "What you can do"}</dt>
+                                <dd>{detailed.userOutcomes[lang]}</dd>
+                              </div>
+                              <div>
+                                <dt>{ar ? "قبل أن تبدأ" : "Before you start"}</dt>
+                                <dd>{detailed.prerequisites[lang]}</dd>
+                              </div>
+                            </dl>
+                          )}
+
+                          {detailed?.multiPlatformChain && detailed.multiPlatformChain.length > 0 && (
                             <>
-                              <h3>{ar ? "ما ينبغي معرفته قبل البدء (المتطلبات المسبقة)" : "Prerequisites & Preparation"}</h3>
-                              <p>{detailed.prerequisites[lang]}</p>
-
-                              <h3>{ar ? "المتطلبات والاشتراطات المؤكدة" : "Confirmed Requirements"}</h3>
-                              <ul className="confirmed-requirements-list">
-                                {detailed.confirmedRequirements.map((req, rIdx) => (
-                                  <li key={rIdx}>
-                                    <Check size={16} />
-                                    <span>{req[lang]}</span>
-                                  </li>
-                                ))}
-                              </ul>
-
-                              <h3>{ar ? "خطوات وإجراءات المعاملة الرسمية" : "Official Procedure Steps"}</h3>
-                              <ol className="procedure-steps-list">
-                                {detailed.procedureSteps.map((step, sIdx) => (
-                                  <li key={sIdx}>
-                                    <span className="step-num">{sIdx + 1}</span>
-                                    <span>{step[lang]}</span>
+                              <h4 className="service-steps-title">{ar ? "خطوات الخدمة" : "Steps"}</h4>
+                              <ol className="service-steps">
+                                {detailed.multiPlatformChain.map((step, i) => (
+                                  <li key={step.url + i}>
+                                    <span className="service-step-num">{i + 1}</span>
+                                    <PlatformLogo url={step.url} name={step.name[lang]} />
+                                    <div className="service-step-text">
+                                      <strong>{step.name[lang]}</strong>
+                                      <p>{step.role[lang]}</p>
+                                    </div>
+                                    <a href={step.url} target="_blank" rel="noopener noreferrer" aria-label={ar ? `فتح ${step.name.ar}` : `Open ${step.name.en}`}>
+                                      <ArrowUpRight size={16} />
+                                    </a>
                                   </li>
                                 ))}
                               </ol>
-
-                              {detailed.multiPlatformChain && detailed.multiPlatformChain.length > 0 && (
-                                <>
-                                  <h3>{ar ? "المنصات والجهات اللازمة لإتمام الخدمة (متى تحتاج كل جهة)" : "Required Platforms & Authorities Sequence"}</h3>
-                                  <div className="platform-chain-container">
-                                    {detailed.multiPlatformChain.map((chain, cIdx) => (
-                                      <div key={cIdx} className="platform-chain-card">
-                                        <div className="platform-chain-top">
-                                          <span className="chain-step-pill">{cIdx + 1}</span>
-                                          <strong>{chain.name[lang]}</strong>
-                                          <span className="chain-auth-tag">{chain.authority[lang]}</span>
-                                        </div>
-                                        <p className="chain-role-text">{chain.role[lang]}</p>
-                                        <div className="chain-when-box">
-                                          <small>{ar ? "متى تنتقل إليها؟" : "When needed?"}</small>
-                                          <span>{chain.whenNeeded[lang]}</span>
-                                        </div>
-                                        <a href={chain.url} target="_blank" rel="noopener noreferrer" className="chain-link">
-                                          <span>{ar ? `زيارة ${chain.name.ar}` : `Open ${chain.name.en}`}</span>
-                                          <ArrowUpRight size={13} />
-                                        </a>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-
-                              <h3>{ar ? "شروط تختلف باختلاف الحالة" : "Conditional Rules & Variants"}</h3>
-                              <div className="conditional-rules-box">
-                                <p>{detailed.conditionalRules[lang]}</p>
-                              </div>
-
-                              <div className="unverified-transparency-box">
-                                <strong>{ar ? "تنبيه الشفافية وعدم التأكيد التلقائي:" : "Transparency & Verification Note:"}</strong>
-                                <p>{detailed.unverifiedAspects[lang]}</p>
-                              </div>
                             </>
                           )}
-
-                          <h3>{ar ? "الجهة والمنصة" : "Authority and platform"}</h3>
-                          <p>{entry.platform[lang]}</p>
-
-                          <div className="official-source-note">
-                            <strong>{ar ? "ملاحظة" : "Note"}</strong>
-                            <p>{entry.note[lang]}</p>
-                            <small>
-                              {ar ? "المصدر" : "Source"}:{" "}
-                              <a href={entry.sourceUrl} target="_blank" rel="noreferrer">
-                                {entry.sourceTitle[lang]}
-                              </a>
-                            </small>
-                          </div>
-
                           <a
                             className="button button-green official-link"
                             href={entry.url}
@@ -1376,42 +1151,7 @@ export default function Homepage() {
                             <ArrowUpRight size={16} />
                           </a>
 
-                          <p className="demo-boundary">
-                            {ar
-                              ? "MYSER دليل استكشافي فقط. لا تُرسل بيانات أو طلبات إلى الجهة من هذه الواجهة."
-                              : "MYSER is an exploratory guide only. This interface does not send data or requests to the authority."}
-                          </p>
-
-                          <h3>{ar ? "جرّب رحلة توضيحية داخل MYSER" : "Try a sample journey in MYSER"}</h3>
-                          <ul>
-                            <li>
-                              <Check size={16} />
-                              {ar
-                                ? "افتح المصدر الرسمي وراجع شروط الخدمة لحالتك"
-                                : "Open the official source and check requirements for your case"}
-                            </li>
-                            <li>
-                              <Check size={16} />
-                              {ar
-                                ? "أكمل أي إجراء أو إدخال بيانات داخل المنصة الرسمية فقط"
-                                : "Complete any application or data entry only on the official platform"}
-                            </li>
-                            <li>
-                              <Check size={16} />
-                              {ar
-                                ? "عد إلى MYSER بعد ذلك لمتابعة الدليل؛ لا توجد مزامنة فعلية"
-                                : "Return to MYSER for the guide; no live synchronization is available"}
-                            </li>
-                          </ul>
-
                           <div className="service-modal-actions">
-                            <button
-                              className="button button-green"
-                              onClick={() => setRequest(true)}
-                            >
-                              {t.beginDemo}
-                              {direction}
-                            </button>
                             <button
                               className="text-button"
                               onClick={() => setService(null)}
@@ -1489,6 +1229,142 @@ export default function Homepage() {
                   )}
                 </div>
               )}
+              {modal === "support" && (
+                <form
+                  className="auth-panel"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setModal(null);
+                    setToast(
+                      ar
+                        ? "هذه نسخة تجريبية: لم يُرسل أي طلب أو بيانات."
+                        : "Demo only: no request or data was sent.",
+                    );
+                  }}
+                >
+                  <div className="support-tabs" role="tablist">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={supportView === "track"}
+                      className={supportView === "track" ? "active" : ""}
+                      onClick={() => setSupportView("track")}
+                    >
+                      {ar ? "متابعة طلب" : "Track a request"}
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={supportView === "new"}
+                      className={supportView === "new" ? "active" : ""}
+                      onClick={() => setSupportView("new")}
+                    >
+                      {ar ? "طلب دعم جديد" : "New request"}
+                    </button>
+                  </div>
+                  {supportView === "track" ? (
+                    <label>
+                      <span>{ar ? "رقم الطلب" : "Request number"}</span>
+                      <input required autoComplete="off" maxLength={20} dir="ltr" placeholder="MY-000000" />
+                    </label>
+                  ) : (
+                    <>
+                      <label>
+                        <span>{ar ? "نوع الاستفسار" : "Topic"}</span>
+                        <select defaultValue="guide">
+                          <option value="guide">{ar ? "استفسار عن خدمة في الدليل" : "Question about a listed service"}</option>
+                          <option value="tech">{ar ? "مشكلة تقنية في معبر" : "Technical issue in MAABAR"}</option>
+                          <option value="feedback">{ar ? "اقتراح أو ملاحظة" : "Suggestion or feedback"}</option>
+                        </select>
+                      </label>
+                      <label>
+                        <span>{ar ? "تفاصيل الطلب" : "Details"}</span>
+                        <textarea required rows={4} maxLength={500} />
+                      </label>
+                    </>
+                  )}
+                  <button type="submit" className="button button-green auth-submit">
+                    {supportView === "track"
+                      ? ar ? "عرض حالة الطلب" : "Check status"
+                      : ar ? "إرسال الطلب" : "Submit request"}
+                  </button>
+                  <p className="auth-note">
+                    {ar
+                      ? "نموذج تجريبي: لا تُرسل الطلبات إلى أي جهة. لا تكتب بيانات شخصية أو أرقام هوية."
+                      : "Demo only: requests are not sent anywhere. Do not enter personal or ID details."}
+                  </p>
+                </form>
+              )}
+              {modal === "login" && (
+                <form
+                  className="auth-panel"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setModal(null);
+                    setToast(
+                      ar
+                        ? "هذه نسخة تجريبية: لم تُرسل أو تُحفظ أي بيانات."
+                        : "Demo only: no data was sent or stored.",
+                    );
+                  }}
+                >
+                  {authView === "signup" && (
+                    <label>
+                      <span>{ar ? "الاسم الكامل" : "Full name"}</span>
+                      <input required autoComplete="off" maxLength={80} />
+                    </label>
+                  )}
+                  <label>
+                    <span>{ar ? "البريد الإلكتروني أو رقم الجوال" : "Email or mobile number"}</span>
+                    <input required autoComplete="off" maxLength={80} dir="ltr" />
+                  </label>
+                  <label>
+                    <span>{ar ? "كلمة المرور" : "Password"}</span>
+                    <input required type="password" autoComplete="off" maxLength={64} dir="ltr" />
+                  </label>
+                  <button type="submit" className="button button-green auth-submit">
+                    {authView === "signin"
+                      ? ar ? "تسجيل الدخول" : "Sign in"
+                      : ar ? "إنشاء الحساب" : "Create account"}
+                  </button>
+                  <div className="auth-divider">
+                    <span>{ar ? "أو" : "or"}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="button button-outline auth-alt"
+                    onClick={() => setAuthView(authView === "signin" ? "signup" : "signin")}
+                  >
+                    {authView === "signin"
+                      ? ar ? "إنشاء حساب جديد" : "Create a new account"
+                      : ar ? "لديك حساب؟ تسجيل الدخول" : "Have an account? Sign in"}
+                  </button>
+                  <button
+                    type="button"
+                    className="button auth-nafath"
+                    onClick={() => {
+                      setModal(null);
+                      setToast(
+                        ar
+                          ? "الدخول عبر نفاذ غير مفعّل في النسخة التجريبية."
+                          : "Nafath sign-in is not active in this demo.",
+                      );
+                    }}
+                  >
+                    {process.env.NEXT_PUBLIC_HIDE_OFFICIAL_LOGOS === "1" ? (
+                      <ShieldCheck size={18} />
+                    ) : (
+                      <img className="nafath-logo" src="nafath-logo.png" alt="" width={56} height={22} />
+                    )}
+                    {ar ? "الدخول عبر النفاذ الوطني الموحد (نفاذ)" : "Sign in with Nafath"}
+                  </button>
+                  <p className="auth-note">
+                    {ar
+                      ? "نموذج تجريبي: لا يتصل معبر بنفاذ أو بأي جهة حكومية، ولا تُرسل البيانات المدخلة إلى أي مكان."
+                      : "Demo only: MAABAR is not connected to Nafath or any government system, and nothing you type is sent anywhere."}
+                  </p>
+                </form>
+              )}
               {(modal === "privacy" || modal === "terms") && (
                 <div className="policy-content">
                   <ShieldCheck size={35} />
@@ -1501,6 +1377,33 @@ export default function Homepage() {
         )}
       </AnimatePresence>
     </main>
+  );
+}
+
+const localLogos: Record<string, string> = {
+  "www.absher.sa": "platforms/absher.png",
+  "business.absher.sa": "platforms/absher.png",
+  "www.iam.gov.sa": "nafath-logo.png",
+  "splonline.com.sa": "platforms/spl.png",
+};
+
+function PlatformLogo({ url, name }: { url: string; name: string }) {
+  const host = (() => {
+    try {
+      return new URL(url).host;
+    } catch {
+      return "";
+    }
+  })();
+  const sources = [localLogos[host], host && `https://${host}/favicon.ico`].filter(Boolean) as string[];
+  const [index, setIndex] = useState(0);
+  if (index >= sources.length) {
+    return <span className="platform-logo platform-logo-fallback" aria-hidden="true">{name.replace(/^(منصة|نظام|منظومة|بوابة)\s+/, "").charAt(0)}</span>;
+  }
+  return (
+    <span className="platform-logo">
+      <img src={sources[index]} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setIndex(index + 1)} />
+    </span>
   );
 }
 

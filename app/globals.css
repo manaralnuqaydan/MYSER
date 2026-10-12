@@ -207,14 +207,14 @@ button:disabled {
   color: #eef6e9;
 }
 .brand-symbol {
-  width: 37px;
+  width: 28px;
   display: block;
   transform: rotate(-4deg);
 }
 .brand-symbol svg {
   display: block;
   width: 100%;
-  height: 43px;
+  height: 32px;
 }
 .brand-name {
   display: flex;
@@ -223,15 +223,15 @@ button:disabled {
   line-height: 1.3;
 }
 .brand-name strong {
-  font-size: 25px;
+  font-size: 20px;
   letter-spacing: -1px;
   font-weight: 800;
 }
 .brand-name > span {
   font-family: "DM Sans", sans-serif;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
-  margin-top: 6px;
+  margin-top: 3px;
   letter-spacing: 2px;
 }
 .hero {
@@ -347,18 +347,37 @@ button:disabled {
   background: none;
   color: white;
 }
+.account-button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #f7f6e9;
+  background: rgba(8, 46, 40, 0.35);
+  border: 1px solid rgba(217, 191, 134, 0.5);
+  transition: background 0.2s, border-color 0.2s;
+}
+.account-button:hover {
+  background: rgba(217, 191, 134, 0.14);
+  border-color: rgba(217, 191, 134, 0.8);
+}
+.nav .nav-login {
+  display: none;
+}
 .hero-body {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
   align-items: center;
   gap: clamp(48px, 7vw, 104px);
-  padding-top: 64px;
+  padding-top: 40px;
   padding-bottom: 18px;
 }
 .hero-copy {
   max-width: 700px;
   width: 100%;
+  align-self: start;
 }
 .hero-eyebrow {
   color: #dac495;
@@ -672,7 +691,7 @@ button:disabled {
   text-align: center;
   color: #eeddb2;
   transform: rotate(-3deg);
-  margin-inline-start: 30px;
+  margin-inline-start: auto;
 }
 .hero-signature small {
   display: block;
@@ -1839,10 +1858,10 @@ footer {
   padding-bottom: 32px;
 }
 .footer-main .brand-symbol {
-  width: 29px;
+  width: 24px;
 }
 .footer-main .brand-name strong {
-  font-size: 22px;
+  font-size: 18px;
 }
 .footer-main .brand-name > span {
   font-size: 10px;
@@ -3049,7 +3068,7 @@ html[dir="ltr"] .nav .active:after {
     font-size: 11px;
   }
   .hero-signature {
-    margin-inline-start: 10px;
+    margin-inline-start: auto;
     font-size: 17px;
   }
   .stat {
@@ -3113,10 +3132,10 @@ html[dir="ltr"] .nav .active:after {
     padding: 8px 13px;
   }
   .brand-symbol {
-    width: 30px;
+    width: 24px;
   }
   .brand-name strong {
-    font-size: 23px;
+    font-size: 18px;
   }
   .hero {
     min-height: 0;
@@ -3274,6 +3293,14 @@ html[dir="ltr"] .nav .active:after {
   }
   .nav {
     display: none;
+  }
+  .account-button {
+    display: none;
+  }
+  .nav.open .nav-login {
+    display: block;
+    color: #e7d3a2;
+    font-weight: 600;
   }
   .menu-button {
     display: block;
@@ -3679,7 +3706,7 @@ html[dir="ltr"] .nav .active:after {
   }
   .hero-buttons {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     width: 100%;
   }
   .hero-trust {
@@ -4223,3 +4250,268 @@ html[dir="ltr"] .nav .active:after {
 .service-results small { line-height: 1.6; }
 .sector-card:focus-visible, .service-results > button:focus-visible, .sector-filters button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
+
+.auth-panel {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  max-width: 440px;
+  margin-inline: auto;
+}
+.auth-panel label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.auth-panel select,
+.auth-panel textarea,
+.auth-panel input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d6dcc8;
+  border-radius: 10px;
+  background: #fffdf5;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: #214833;
+  outline: 0;
+}
+.auth-panel input:focus {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px #bf995026;
+}
+.auth-panel .button {
+  width: 100%;
+  justify-content: center;
+  min-height: 48px;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.auth-divider:before,
+.auth-divider:after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.auth-panel .auth-alt {
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid #c9d2b8;
+  backdrop-filter: none;
+}
+.auth-panel .auth-alt:hover {
+  background: #eef1e4;
+}
+.auth-panel .auth-nafath {
+  gap: 12px;
+  color: #0b3d32;
+  background: #ffffff;
+  border: 1px solid #c9d2b8;
+}
+.auth-panel .auth-nafath:hover {
+  background: #f6f8f2;
+}
+.auth-panel .auth-nafath .nafath-logo {
+  height: 24px;
+  width: auto;
+  padding-inline-end: 12px;
+  border-inline-end: 1px solid #d9dfd4;
+  box-sizing: content-box;
+}
+.auth-note {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+  text-align: center;
+}
+
+.account-wrap {
+  position: relative;
+}
+.account-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  inset-inline-end: 0;
+  min-width: 230px;
+  display: grid;
+  padding: 8px;
+  background: #f8f7ef;
+  border: 1px solid #d2d8bd;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px #001f2040;
+  z-index: 30;
+}
+.account-menu button,
+.account-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: start;
+}
+.account-menu svg {
+  color: var(--gold-strong);
+}
+.account-menu button:hover,
+.account-menu a:hover {
+  background: #ecefe1;
+}
+.support-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  background: #ecefe1;
+  border-radius: 12px;
+}
+.support-tabs button {
+  padding: 10px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.support-tabs button.active {
+  background: #fffdf5;
+  color: var(--ink);
+  box-shadow: 0 2px 8px #0b423714;
+}
+.auth-panel textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.service-platform-logo {
+  height: 56px;
+  width: auto;
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.service-brief {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+.service-brief > div {
+  padding: 12px 14px;
+  background: #fffdf5;
+  border: 1px solid #e3e7d8;
+  border-radius: 12px;
+}
+.service-brief dt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-strong);
+  margin-bottom: 4px;
+}
+.service-brief dd {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink);
+}
+
+.service-steps-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 6px 0 10px;
+}
+.service-steps {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 22px;
+  list-style: none;
+  padding: 0;
+}
+.service-steps li {
+  display: grid;
+  grid-template-columns: 24px 40px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fffdf5;
+  border: 1px solid #e3e7d8;
+  border-radius: 12px;
+}
+.service-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--green-strong);
+}
+.platform-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.platform-logo img {
+  max-width: 30px;
+  max-height: 30px;
+  object-fit: contain;
+}
+.platform-logo-fallback {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--green-strong);
+  background: #ecefe1;
+}
+.service-step-text strong {
+  display: block;
+  font-size: 14px;
+  color: var(--ink);
+}
+.service-step-text p {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.service-steps li > a {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--green-strong);
+  border: 1px solid #c9d2b8;
+}
+.service-steps li > a:hover {
+  background: #ecefe1;
+}
+/* Sectors heading: large black label in the hero headline style */
+.services .section-heading .eyebrow {
+  font-family: "Noto Sans Arabic", "DM Sans", sans-serif;
+  font-size: clamp(38px, 3.6vw, 54px);
+  font-weight: 750;
+  letter-spacing: -0.5px;
+  line-height: 1.32;
+  color: #111111;
+}
