@@ -349,7 +349,7 @@ Traffic collision handling is not limited to a single platform like Absher; it i
 * إذا كان لديك اعتراض أو سداد سابق، يمكنك الضغط على «منازعة تنفيذ» داخل ناجز مع إرفاق الإثباتات.
 
 > **تنبيه نظامي وأمني مشدد:**
-> * مُيسّرة دليل توجيهي ولا تطلع على قضاياك أو بياناتك الخاصة، ولا تُغني عن استشارة محامٍ مرخص.
+> * مُيسّر دليل توجيهي ولا تطلع على قضاياك أو بياناتك الخاصة، ولا تُغني عن استشارة محامٍ مرخص.
 > * أي رسالة تطلب تحويل مبالغ لحسابات شخصية أو بطاقات بنكية خارج نظام «سداد» هي محاولة احتيال، ويجب الإبلاغ عنها عبر تطبيق **«كلنا أمن»**.`
       : `### Guidance on Judicial Notices & Court Subpoenas
 
@@ -520,7 +520,7 @@ A unified national authentication framework governed by SDAIA, providing secure 
 
   // 4. UNKNOWN / GENERAL QUERY - Fallback with honest transparency
   const fallbackText = ar
-    ? `أهلاً بك في مُيسّرة. 
+    ? `أهلاً بك في مُيسّر. 
 فهمت استفسارك حول: «${userQuery}».
 
 لم يتم رصد هذا الموضوع بدقة في قاعدة الخدمات الحكومية الموثقة حاليًا في هذه الجلسة المحلية. 

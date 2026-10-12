@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpLeft,
@@ -45,6 +45,42 @@ import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
 import PhoneMockups from "./PhoneMockups";
+// Renders **bold** segments inside assistant text as <strong>, so raw asterisks never show in the chat.
+function renderInline(text: string): ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.length > 4 && part.startsWith("**") && part.endsWith("**") ? (
+      <strong key={i}>{part.slice(2, -2)}</strong>
+    ) : (
+      part
+    ),
+  );
+}
+
+// Splits a reply into blocks; consecutive numbered steps (even if separated by blank lines) become one block.
+function splitBlocks(text: string): string[] {
+  const isStep = (t: string) => /^\d+\.\s/.test(t.trim());
+  // A heading line directly followed by numbered lines is split into heading + steps.
+  const parts = text
+    .split("\n\n")
+    .map((raw) => raw.trim())
+    .filter(Boolean)
+    .flatMap((t) => {
+      const lines = t.split("\n");
+      return lines.length > 1 && !isStep(lines[0]) && lines.slice(1).every(isStep)
+        ? [lines[0], lines.slice(1).join("\n")]
+        : [t];
+    });
+  return parts.reduce<string[]>((acc, t) => {
+    const last = acc[acc.length - 1];
+    if (last !== undefined && isStep(t) && last.split("\n").every(isStep)) {
+      acc[acc.length - 1] = `${last}\n${t}`;
+    } else {
+      acc.push(t);
+    }
+    return acc;
+  }, []);
+}
+
 const sectorIcons = {
   people: Users,
   traffic: CarFront,
@@ -238,8 +274,8 @@ export default function Homepage() {
           role="img"
           aria-label={
             ar
-              ? "مشهد سعودي يجمع برج المملكة وبرج مياه بريدة والأعلام السعودية عند الغروب"
-              : "A cinematic Saudi composition featuring Kingdom Centre, Buraidah Water Tower, and Saudi flags at sunset"
+              ? "مشهد سعودي يجمع برج المملكة والأعلام السعودية عند الغروب"
+              : "A cinematic Saudi composition featuring Kingdom Centre and Saudi flags at sunset"
           }
         />
         <div className="hero-shade" />
@@ -834,7 +870,7 @@ export default function Homepage() {
       <section className="closing-banner">
         <div className="closing-pattern" />
         <div className="container">
-          <span className="eyebrow">MYSER / مُيسّرة</span>
+          <span className="eyebrow">MYSER / مُيسّر</span>
           <h2 className="multiline">{t.ctaTitle}</h2>
           <p>{t.ctaSub}</p>
           <button className="button button-gold" onClick={() => openServices()}>
@@ -916,7 +952,7 @@ export default function Homepage() {
             >
               <div className="modal-heading">
                 <div>
-                  <span className="eyebrow">MYSER / مُيسّرة</span>
+                  <span className="eyebrow">MYSER / مُيسّر</span>
                   <h2 id="dialog-title">
                     {chatOpen
                       ? t.smart
@@ -961,111 +997,135 @@ export default function Homepage() {
                       </div>
                     ) : (
                       messages.map((m, i) => (
-                        <div key={i} className={`chat-message ${m.role}`}>
+                        <div key={i} className={`chat-row ${m.role}`}>
                           {m.role === "assistant" && (
-                            <div className="chat-msg-header">
-                              <Sparkles size={15} />
-                              <span className="chat-role-label">{ar ? "مُيسّرة · إرشاد موثق" : "MYSER · Verified Guide"}</span>
-                            </div>
+                            <span className="chat-avatar" aria-hidden="true">
+                              <Sparkles size={16} />
+                            </span>
                           )}
-                          <div className="chat-msg-body">
-                            {m.text.split("\n\n").map((paragraph, pIdx) => {
-                              const trimmedP = paragraph.trim();
-                              // Check if header (starts with ### or contains bold title)
-                              if (trimmedP.startsWith("### ")) {
-                                return (
-                                  <h4 key={pIdx} className="assistant-msg-title">
-                                    {trimmedP.replace("### ", "")}
-                                  </h4>
-                                );
-                              }
-                              // Check if blockquote warning/note
-                              if (trimmedP.startsWith("> ")) {
-                                return (
-                                  <div key={pIdx} className="assistant-msg-callout">
-                                    <ShieldCheck size={16} className="callout-icon" />
-                                    <span>{trimmedP.replace(/^>\s*/, "").replace(/^\*\*(.*?)\*\*/, "$1")}</span>
+                          <div className="chat-col">
+                            {m.role === "assistant" && (
+                              <div className="chat-msg-header">
+                                <span className="chat-role-label">{ar ? "مُيسّر" : "MYSER"}</span>
+                                <span className="chat-verified">
+                                  <ShieldCheck size={13} />
+                                  {ar ? "إرشاد موثق" : "Verified guide"}
+                                </span>
+                              </div>
+                            )}
+                            <div className={`chat-message ${m.role}`}>
+                              <div className="chat-msg-body">
+                                {splitBlocks(m.text).map((paragraph, pIdx) => {
+                                  const trimmedP = paragraph.trim();
+                                  if (!trimmedP) return null;
+                                  if (trimmedP.startsWith("### ")) {
+                                    return (
+                                      <h4 key={pIdx} className="assistant-msg-title">
+                                        {renderInline(trimmedP.replace("### ", ""))}
+                                      </h4>
+                                    );
+                                  }
+                                  // A paragraph that is only a bold line acts as a section heading
+                                  if (/^\*\*[^*]+\*\*$/.test(trimmedP)) {
+                                    return (
+                                      <h4 key={pIdx} className="assistant-msg-title">
+                                        {renderInline(trimmedP)}
+                                      </h4>
+                                    );
+                                  }
+                                  if (trimmedP.startsWith("> ")) {
+                                    return (
+                                      <div key={pIdx} className="assistant-msg-callout">
+                                        <ShieldCheck size={16} className="callout-icon" />
+                                        <span>{renderInline(trimmedP.replace(/^>\s*/, ""))}</span>
+                                      </div>
+                                    );
+                                  }
+                                  const lines = trimmedP.split("\n");
+                                  const isOrderedList = lines.every((l) => /^\d+\.\s/.test(l.trim()));
+                                  const isUnorderedList = lines.every((l) => /^[*•-]\s/.test(l.trim()));
+                                  if (isOrderedList) {
+                                    return (
+                                      <ol key={pIdx} className="assistant-msg-steps">
+                                        {lines.map((l, lIdx) => (
+                                          <li key={lIdx}>
+                                            <span className="step-pill">{l.trim().match(/^\d+/)?.[0] ?? lIdx + 1}</span>
+                                            <span>{renderInline(l.trim().replace(/^\d+\.\s*/, ""))}</span>
+                                          </li>
+                                        ))}
+                                      </ol>
+                                    );
+                                  }
+                                  if (lines.length > 1 && isUnorderedList) {
+                                    return (
+                                      <ul key={pIdx} className="assistant-msg-bullets">
+                                        {lines.map((l, lIdx) => (
+                                          <li key={lIdx}>
+                                            <Check size={14} className="bullet-icon" />
+                                            <span>{renderInline(l.trim().replace(/^[*•-]\s*/, ""))}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    );
+                                  }
+                                  return <p key={pIdx}>{renderInline(trimmedP)}</p>;
+                                })}
+                              </div>
+                              {m.sources && m.sources.length > 0 && (
+                                <div className="chat-msg-sources">
+                                  <small>{ar ? "المصادر الرسمية الموثقة" : "Verified official sources"}</small>
+                                  <div className="sources-list">
+                                    {m.sources.map((src, sIdx) => (
+                                      <a
+                                        key={sIdx}
+                                        href={src.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="source-tag"
+                                      >
+                                        <span>{src.title}</span>
+                                        <ArrowUpRight size={12} />
+                                      </a>
+                                    ))}
                                   </div>
-                                );
-                              }
-                              // Check if list of steps (lines starting with number or bullet)
-                              const lines = trimmedP.split("\n");
-                              const isOrderedList = lines.every((l) => /^\d+\.\s/.test(l.trim()));
-                              const isUnorderedList = lines.every((l) => /^[*•-]\s/.test(l.trim()));
-                              if (lines.length > 1 && isOrderedList) {
-                                return (
-                                  <ol key={pIdx} className="assistant-msg-steps">
-                                    {lines.map((l, lIdx) => (
-                                      <li key={lIdx}>
-                                        <span className="step-pill">{lIdx + 1}</span>
-                                        <span>{l.replace(/^\d+\.\s*/, "").replace(/\*\*(.*?)\*\*/g, "$1")}</span>
-                                      </li>
-                                    ))}
-                                  </ol>
-                                );
-                              }
-                              if (lines.length > 1 && isUnorderedList) {
-                                return (
-                                  <ul key={pIdx} className="assistant-msg-bullets">
-                                    {lines.map((l, lIdx) => (
-                                      <li key={lIdx}>
-                                        <Check size={14} className="bullet-icon" />
-                                        <span>{l.replace(/^[*•-]\s*/, "").replace(/\*\*(.*?)\*\*/g, "$1")}</span>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                );
-                              }
-                              return <p key={pIdx}>{paragraph}</p>;
-                            })}
+                                </div>
+                              )}
+                            </div>
+                            {m.followUpQuestions && m.followUpQuestions.length > 0 && (
+                              <div className="chat-msg-followups">
+                                <small>{ar ? "استفسارات مقترحة" : "Suggested follow-ups"}</small>
+                                <div className="followup-chips">
+                                  {m.followUpQuestions.map((fq, fIdx) => (
+                                    <button
+                                      key={fIdx}
+                                      type="button"
+                                      className="followup-chip"
+                                      onClick={() => answer(fq)}
+                                    >
+                                      <span>{fq}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
-                          {m.sources && m.sources.length > 0 && (
-                            <div className="chat-msg-sources">
-                              <small>{ar ? "المصادر الرسمية الموثقة:" : "Verified official sources:"}</small>
-                              <div className="sources-list">
-                                {m.sources.map((src, sIdx) => (
-                                  <a
-                                    key={sIdx}
-                                    href={src.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="source-tag"
-                                  >
-                                    <span>{src.title}</span>
-                                    <ArrowUpRight size={12} />
-                                  </a>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          {m.followUpQuestions && m.followUpQuestions.length > 0 && (
-                            <div className="chat-msg-followups">
-                              <small>{ar ? "استفسارات مقترحة:" : "Suggested follow-ups:"}</small>
-                              <div className="followup-chips">
-                                {m.followUpQuestions.map((fq, fIdx) => (
-                                  <button
-                                    key={fIdx}
-                                    type="button"
-                                    className="followup-chip"
-                                    onClick={() => answer(fq)}
-                                  >
-                                    <span>{fq}</span>
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
                         </div>
                       ))
                     )}
                     {typing && (
-                      <div
-                        className="typing-dots"
-                        aria-label={ar ? "جاري الرد" : "Replying"}
-                      >
-                        <i />
-                        <i />
-                        <i />
+                      <div className="chat-row assistant">
+                        <span className="chat-avatar" aria-hidden="true">
+                          <Sparkles size={16} />
+                        </span>
+                        <div
+                          className="typing-dots"
+                          role="status"
+                          aria-label={ar ? "جاري الرد" : "Replying"}
+                        >
+                          <i />
+                          <i />
+                          <i />
+                        </div>
                       </div>
                     )}
                     {chatTarget !== null && !typing && (

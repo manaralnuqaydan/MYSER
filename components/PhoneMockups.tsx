@@ -65,7 +65,7 @@ export default function PhoneMockups({ lang }: { lang: Lang }) {
           <h3>{t.appGreeting}</h3>
           <div className="phone-hero-mini">
             <span>
-              مُيسّرة
+              مُيسّر
               <br />
               <small>
                 {ar ? "دليل المنصات الرسمية" : "Official Services Directory"}

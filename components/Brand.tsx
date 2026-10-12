@@ -9,7 +9,7 @@ export default function Brand({
     <a
       href="#home"
       className={`brand ${light ? "light" : ""}`}
-      aria-label="MYSER | مُيسّرة"
+      aria-label="MYSER | مُيسّر"
     >
       <span className="brand-symbol">
         <svg viewBox="0 0 42 48" fill="none" aria-hidden="true">
@@ -26,7 +26,7 @@ export default function Brand({
       </span>
       {!compact && (
         <span className="brand-name">
-          <strong>مُيسّرة</strong>
+          <strong>مُيسّر</strong>
           <span>M Y S E R</span>
         </span>
       )}

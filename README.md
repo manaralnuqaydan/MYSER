@@ -1,4 +1,4 @@
-# MYSER | مُيسّرة
+# MYSER | مُيسّر
 
 An Arabic-first, bilingual Saudi digital-services concept built with Next.js, TypeScript, Tailwind CSS, Framer Motion, and Lucide icons.
 
