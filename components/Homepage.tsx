@@ -1323,6 +1323,26 @@ export default function Homepage() {
                             </dl>
                           )}
 
+                          {detailed?.multiPlatformChain && detailed.multiPlatformChain.length > 0 && (
+                            <>
+                              <h4 className="service-steps-title">{ar ? "خطوات الخدمة" : "Steps"}</h4>
+                              <ol className="service-steps">
+                                {detailed.multiPlatformChain.map((step, i) => (
+                                  <li key={step.url + i}>
+                                    <span className="service-step-num">{i + 1}</span>
+                                    <PlatformLogo url={step.url} name={step.name[lang]} />
+                                    <div className="service-step-text">
+                                      <strong>{step.name[lang]}</strong>
+                                      <p>{step.role[lang]}</p>
+                                    </div>
+                                    <a href={step.url} target="_blank" rel="noopener noreferrer" aria-label={ar ? `فتح ${step.name.ar}` : `Open ${step.name.en}`}>
+                                      <ArrowUpRight size={16} />
+                                    </a>
+                                  </li>
+                                ))}
+                              </ol>
+                            </>
+                          )}
                           <a
                             className="button button-green official-link"
                             href={entry.url}
@@ -1559,6 +1579,32 @@ export default function Homepage() {
         )}
       </AnimatePresence>
     </main>
+  );
+}
+
+const localLogos: Record<string, string> = {
+  "www.absher.sa": "platforms/absher.png",
+  "business.absher.sa": "platforms/absher.png",
+  "www.iam.gov.sa": "nafath-logo.png",
+};
+
+function PlatformLogo({ url, name }: { url: string; name: string }) {
+  const host = (() => {
+    try {
+      return new URL(url).host;
+    } catch {
+      return "";
+    }
+  })();
+  const sources = [localLogos[host], host && `https://${host}/favicon.ico`].filter(Boolean) as string[];
+  const [index, setIndex] = useState(0);
+  if (index >= sources.length) {
+    return <span className="platform-logo platform-logo-fallback" aria-hidden="true">{name.replace(/^(منصة|نظام|منظومة|بوابة)\s+/, "").charAt(0)}</span>;
+  }
+  return (
+    <span className="platform-logo">
+      <img src={sources[index]} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setIndex(index + 1)} />
+    </span>
   );
 }
 
