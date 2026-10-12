@@ -469,13 +469,6 @@ export default function Homepage() {
               <h2>{t.sectorTitle}</h2>
               <p>{t.sectorSub}</p>
             </div>
-            <button
-              className="button button-outline"
-              onClick={() => openServices()}
-            >
-              {t.all}
-              {direction}
-            </button>
           </motion.div>
           <div className="sector-grid">
             {directorySectors.map((item, i) => {
