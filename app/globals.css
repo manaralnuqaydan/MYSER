@@ -4312,7 +4312,7 @@ html[dir="ltr"] .nav .active:after {
   background: #eef1e4;
 }
 .auth-panel .auth-nafath {
-  gap: 10px;
+  gap: 12px;
   color: #0b3d32;
   background: #ffffff;
   border: 1px solid #c9d2b8;
@@ -4321,8 +4321,11 @@ html[dir="ltr"] .nav .active:after {
   background: #f6f8f2;
 }
 .auth-panel .auth-nafath .nafath-logo {
-  height: 22px;
+  height: 24px;
   width: auto;
+  padding-inline-end: 12px;
+  border-inline-end: 1px solid #d9dfd4;
+  box-sizing: content-box;
 }
 .auth-note {
   font-size: 12px;
