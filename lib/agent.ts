@@ -121,7 +121,7 @@ export function retrieveRelevantKnowledge(
     // Category boost
     if (detectedCategory === "business_establishment" && service.sectorId === "business") score += 4;
     if (detectedCategory === "traffic_vehicles" && service.sectorId === "traffic") score += 4;
-    if (detectedCategory === "civil_affairs" && service.sectorId === "public") score += 4;
+    if (detectedCategory === "civil_affairs" && service.sectorId === "civil") score += 4;
     if (detectedCategory === "labor_regulations" && service.sectorId === "work") score += 4;
     if (detectedCategory === "health_services" && service.sectorId === "health") score += 4;
     if (detectedCategory === "education" && service.sectorId === "education") score += 4;
