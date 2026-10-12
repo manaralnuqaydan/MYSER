@@ -344,7 +344,7 @@ export default function Homepage() {
               {ar ? "تسجيل الدخول / إنشاء حساب" : "Sign in / Create account"}
             </button>
             <button className="nav-login" onClick={openSupport}>
-              {ar ? "متابعة خدمة العملاء" : "Customer support"}
+              {ar ? "خدمة العملاء" : "Customer service"}
             </button>
           </nav>
           <div className="header-actions">
@@ -374,7 +374,7 @@ export default function Homepage() {
                   </button>
                   <button role="menuitem" onClick={openSupport}>
                     <Headset size={18} />
-                    {ar ? "متابعة خدمة العملاء" : "Customer support"}
+                    {ar ? "خدمة العملاء" : "Customer service"}
                   </button>
                   <a role="menuitem" href="#about" onClick={() => setAccountMenu(false)}>
                     <Info size={18} />
@@ -988,7 +988,7 @@ export default function Homepage() {
                         : modal === "meeting"
                           ? "GovMeet"
                           : modal === "support"
-                            ? ar ? "متابعة خدمة العملاء" : "Customer support"
+                            ? ar ? "خدمة العملاء" : "Customer service"
                           : modal === "login"
                             ? authView === "signin"
                               ? ar ? "تسجيل الدخول" : "Sign in"
