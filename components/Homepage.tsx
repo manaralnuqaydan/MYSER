@@ -1284,7 +1284,6 @@ export default function Homepage() {
                   <div className="service-detail">
                     {(() => {
                       const entry = curatedServices.find((item) => item.id === service);
-                      const detailed = detailedServices.find((item) => item.id === service);
                       if (!entry) return <p>{ar ? "تعذر العثور على الخدمة." : "Service not found."}</p>;
                       return (
                         <>
@@ -1297,104 +1296,7 @@ export default function Homepage() {
                             <span className="service-platform-badge">{entry.platform[lang]}</span>
                           </div>
 
-                          <h3>{entry.name[lang]}</h3>
                           <p className="service-lead-summary">{entry.summary[lang]}</p>
-
-                          {/* 10-Dimension Structured Content */}
-                          <div className="service-meta-grid">
-                            {detailed && (
-                              <>
-                                <div className="meta-card">
-                                  <strong>{ar ? "لمن تناسب الخدمة؟" : "Target Audience"}</strong>
-                                  <p>{detailed.targetAudience[lang]}</p>
-                                </div>
-                                <div className="meta-card">
-                                  <strong>{ar ? "ماذا يستطيع المستخدم إنجازه؟" : "User Outcomes"}</strong>
-                                  <p>{detailed.userOutcomes[lang]}</p>
-                                </div>
-                              </>
-                            )}
-                          </div>
-
-                          <h3>{ar ? "متى قد تحتاجها؟" : "When might you need it?"}</h3>
-                          <p>{entry.when[lang]}</p>
-
-                          {detailed && (
-                            <>
-                              <h3>{ar ? "ما ينبغي معرفته قبل البدء (المتطلبات المسبقة)" : "Prerequisites & Preparation"}</h3>
-                              <p>{detailed.prerequisites[lang]}</p>
-
-                              <h3>{ar ? "المتطلبات والاشتراطات المؤكدة" : "Confirmed Requirements"}</h3>
-                              <ul className="confirmed-requirements-list">
-                                {detailed.confirmedRequirements.map((req, rIdx) => (
-                                  <li key={rIdx}>
-                                    <Check size={16} />
-                                    <span>{req[lang]}</span>
-                                  </li>
-                                ))}
-                              </ul>
-
-                              <h3>{ar ? "خطوات وإجراءات المعاملة الرسمية" : "Official Procedure Steps"}</h3>
-                              <ol className="procedure-steps-list">
-                                {detailed.procedureSteps.map((step, sIdx) => (
-                                  <li key={sIdx}>
-                                    <span className="step-num">{sIdx + 1}</span>
-                                    <span>{step[lang]}</span>
-                                  </li>
-                                ))}
-                              </ol>
-
-                              {detailed.multiPlatformChain && detailed.multiPlatformChain.length > 0 && (
-                                <>
-                                  <h3>{ar ? "المنصات والجهات اللازمة لإتمام الخدمة (متى تحتاج كل جهة)" : "Required Platforms & Authorities Sequence"}</h3>
-                                  <div className="platform-chain-container">
-                                    {detailed.multiPlatformChain.map((chain, cIdx) => (
-                                      <div key={cIdx} className="platform-chain-card">
-                                        <div className="platform-chain-top">
-                                          <span className="chain-step-pill">{cIdx + 1}</span>
-                                          <strong>{chain.name[lang]}</strong>
-                                          <span className="chain-auth-tag">{chain.authority[lang]}</span>
-                                        </div>
-                                        <p className="chain-role-text">{chain.role[lang]}</p>
-                                        <div className="chain-when-box">
-                                          <small>{ar ? "متى تنتقل إليها؟" : "When needed?"}</small>
-                                          <span>{chain.whenNeeded[lang]}</span>
-                                        </div>
-                                        <a href={chain.url} target="_blank" rel="noopener noreferrer" className="chain-link">
-                                          <span>{ar ? `زيارة ${chain.name.ar}` : `Open ${chain.name.en}`}</span>
-                                          <ArrowUpRight size={13} />
-                                        </a>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-
-                              <h3>{ar ? "شروط تختلف باختلاف الحالة" : "Conditional Rules & Variants"}</h3>
-                              <div className="conditional-rules-box">
-                                <p>{detailed.conditionalRules[lang]}</p>
-                              </div>
-
-                              <div className="unverified-transparency-box">
-                                <strong>{ar ? "تنبيه الشفافية وعدم التأكيد التلقائي:" : "Transparency & Verification Note:"}</strong>
-                                <p>{detailed.unverifiedAspects[lang]}</p>
-                              </div>
-                            </>
-                          )}
-
-                          <h3>{ar ? "الجهة والمنصة" : "Authority and platform"}</h3>
-                          <p>{entry.platform[lang]}</p>
-
-                          <div className="official-source-note">
-                            <strong>{ar ? "ملاحظة" : "Note"}</strong>
-                            <p>{entry.note[lang]}</p>
-                            <small>
-                              {ar ? "المصدر" : "Source"}:{" "}
-                              <a href={entry.sourceUrl} target="_blank" rel="noreferrer">
-                                {entry.sourceTitle[lang]}
-                              </a>
-                            </small>
-                          </div>
 
                           <a
                             className="button button-green official-link"
@@ -1406,42 +1308,7 @@ export default function Homepage() {
                             <ArrowUpRight size={16} />
                           </a>
 
-                          <p className="demo-boundary">
-                            {ar
-                              ? "MAABAR دليل استكشافي فقط. لا تُرسل بيانات أو طلبات إلى الجهة من هذه الواجهة."
-                              : "MAABAR is an exploratory guide only. This interface does not send data or requests to the authority."}
-                          </p>
-
-                          <h3>{ar ? "جرّب رحلة توضيحية داخل معبر" : "Try a sample journey in MAABAR"}</h3>
-                          <ul>
-                            <li>
-                              <Check size={16} />
-                              {ar
-                                ? "افتح المصدر الرسمي وراجع شروط الخدمة لحالتك"
-                                : "Open the official source and check requirements for your case"}
-                            </li>
-                            <li>
-                              <Check size={16} />
-                              {ar
-                                ? "أكمل أي إجراء أو إدخال بيانات داخل المنصة الرسمية فقط"
-                                : "Complete any application or data entry only on the official platform"}
-                            </li>
-                            <li>
-                              <Check size={16} />
-                              {ar
-                                ? "عد إلى MAABAR بعد ذلك لمتابعة الدليل؛ لا توجد مزامنة فعلية"
-                                : "Return to MAABAR for the guide; no live synchronization is available"}
-                            </li>
-                          </ul>
-
                           <div className="service-modal-actions">
-                            <button
-                              className="button button-green"
-                              onClick={() => setRequest(true)}
-                            >
-                              {t.beginDemo}
-                              {direction}
-                            </button>
                             <button
                               className="text-button"
                               onClick={() => setService(null)}
