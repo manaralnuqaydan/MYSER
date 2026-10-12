@@ -45,6 +45,7 @@ import {
 import { assistantFallback, assistantScenarios, copy, curatedServices, directorySectors, type Lang } from "@/lib/content";
 import { detailedServices } from "@/lib/servicesDetailed";
 import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
+import { runJourney } from "@/lib/journeys";
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
 import PhoneMockups from "./PhoneMockups";
@@ -240,12 +241,34 @@ export default function Homepage() {
     setTyping(true);
 
     const v = trimmed.toLowerCase();
-    const scenario = assistantScenarios.find((item) => item.keywords.some((keyword) => v.includes(keyword)));
+    // Goal-to-action journeys come first: one question at a time, then an ordered roadmap
+    const journeyRes = runJourney(trimmed, messages, lang);
+    const scenario = journeyRes ? undefined : assistantScenarios.find((item) => item.keywords.some((keyword) => v.includes(keyword)));
     const target = scenario
       ? directorySectors.findIndex((item) => item.id === scenario.sectorId)
       : null;
 
     timer.current = setTimeout(() => {
+      if (journeyRes) {
+        const idx = journeyRes.suggestedSectorId
+          ? directorySectors.findIndex((item) => item.id === journeyRes.suggestedSectorId)
+          : -1;
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            text: journeyRes.text,
+            sources: journeyRes.sources,
+            suggestedSectorId: journeyRes.suggestedSectorId,
+            followUpQuestions: journeyRes.followUpQuestions,
+            journey: journeyRes.journey,
+            isVerified: true,
+          },
+        ]);
+        setChatTarget(idx !== -1 ? idx : null);
+        setTyping(false);
+        return;
+      }
       // If direct predefined scenario matches, preserve exact response to guarantee tests and consistency
       if (scenario) {
         const result = scenario.response[lang];

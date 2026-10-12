@@ -1,5 +1,6 @@
 import { detailedServices, CuratedServiceDetailed } from "./servicesDetailed";
 import { directorySectors, Lang } from "./content";
+import type { JourneyState } from "./journeys";
 
 export type MessageRole = "user" | "assistant" | "system";
 
@@ -11,6 +12,7 @@ export type ChatMessage = {
   suggestedServiceId?: string;
   followUpQuestions?: string[];
   isVerified?: boolean;
+  journey?: JourneyState;
 };
 
 export type KnowledgeCategory =
