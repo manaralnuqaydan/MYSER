@@ -7,7 +7,7 @@ test("Arabic-first homepage loads without runtime errors", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "خدماتك الحكومية",
+    "دليلك الميسّر",
   );
   await expect(page.locator(".hero-skyline")).toHaveCSS(
     "background-image",
@@ -70,7 +70,7 @@ test("English LTR and cross-language assistant work", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Simply smarter.",
+    "Your simple guide",
   );
   await page.locator(".assistant-input input").fill("كيف أبدأ نشاط تجاري؟");
   await page
