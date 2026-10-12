@@ -281,7 +281,7 @@ export default function Homepage() {
             isVerified: true,
           },
         ]);
-        setChatTarget(target);
+        setChatTarget(target !== null && target !== -1 ? target : null);
       } else {
         // Run deep local knowledge agent reasoning
         const agentRes = generateLocalAgentResponse(trimmed, messages, lang);
