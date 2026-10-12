@@ -340,10 +340,6 @@ export default function Homepage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reduce ? 0 : 0.9 }}
           >
-            <div className="eyebrow hero-eyebrow">
-              <span className="little-line" />
-              MYSER <span className="eyebrow-divider">/</span> {t.eyebrow}
-            </div>
             <h1>
               {t.headline1}
               <br />
@@ -463,14 +459,6 @@ export default function Homepage() {
           </motion.div>
         </div>
         <div className="hero-bottom container">
-          <div className="hero-stats">
-            {[String(curatedServices.length), String(directorySectors.length), "2", t.one].map((v, i) => (
-              <div className="stat" key={i}>
-                <strong dir={i < 3 ? "ltr" : undefined}>{v}</strong>
-                <span>{t.statLabels[i]}</span>
-              </div>
-            ))}
-          </div>
           <a href="#services" className="scroll-link">
             <span>{t.scroll}</span>
             <span className="scroll-circle">
