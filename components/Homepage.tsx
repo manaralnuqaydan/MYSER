@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
+  Headset,
+  Info,
+  LogIn,
   ArrowUpLeft,
   ArrowUpRight,
   ArrowLeft,
@@ -111,9 +114,11 @@ export default function Homepage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [typing, setTyping] = useState(false);
   const [modal, setModal] = useState<
-    "services" | "meeting" | "privacy" | "terms" | "login" | null
+    "services" | "meeting" | "privacy" | "terms" | "login" | "support" | null
   >(null);
   const [authView, setAuthView] = useState<"signin" | "signup">("signin");
+  const [accountMenu, setAccountMenu] = useState(false);
+  const [supportView, setSupportView] = useState<"track" | "new">("track");
   const [sector, setSector] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [service, setService] = useState<string | null>(null);
@@ -194,7 +199,29 @@ export default function Homepage() {
     setMenu(false);
     setChatOpen(false);
   }
+  useEffect(() => {
+    if (!accountMenu) return;
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent && e.key !== "Escape") return;
+      if (e instanceof MouseEvent && (e.target as HTMLElement).closest(".account-wrap")) return;
+      setAccountMenu(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [accountMenu]);
+  function openSupport() {
+    setSupportView("track");
+    setModal("support");
+    setAccountMenu(false);
+    setMenu(false);
+    setChatOpen(false);
+  }
   function openLogin() {
+    setAccountMenu(false);
     setAuthView("signin");
     setModal("login");
     setMenu(false);
@@ -316,6 +343,9 @@ export default function Homepage() {
             <button className="nav-login" onClick={openLogin}>
               {ar ? "تسجيل الدخول / إنشاء حساب" : "Sign in / Create account"}
             </button>
+            <button className="nav-login" onClick={openSupport}>
+              {ar ? "متابعة خدمة العملاء" : "Customer support"}
+            </button>
           </nav>
           <div className="header-actions">
             <button
@@ -326,13 +356,33 @@ export default function Homepage() {
               <Globe2 size={16} />
               <span>{ar ? "English" : "العربية"}</span>
             </button>
-            <button
-              className="account-button"
-              onClick={openLogin}
-              aria-label={ar ? "تسجيل الدخول" : "Sign in"}
-            >
-              <Menu size={22} />
-            </button>
+            <div className="account-wrap">
+              <button
+                className="account-button"
+                onClick={() => setAccountMenu(!accountMenu)}
+                aria-expanded={accountMenu}
+                aria-haspopup="menu"
+                aria-label={ar ? "قائمة الحساب" : "Account menu"}
+              >
+                {accountMenu ? <X size={22} /> : <Menu size={22} />}
+              </button>
+              {accountMenu && (
+                <div className="account-menu" role="menu">
+                  <button role="menuitem" onClick={openLogin}>
+                    <LogIn size={18} />
+                    {ar ? "تسجيل الدخول" : "Sign in"}
+                  </button>
+                  <button role="menuitem" onClick={openSupport}>
+                    <Headset size={18} />
+                    {ar ? "متابعة خدمة العملاء" : "Customer support"}
+                  </button>
+                  <a role="menuitem" href="#about" onClick={() => setAccountMenu(false)}>
+                    <Info size={18} />
+                    {ar ? "من نحن" : "About us"}
+                  </a>
+                </div>
+              )}
+            </div>
             <button
               className="menu-button"
               onClick={() => setMenu(!menu)}
@@ -937,6 +987,8 @@ export default function Homepage() {
         ? curatedServices.find((entry) => entry.id === service)?.name[lang] || t.all
                         : modal === "meeting"
                           ? "GovMeet"
+                          : modal === "support"
+                            ? ar ? "متابعة خدمة العملاء" : "Customer support"
                           : modal === "login"
                             ? authView === "signin"
                               ? ar ? "تسجيل الدخول" : "Sign in"
@@ -1469,6 +1521,72 @@ export default function Homepage() {
                     </div>
                   )}
                 </div>
+              )}
+              {modal === "support" && (
+                <form
+                  className="auth-panel"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setModal(null);
+                    setToast(
+                      ar
+                        ? "هذه نسخة تجريبية: لم يُرسل أي طلب أو بيانات."
+                        : "Demo only: no request or data was sent.",
+                    );
+                  }}
+                >
+                  <div className="support-tabs" role="tablist">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={supportView === "track"}
+                      className={supportView === "track" ? "active" : ""}
+                      onClick={() => setSupportView("track")}
+                    >
+                      {ar ? "متابعة طلب" : "Track a request"}
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={supportView === "new"}
+                      className={supportView === "new" ? "active" : ""}
+                      onClick={() => setSupportView("new")}
+                    >
+                      {ar ? "طلب دعم جديد" : "New request"}
+                    </button>
+                  </div>
+                  {supportView === "track" ? (
+                    <label>
+                      <span>{ar ? "رقم الطلب" : "Request number"}</span>
+                      <input required autoComplete="off" maxLength={20} dir="ltr" placeholder="MY-000000" />
+                    </label>
+                  ) : (
+                    <>
+                      <label>
+                        <span>{ar ? "نوع الاستفسار" : "Topic"}</span>
+                        <select defaultValue="guide">
+                          <option value="guide">{ar ? "استفسار عن خدمة في الدليل" : "Question about a listed service"}</option>
+                          <option value="tech">{ar ? "مشكلة تقنية في مُيسّر" : "Technical issue in MYSER"}</option>
+                          <option value="feedback">{ar ? "اقتراح أو ملاحظة" : "Suggestion or feedback"}</option>
+                        </select>
+                      </label>
+                      <label>
+                        <span>{ar ? "تفاصيل الطلب" : "Details"}</span>
+                        <textarea required rows={4} maxLength={500} />
+                      </label>
+                    </>
+                  )}
+                  <button type="submit" className="button button-green auth-submit">
+                    {supportView === "track"
+                      ? ar ? "عرض حالة الطلب" : "Check status"
+                      : ar ? "إرسال الطلب" : "Submit request"}
+                  </button>
+                  <p className="auth-note">
+                    {ar
+                      ? "نموذج تجريبي: لا تُرسل الطلبات إلى أي جهة. لا تكتب بيانات شخصية أو أرقام هوية."
+                      : "Demo only: requests are not sent anywhere. Do not enter personal or ID details."}
+                  </p>
+                </form>
               )}
               {modal === "login" && (
                 <form

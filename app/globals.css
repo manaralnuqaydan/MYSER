@@ -4266,6 +4266,8 @@ html[dir="ltr"] .nav .active:after {
   font-weight: 600;
   color: var(--ink);
 }
+.auth-panel select,
+.auth-panel textarea,
 .auth-panel input {
   width: 100%;
   min-width: 0;
@@ -4319,4 +4321,64 @@ html[dir="ltr"] .nav .active:after {
   line-height: 1.8;
   color: var(--muted);
   text-align: center;
+}
+
+.account-wrap {
+  position: relative;
+}
+.account-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  inset-inline-end: 0;
+  min-width: 230px;
+  display: grid;
+  padding: 8px;
+  background: #f8f7ef;
+  border: 1px solid #d2d8bd;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px #001f2040;
+  z-index: 30;
+}
+.account-menu button,
+.account-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: start;
+}
+.account-menu svg {
+  color: var(--gold-strong);
+}
+.account-menu button:hover,
+.account-menu a:hover {
+  background: #ecefe1;
+}
+.support-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  background: #ecefe1;
+  border-radius: 12px;
+}
+.support-tabs button {
+  padding: 10px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.support-tabs button.active {
+  background: #fffdf5;
+  color: var(--ink);
+  box-shadow: 0 2px 8px #0b423714;
+}
+.auth-panel textarea {
+  resize: vertical;
+  font-family: inherit;
 }
