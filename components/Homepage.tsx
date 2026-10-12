@@ -1005,7 +1005,9 @@ export default function Homepage() {
                     {chatOpen
                       ? t.smart
                       : modal === "services"
-        ? curatedServices.find((entry) => entry.id === service)?.name[lang] || t.all
+        ? curatedServices.find((entry) => entry.id === service)?.name[lang] ||
+          (sector !== null ? directorySectors[sector]?.name[lang] : undefined) ||
+          t.all
                         : modal === "meeting"
                           ? "GovMeet"
                           : modal === "support"
@@ -1234,24 +1236,7 @@ export default function Homepage() {
                         onChange={(e) => setQuery(e.target.value)}
                       />
                     </div>
-                    <div className="sector-filters">
-                      <button
-                        className={sector === null ? "selected" : ""}
-                        onClick={() => setSector(null)}
-                      >
-                        {ar ? "الكل" : "All"}
-                      </button>
-                      {directorySectors.map((item, i) => (
-                        <button
-                          className={sector === i ? "selected" : ""}
-                          key={item.id}
-                          onClick={() => setSector(i)}
-                        >
-                          {item.name[lang]}
-                        </button>
-                      ))}
-                    </div>
-                    {sector === 2 && (
+                    {directorySectors[sector ?? -1]?.id === "business" && (
                       <BusinessRoute lang={lang} />
                     )}
                     <div className="service-results">
