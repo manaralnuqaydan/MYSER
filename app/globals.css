@@ -353,12 +353,13 @@ button:disabled {
   grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
   align-items: center;
   gap: clamp(48px, 7vw, 104px);
-  padding-top: 64px;
+  padding-top: 40px;
   padding-bottom: 18px;
 }
 .hero-copy {
   max-width: 700px;
   width: 100%;
+  align-self: start;
 }
 .hero-eyebrow {
   color: #dac495;
@@ -672,7 +673,7 @@ button:disabled {
   text-align: center;
   color: #eeddb2;
   transform: rotate(-3deg);
-  margin-inline-start: 30px;
+  margin-inline-start: auto;
 }
 .hero-signature small {
   display: block;
@@ -3049,7 +3050,7 @@ html[dir="ltr"] .nav .active:after {
     font-size: 11px;
   }
   .hero-signature {
-    margin-inline-start: 10px;
+    margin-inline-start: auto;
     font-size: 17px;
   }
   .stat {
@@ -3679,7 +3680,7 @@ html[dir="ltr"] .nav .active:after {
   }
   .hero-buttons {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     width: 100%;
   }
   .hero-trust {

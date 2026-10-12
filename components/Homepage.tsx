@@ -451,12 +451,6 @@ export default function Homepage() {
           </motion.div>
         </div>
         <div className="hero-bottom container">
-          <a href="#services" className="scroll-link">
-            <span>{t.scroll}</span>
-            <span className="scroll-circle">
-              <ChevronDown size={17} />
-            </span>
-          </a>
           <span className="hero-signature">
             {ar
               ? "لمستقبل أسهل،\nفي وطن أكبر."
