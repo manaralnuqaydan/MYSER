@@ -551,7 +551,7 @@ export default function Homepage() {
                 >
                   <SectorArt index={item.artIndex} />
                   <div className="sector-overlay" />
-                  <span className="sector-index">0{i + 1} / MYSER</span>
+                  <span className="sector-index">0{i + 1} / WASL</span>
                   <span className="sector-icon">
                     <Icon size={25} strokeWidth={1.3} />
                   </span>
@@ -595,7 +595,7 @@ export default function Homepage() {
                 ? "مصادر رسمية. دليل استكشافي واحد."
                 : "Official sources. One exploratory guide."}
             </span>
-            <span>MYSER ECOSYSTEM</span>
+            <span>WASL ECOSYSTEM</span>
           </div>
         </div>
       </section>
@@ -894,7 +894,7 @@ export default function Homepage() {
       <section className="closing-banner">
         <div className="closing-pattern" />
         <div className="container">
-          <span className="eyebrow">MYSER / مُيسّر</span>
+          <span className="eyebrow">WASL / وصل</span>
           <h2 className="multiline">{t.ctaTitle}</h2>
           <p>{t.ctaSub}</p>
           <button className="button button-gold" onClick={() => openServices()}>
@@ -976,7 +976,7 @@ export default function Homepage() {
             >
               <div className="modal-heading">
                 <div>
-                  <span className="eyebrow">MYSER / مُيسّر</span>
+                  <span className="eyebrow">WASL / وصل</span>
                   <h2 id="dialog-title">
                     {chatOpen
                       ? t.smart
@@ -1036,7 +1036,7 @@ export default function Homepage() {
                           <div className="chat-col">
                             {m.role === "assistant" && (
                               <div className="chat-msg-header">
-                                <span className="chat-role-label">{ar ? "مُيسّر" : "MYSER"}</span>
+                                <span className="chat-role-label">{ar ? "وصل" : "WASL"}</span>
                                 <span className="chat-verified">
                                   <ShieldCheck size={13} />
                                   {ar ? "إرشاد موثق" : "Verified guide"}
@@ -1266,7 +1266,7 @@ export default function Homepage() {
                     <p>{t.requestHint}</p>
                     <div>
                       <small>{t.requestNumber}</small>
-                      <strong dir="ltr">MYS-2026-001</strong>
+                      <strong dir="ltr">WSL-2026-001</strong>
                       <span className="status-pill">{t.processing}</span>
                     </div>
                     <button
@@ -1408,11 +1408,11 @@ export default function Homepage() {
 
                           <p className="demo-boundary">
                             {ar
-                              ? "MYSER دليل استكشافي فقط. لا تُرسل بيانات أو طلبات إلى الجهة من هذه الواجهة."
-                              : "MYSER is an exploratory guide only. This interface does not send data or requests to the authority."}
+                              ? "WASL دليل استكشافي فقط. لا تُرسل بيانات أو طلبات إلى الجهة من هذه الواجهة."
+                              : "WASL is an exploratory guide only. This interface does not send data or requests to the authority."}
                           </p>
 
-                          <h3>{ar ? "جرّب رحلة توضيحية داخل MYSER" : "Try a sample journey in MYSER"}</h3>
+                          <h3>{ar ? "جرّب رحلة توضيحية داخل وصل" : "Try a sample journey in WASL"}</h3>
                           <ul>
                             <li>
                               <Check size={16} />
@@ -1429,8 +1429,8 @@ export default function Homepage() {
                             <li>
                               <Check size={16} />
                               {ar
-                                ? "عد إلى MYSER بعد ذلك لمتابعة الدليل؛ لا توجد مزامنة فعلية"
-                                : "Return to MYSER for the guide; no live synchronization is available"}
+                                ? "عد إلى WASL بعد ذلك لمتابعة الدليل؛ لا توجد مزامنة فعلية"
+                                : "Return to WASL for the guide; no live synchronization is available"}
                             </li>
                           </ul>
 
@@ -1563,7 +1563,7 @@ export default function Homepage() {
                         <span>{ar ? "نوع الاستفسار" : "Topic"}</span>
                         <select defaultValue="guide">
                           <option value="guide">{ar ? "استفسار عن خدمة في الدليل" : "Question about a listed service"}</option>
-                          <option value="tech">{ar ? "مشكلة تقنية في مُيسّر" : "Technical issue in MYSER"}</option>
+                          <option value="tech">{ar ? "مشكلة تقنية في وصل" : "Technical issue in WASL"}</option>
                           <option value="feedback">{ar ? "اقتراح أو ملاحظة" : "Suggestion or feedback"}</option>
                         </select>
                       </label>
@@ -1650,8 +1650,8 @@ export default function Homepage() {
                   </button>
                   <p className="auth-note">
                     {ar
-                      ? "نموذج تجريبي: لا يتصل مُيسّر بنفاذ أو بأي جهة حكومية، ولا تُرسل البيانات المدخلة إلى أي مكان."
-                      : "Demo only: MYSER is not connected to Nafath or any government system, and nothing you type is sent anywhere."}
+                      ? "نموذج تجريبي: لا يتصل وصل بنفاذ أو بأي جهة حكومية، ولا تُرسل البيانات المدخلة إلى أي مكان."
+                      : "Demo only: WASL is not connected to Nafath or any government system, and nothing you type is sent anywhere."}
                   </p>
                 </form>
               )}

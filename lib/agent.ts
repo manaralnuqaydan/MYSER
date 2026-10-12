@@ -349,7 +349,7 @@ Traffic collision handling is not limited to a single platform like Absher; it i
 * إذا كان لديك اعتراض أو سداد سابق، يمكنك الضغط على «منازعة تنفيذ» داخل ناجز مع إرفاق الإثباتات.
 
 > **تنبيه نظامي وأمني مشدد:**
-> * مُيسّر دليل توجيهي ولا تطلع على قضاياك أو بياناتك الخاصة، ولا تُغني عن استشارة محامٍ مرخص.
+> * وصل دليل توجيهي لا يطّلع على قضاياك أو بياناتك الخاصة، ولا يُغني عن استشارة محامٍ مرخص.
 > * أي رسالة تطلب تحويل مبالغ لحسابات شخصية أو بطاقات بنكية خارج نظام «سداد» هي محاولة احتيال، ويجب الإبلاغ عنها عبر تطبيق **«كلنا أمن»**.`
       : `### Guidance on Judicial Notices & Court Subpoenas
 
@@ -370,7 +370,7 @@ Upon receiving an SMS regarding a judicial notice or court subpoena, follow this
 * Submit a procedural dispute within Najiz if the claim has been settled or contested.
 
 > **Crucial Legal & Privacy Notice:**
-> * MYSER is an advisory directory; it does not access court databases or replace licensed attorneys.
+> * WASL is an advisory directory; it does not access court databases or replace licensed attorneys.
 > * Any message soliciting funds to private bank accounts outside official SADAD is fraudulent; report it via **Kollona Amn**.`;
 
     return {
@@ -520,7 +520,7 @@ A unified national authentication framework governed by SDAIA, providing secure 
 
   // 4. UNKNOWN / GENERAL QUERY - Fallback with honest transparency
   const fallbackText = ar
-    ? `أهلاً بك في مُيسّر. 
+    ? `أهلاً بك في وصل. 
 فهمت استفسارك حول: «${userQuery}».
 
 لم يتم رصد هذا الموضوع بدقة في قاعدة الخدمات الحكومية الموثقة حاليًا في هذه الجلسة المحلية. 
@@ -529,7 +529,7 @@ A unified national authentication framework governed by SDAIA, providing secure 
 1. إذا كان استفسارك يتعلق بمعاملة حكومية عامة، يمكنك البحث المباشر في **المنصة الوطنية الموحدة (GOV.SA)**.
 2. إذا كان يتعلق بتأسيس أعمال، فإن **المركز السعودي للأعمال (business.sa)** يوفر الدليل الشامل لكافة القطاعات.
 3. يمكنك توضيح سؤالك أكثر بتحديد القطاع (مرور، تجارة، أحوال، صحة، عدل، تعليم) لأرشدك للجهة المعتمدة فورًا.`
-    : `Welcome to MYSER.
+    : `Welcome to WASL.
 Regarding your inquiry: "${userQuery}".
 
 This specific topic is not currently indexed in the verified local knowledge directory of this session.

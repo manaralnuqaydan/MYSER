@@ -349,8 +349,8 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "verified",
     note: {
-      ar: "MYSER دليل استرشادي؛ لا يحل محل الاتصال الفوري بالطوارئ (911 / 993 / 199033) عند وقوع الحادث.",
-      en: "MYSER is an advisory directory; always call emergency lines (911 / 993 / 199033) immediately at accident scenes."
+      ar: "وصل دليل استرشادي؛ لا يحل محل الاتصال الفوري بالطوارئ (911 / 993 / 199033) عند وقوع الحادث.",
+      en: "WASL is an advisory directory; always call emergency lines (911 / 993 / 199033) immediately at accident scenes."
     },
     requiredAuthorities: [
       { ar: "شركة نجم لخدمات التأمين", en: "Najm Insurance Services" },
@@ -972,8 +972,8 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "verified",
     note: {
-      ar: "لا تدخل بيانات صحية سرية أو أعراضًا طارئة داخل MYSER؛ الحالات الطارئة تطلب الاتصال المباشر بالرقم 997 أو 937.",
-      en: "Do not enter medical data into MYSER; for emergency situations, call 997 (Ambulance) or 937 (Health Help Center) directly."
+      ar: "لا تدخل بيانات صحية سرية أو أعراضًا طارئة داخل وصل؛ الحالات الطارئة تطلب الاتصال المباشر بالرقم 997 أو 937.",
+      en: "Do not enter medical data into WASL; for emergency situations, call 997 (Ambulance) or 937 (Health Help Center) directly."
     },
     requiredAuthorities: [
       { ar: "وزارة الصحة (تطبيق ومنصة صحتي)", en: "Ministry of Health (Sehhaty Platform)" },
@@ -1055,8 +1055,8 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "destination-limited",
     note: {
-      ar: "محتوى MYSER في القطاع العدلي إرشادي وتوجيهي للمنصة الرسمية ولا يُعد استشارة قانونية مهنية.",
-      en: "MYSER's justice directory content is orientational and does not constitute formal legal counsel."
+      ar: "محتوى وصل في القطاع العدلي إرشادي وتوجيهي للمنصة الرسمية ولا يُعد استشارة قانونية مهنية.",
+      en: "WASL's justice directory content is orientational and does not constitute formal legal counsel."
     },
     requiredAuthorities: [
       { ar: "وزارة العدل (المحاكم العامة والتجارية والعمالية)", en: "Ministry of Justice (General, Commercial, and Labor Courts)" },
@@ -1137,8 +1137,8 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "verified",
     note: {
-      ar: "MYSER يشرح الإجراء العام؛ لا يطلع على أي قضية ولا يطلب أرقام هويات أو صكوك ولا يقدم رأياً قانونياً فاصلاً.",
-      en: "MYSER explains general procedure only; it cannot access cases, never requests IDs, and does not provide legal opinions."
+      ar: "وصل يشرح الإجراء العام؛ لا يطلع على أي قضية ولا يطلب أرقام هويات أو صكوك ولا يقدم رأياً قانونياً فاصلاً.",
+      en: "WASL explains general procedure only; it cannot access cases, never requests IDs, and does not provide legal opinions."
     },
     requiredAuthorities: [
       { ar: "وزارة العدل (محاكم التنفيذ والمحاكم العامة)", en: "Ministry of Justice (Enforcement & General Courts)" },
