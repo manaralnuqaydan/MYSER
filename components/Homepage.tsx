@@ -1394,6 +1394,10 @@ const localLogos: Record<string, string> = {
   "business.absher.sa": "platforms/absher.png",
   "www.iam.gov.sa": "nafath-logo.png",
   "splonline.com.sa": "platforms/spl.png",
+  "business.sa": "platforms/sbc.png",
+  "zatca.gov.sa": "platforms/zatca.png",
+  "qiwa.sa": "platforms/qiwa.png",
+  "www.qiwa.sa": "platforms/qiwa.png",
 };
 
 // Short platform names shown when no logo image is available
