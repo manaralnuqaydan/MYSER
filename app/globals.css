@@ -4555,3 +4555,6 @@ html[dir="ltr"] .nav .active:after {
 .step-icon.step-call svg {
   filter: none;
 }
+/* Service list: one-line benefit, then the platform */
+.service-results small.service-benefit { display: block; color: var(--ink); opacity: 0.8; font-size: 12.5px; line-height: 1.7; }
+.service-results small.service-platform { display: block; margin-top: 2px; color: #8a8f83; font-size: 11px; }
