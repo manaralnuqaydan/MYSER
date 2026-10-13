@@ -104,9 +104,6 @@ const stepIcons = [
   ShieldCheck,
 ];
 const amounts = [200, 150, 500];
-const platformLogos: Record<string, string> = {
-  "أبشر": "platforms/absher.png",
-};
 
 export default function Homepage() {
   const [lang, setLang] = useState<Lang>("ar");
@@ -1104,7 +1101,6 @@ export default function Homepage() {
                     {(() => {
                       const entry = curatedServices.find((item) => item.id === service);
                       const detailed = detailedServices.find((item) => item.id === service);
-                      const logo = platformLogos[entry?.platform.ar ?? ""];
                       if (!entry) return <p>{ar ? "تعذر العثور على الخدمة." : "Service not found."}</p>;
                       return (
                         <>
@@ -1114,11 +1110,6 @@ export default function Homepage() {
                                 ? (ar ? `مصدر رسمي مراجع · ${entry.verifiedAt}` : `Official source reviewed · ${entry.verifiedAt}`)
                                 : (ar ? "المصدر مراجع؛ الوجهة تحتاج تحققًا مباشرًا" : "Source reviewed; destination needs direct verification")}
                             </span>
-                            {logo ? (
-                              <img className="service-platform-logo" src={logo} alt={entry.platform[lang]} />
-                            ) : (
-                              <span className="service-platform-badge">{entry.platform[lang]}</span>
-                            )}
                           </div>
 
                           <p className="service-lead-summary">{entry.summary[lang]}</p>
