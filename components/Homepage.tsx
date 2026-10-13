@@ -1019,6 +1019,10 @@ export default function Homepage() {
               {modal === "services" &&
                 (!service ? (
                   <>
+                    {directorySectors[sector ?? -1]?.id === "business" ? (
+                      <BusinessRoute lang={lang} />
+                    ) : (
+                      <>
                     <div className="service-search">
                       <Search size={18} />
                       <input
@@ -1028,9 +1032,6 @@ export default function Homepage() {
                         onChange={(e) => setQuery(e.target.value)}
                       />
                     </div>
-                    {directorySectors[sector ?? -1]?.id === "business" && (
-                      <BusinessRoute lang={lang} />
-                    )}
                     <div className="service-results">
                       {curatedServices
                         .filter((entry) => sector === null || directorySectors[sector]?.id === entry.sectorId)
@@ -1072,6 +1073,8 @@ export default function Homepage() {
                         </div>
                       )}
                     </div>
+                      </>
+                    )}
                   </>
                 ) : request ? (
                   <div className="request-success">
