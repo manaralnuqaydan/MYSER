@@ -1020,7 +1020,16 @@ export default function Homepage() {
                 (!service ? (
                   <>
                     {directorySectors[sector ?? -1]?.id === "business" ? (
-                      <BusinessRoute lang={lang} />
+                      <BusinessRoute
+                        lang={lang}
+                        onConcierge={() =>
+                          setToast(
+                            ar
+                              ? "خدمة المعقّب ستتوفر قريبًا · هذا عرض تجريبي"
+                              : "The facilitator service is coming soon · This is a demo"
+                          )
+                        }
+                      />
                     ) : (
                       <>
                     <div className="service-search">
@@ -1482,7 +1491,7 @@ function businessSteps(kind: RouteKind, form: RouteForm): RouteStep[] {
   return steps;
 }
 
-function BusinessRoute({ lang }: { lang: Lang }) {
+function BusinessRoute({ lang, onConcierge }: { lang: Lang; onConcierge: () => void }) {
   const ar = lang === "ar";
   const [kind, setKind] = useState<RouteKind>("online");
   const [form, setForm] = useState<RouteForm>("sole");
@@ -1538,6 +1547,22 @@ function BusinessRoute({ lang }: { lang: Lang }) {
         ))}
       </ol>
       <small>{ar ? "خطوات استرشادية؛ تأكد من المتطلبات في المنصة الرسمية قبل التقديم." : "A guide only; confirm requirements on the official platform before applying."}</small>
+      <div className="route-concierge">
+        <span className="route-concierge-icon" aria-hidden="true">
+          <Headset size={22} strokeWidth={1.8} />
+        </span>
+        <div className="route-concierge-text">
+          <strong>{ar ? "معقّب لمرحلة تجارتك" : "A facilitator for every stage of your business"}</strong>
+          <p>
+            {ar
+              ? "مختص يرافقك في جميع مراحل منشأتك، من التأسيس والتراخيص إلى متابعة الإجراءات مع الجهات حتى اكتمالها."
+              : "A specialist who supports you through every stage of your business, from formation and licensing to following up with authorities until each step is complete."}
+          </p>
+        </div>
+        <button type="button" onClick={onConcierge}>
+          {ar ? "اطلب معقّبًا" : "Request a facilitator"}
+        </button>
+      </div>
     </section>
   );
 }
