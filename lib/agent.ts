@@ -206,14 +206,14 @@ export function generateLocalAgentResponse(
         ? "4. **الشهادات الصحية للعاملين:** استخراج الشهادات الصحية لكافة المشتغلين في إعداد وتقديم المأكولات والمشروبات عبر فحص طبي معتمد من منصة بلدي."
         : "4. **Worker Health Certificates:** Issue health cards for food and beverage handling personnel via certified medical screenings on Balady.",
       ar
-        ? "5. **الالتزامات الضريبية والعمالية:** تسجيل المنشأة لدى هيئة الزكاة والضريبة والجمارك (زاتكا) لإصدار الشهادة الضريبية وتركيب الفوترة الإلكترونية، وتوثيق عقود العمل عبر منصة «قوى» عند استقطاب عمالة."
+        ? "5. **الالتزامات الضريبية والعمالية:** تسجيل المنشأة لدى هيئة الزكاة والضريبة والجمارك لإصدار الشهادة الضريبية وتركيب الفوترة الإلكترونية، وتوثيق عقود العمل عبر منصة «قوى» عند استقطاب عمالة."
         : "5. **Tax & Labor Compliance:** Register with ZATCA for tax certification and E-Invoicing, and authenticate labor contracts via 'Qiwa' upon hiring."
     ];
 
     const sources = [
       { title: ar ? "المركز السعودي للأعمال (تأسيس وسجل تجاري)" : "Saudi Business Center (CR)", url: "https://mc.gov.sa/ar/eservices/pages/ServiceDetails.aspx?sID=38" },
       { title: ar ? "منصة بلدي (الرخصة التجارية البلدية)" : "Balady (Municipal License)", url: "https://balady.gov.sa/" },
-      { title: ar ? "هيئة الزكاة والضريبة والجمارك (زاتكا)" : "ZATCA (Tax & Invoicing)", url: "https://zatca.gov.sa/" }
+      { title: ar ? "هيئة الزكاة والضريبة والجمارك" : "ZATCA (Tax & Invoicing)", url: "https://zatca.gov.sa/" }
     ];
 
     const text = ar

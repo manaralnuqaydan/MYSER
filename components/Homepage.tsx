@@ -1400,7 +1400,7 @@ const localLogos: Record<string, string> = {
 const platformShortNames: Record<string, Localized> = {
   "business.sa": { ar: "الأعمال", en: "SBC" },
   "mc.gov.sa": { ar: "التجارة", en: "MC" },
-  "zatca.gov.sa": { ar: "زاتكا", en: "ZATCA" },
+  "zatca.gov.sa": { ar: "هيئة الزكاة", en: "ZATCA" },
   "qiwa.sa": { ar: "قوى", en: "Qiwa" },
   "www.qiwa.sa": { ar: "قوى", en: "Qiwa" },
   "balady.gov.sa": { ar: "بلدي", en: "Balady" },
@@ -1469,7 +1469,7 @@ function businessSteps(kind: RouteKind, form: RouteForm): RouteStep[] {
     steps.push({ name: { ar: "تحقق من ترخيص خدمتك", en: "Check whether your service needs a license" }, detail: { ar: "بعض الخدمات المهنية تحتاج ترخيصًا من جهة مختصة قبل البدء.", en: "Some professional services need a license from a specific authority first." }, url: "https://business.sa", platform: "مركز الأعمال" });
   }
   steps.push(
-    { name: { ar: "سجّل في الضريبة إذا انطبقت عليك", en: "Register for tax if it applies" }, detail: { ar: "تحقق من حد التسجيل في ضريبة القيمة المضافة لدى الهيئة.", en: "Check the VAT registration threshold with ZATCA." }, url: "https://zatca.gov.sa", platform: "زاتكا" },
+    { name: { ar: "سجّل في الضريبة إذا انطبقت عليك", en: "Register for tax if it applies" }, detail: { ar: "تحقق من حد التسجيل في ضريبة القيمة المضافة لدى هيئة الزكاة والضريبة والجمارك.", en: "Check the VAT registration threshold with ZATCA." }, url: "https://zatca.gov.sa", platform: "زاتكا" },
     { name: { ar: "إذا بتوظف: سجّل في قوى", en: "If you hire: register in Qiwa" }, detail: { ar: "هذي الخطوة عند التوظيف فقط.", en: "Only needed when you hire employees." }, url: "https://qiwa.sa", platform: "قوى" }
   );
   return steps;
