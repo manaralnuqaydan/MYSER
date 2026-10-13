@@ -4248,7 +4248,7 @@ html[dir="ltr"] .nav .active:after {
 .business-route ol.service-steps li { padding-inline-start: 0; color: inherit; }
 .business-route ol.service-steps li strong { display: block; }
 .business-route ol.service-steps li span.service-step-num { display: grid; margin: 0; color: #fff; font-size: 12px; }
-.business-route ol.service-steps li span.platform-logo { display: grid; margin: 0; font-size: 16px; color: var(--green-strong); }
+.business-route ol.service-steps li span.platform-logo { display: grid; margin: 0; font-size: 11.5px; color: var(--green-strong); }
 .business-route ol.service-steps .service-step-text p { margin: 2px 0 0; display: block; overflow: visible; }
 .official-source-note { margin: 14px 0; padding: 14px; border-inline-start: 3px solid var(--gold); border-radius: 8px; background: #f6f4eb; }
 .official-source-note > strong { font-size: 13px; }
@@ -4454,7 +4454,7 @@ html[dir="ltr"] .nav .active:after {
 }
 .service-steps li {
   display: grid;
-  grid-template-columns: 24px 40px minmax(0, 1fr) 34px;
+  grid-template-columns: 24px 56px minmax(0, 1fr) 34px;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
@@ -4474,8 +4474,8 @@ html[dir="ltr"] .nav .active:after {
   background: var(--green-strong);
 }
 .platform-logo {
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 44px;
   border-radius: 10px;
   background: #fff;
   border: 1px solid var(--line);
@@ -4484,12 +4484,15 @@ html[dir="ltr"] .nav .active:after {
   overflow: hidden;
 }
 .platform-logo img {
-  max-width: 30px;
-  max-height: 30px;
+  max-width: 46px;
+  max-height: 34px;
   object-fit: contain;
 }
 .platform-logo-fallback {
-  font-size: 16px;
+  padding: 0 4px;
+  font-size: 11.5px;
+  line-height: 1.2;
+  text-align: center;
   font-weight: 800;
   color: var(--green-strong);
   background: #ecefe1;

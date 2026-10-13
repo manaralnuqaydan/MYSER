@@ -1396,6 +1396,32 @@ const localLogos: Record<string, string> = {
   "splonline.com.sa": "platforms/spl.png",
 };
 
+// Short platform names shown when no logo image is available
+const platformShortNames: Record<string, Localized> = {
+  "business.sa": { ar: "الأعمال", en: "SBC" },
+  "mc.gov.sa": { ar: "التجارة", en: "MC" },
+  "zatca.gov.sa": { ar: "زاتكا", en: "ZATCA" },
+  "qiwa.sa": { ar: "قوى", en: "Qiwa" },
+  "www.qiwa.sa": { ar: "قوى", en: "Qiwa" },
+  "balady.gov.sa": { ar: "بلدي", en: "Balady" },
+  "www.ejar.sa": { ar: "إيجار", en: "Ejar" },
+  "new.najiz.sa": { ar: "ناجز", en: "Najiz" },
+  "www.sadad.com": { ar: "سداد", en: "SADAD" },
+  "www.sehhaty.sa": { ar: "صحتي", en: "Sehhaty" },
+  "www.najm.sa": { ar: "نجم", en: "Najm" },
+  "www.moh.gov.sa": { ar: "الصحة", en: "MOH" },
+  "tawakkalna.sdaia.gov.sa": { ar: "توكلنا", en: "Tawakkalna" },
+  "noor.moe.gov.sa": { ar: "نور", en: "Noor" },
+  "efaa.sa": { ar: "إيفاء", en: "Efaa" },
+  "www.moi.gov.sa": { ar: "الداخلية", en: "MOI" },
+  "www.gosi.gov.sa": { ar: "التأمينات", en: "GOSI" },
+  "wasfaty.sa": { ar: "وصفتي", en: "Wasfaty" },
+  "taqdeer.sa": { ar: "تقدير", en: "Taqdeer" },
+  "srem.moj.gov.sa": { ar: "العقار", en: "SREM" },
+  "salamah.998.gov.sa": { ar: "سلامة", en: "Salamah" },
+  "mudad.com.sa": { ar: "مدد", en: "Mudad" },
+};
+
 function PlatformLogo({ url, name }: { url: string; name: string }) {
   const host = (() => {
     try {
@@ -1407,7 +1433,13 @@ function PlatformLogo({ url, name }: { url: string; name: string }) {
   const sources = [localLogos[host], host && `https://${host}/favicon.ico`].filter(Boolean) as string[];
   const [index, setIndex] = useState(0);
   if (index >= sources.length) {
-    return <span className="platform-logo platform-logo-fallback" aria-hidden="true">{name.replace(/^(منصة|نظام|منظومة|بوابة)\s+/, "").charAt(0)}</span>;
+    const short = platformShortNames[host];
+    const ar = /[\u0600-\u06FF]/.test(name);
+    return (
+      <span className="platform-logo platform-logo-fallback" aria-hidden="true">
+        {short ? short[ar ? "ar" : "en"] : name.replace(/^(منصة|نظام|منظومة|بوابة)\s+/, "").split(/\s+/)[0]}
+      </span>
+    );
   }
   return (
     <span className="platform-logo">
