@@ -4517,3 +4517,26 @@ html[dir="ltr"] .nav .active:after {
   line-height: 1.32;
   color: #111111;
 }
+/* Call-an-advisor button on the advisor step */
+.step-icon.step-call {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--green);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 8px 20px #0b423733;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.step-icon.step-call:hover {
+  background: var(--green-strong);
+  transform: scale(1.06);
+}
+.step-icon.step-call:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+.step-icon.step-call svg {
+  filter: none;
+}

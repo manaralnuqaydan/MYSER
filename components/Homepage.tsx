@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
+  Phone,
   Headset,
   Info,
   LogIn,
@@ -643,9 +644,26 @@ export default function Homepage() {
                   }}
                 >
                   <span className="step-number">0{i + 1}</span>
-                  <div className="step-icon">
-                    <Icon size={27} strokeWidth={1.45} />
-                  </div>
+                  {i === 1 ? (
+                    <button
+                      type="button"
+                      className="step-icon step-call"
+                      aria-label={ar ? "اتصل بمستشار" : "Call an advisor"}
+                      onClick={() =>
+                        setToast(
+                          ar
+                            ? "الاتصال بمستشار سيتوفر قريبًا · هذا عرض تجريبي"
+                            : "Calling an advisor is coming soon · This is a demo"
+                        )
+                      }
+                    >
+                      <Phone size={22} strokeWidth={1.8} />
+                    </button>
+                  ) : (
+                    <div className="step-icon">
+                      <Icon size={27} strokeWidth={1.45} />
+                    </div>
+                  )}
                   <h3>{title}</h3>
                   <p>{t.stepDescriptions[i]}</p>
                   {i < 5 && <ChevronLeft className="step-arrow" size={16} />}
