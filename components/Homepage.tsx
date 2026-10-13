@@ -1041,7 +1041,7 @@ export default function Homepage() {
                           return (
                             <button key={entry.id} onClick={() => { setService(entry.id); setRequest(false); }}>
                               <span><Icon size={19} /></span>
-                              <div><strong>{entry.name[lang]}</strong><small className="service-benefit">{entry.benefit[lang]}</small><small className="service-platform">{ar ? `عبر ${entry.platform.ar}` : `Via ${entry.platform.en}`}</small></div>
+                              <div><strong>{entry.name[lang]}</strong><small>{directorySectors[sectorIndex]?.name[lang]} · {entry.platform[lang]}</small></div>
                               {direction}
                             </button>
                           );
