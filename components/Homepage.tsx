@@ -43,7 +43,7 @@ import {
   X,
 } from "lucide-react";
 
-import { assistantFallback, assistantScenarios, copy, curatedServices, directorySectors, type Lang } from "@/lib/content";
+import { assistantFallback, assistantScenarios, copy, curatedServices, directorySectors, type Lang, type Localized } from "@/lib/content";
 import { detailedServices } from "@/lib/servicesDetailed";
 import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
 import { runJourney } from "@/lib/journeys";
@@ -1416,36 +1416,89 @@ function PlatformLogo({ url, name }: { url: string; name: string }) {
   );
 }
 
+type RouteKind = "online" | "physical" | "services";
+type RouteForm = "sole" | "company";
+type RouteStep = { name: Localized; detail: Localized; url: string; platform: string };
+
+function businessSteps(kind: RouteKind, form: RouteForm): RouteStep[] {
+  const steps: RouteStep[] = [
+    form === "sole"
+      ? { name: { ar: "أصدر السجل التجاري", en: "Issue your Commercial Registration" }, detail: { ar: "سجل مؤسسة فردية من المركز السعودي للأعمال بعد الدخول بنفاذ.", en: "Register a sole proprietorship at the Saudi Business Center after signing in with Nafath." }, url: "https://business.sa", platform: "مركز الأعمال" }
+      : { name: { ar: "أسس الشركة وأصدر السجل", en: "Form the company and issue its CR" }, detail: { ar: "اتفقوا على عقد التأسيس وأصدروا سجل الشركة من المركز السعودي للأعمال.", en: "Agree on the articles of association and issue the company CR at the Saudi Business Center." }, url: "https://business.sa", platform: "مركز الأعمال" },
+  ];
+  if (kind === "physical") {
+    steps.push(
+      { name: { ar: "وثّق عقد إيجار المحل", en: "Register the shop lease" }, detail: { ar: "وثّق العقد التجاري لمقرك في إيجار.", en: "Register the commercial lease for your premises in Ejar." }, url: "https://www.ejar.sa", platform: "إيجار" },
+      { name: { ar: "استخرج الرخصة البلدية", en: "Get the municipal license" }, detail: { ar: "قدّم على رخصة النشاط من بلدي، وتحقق هناك من أي اشتراطات إضافية.", en: "Apply for the activity license in Balady and check any extra conditions there." }, url: "https://balady.gov.sa", platform: "بلدي" }
+    );
+  } else if (kind === "online") {
+    steps.push({ name: { ar: "وثّق متجرك الإلكتروني", en: "Register your online store" }, detail: { ar: "احصل على شهادة توثيق المتجر من المركز السعودي للأعمال.", en: "Get the online store certificate from the Saudi Business Center." }, url: "https://business.sa", platform: "مركز الأعمال" });
+  } else {
+    steps.push({ name: { ar: "تحقق من ترخيص خدمتك", en: "Check whether your service needs a license" }, detail: { ar: "بعض الخدمات المهنية تحتاج ترخيصًا من جهة مختصة قبل البدء.", en: "Some professional services need a license from a specific authority first." }, url: "https://business.sa", platform: "مركز الأعمال" });
+  }
+  steps.push(
+    { name: { ar: "سجّل في الضريبة إذا انطبقت عليك", en: "Register for tax if it applies" }, detail: { ar: "تحقق من حد التسجيل في ضريبة القيمة المضافة لدى الهيئة.", en: "Check the VAT registration threshold with ZATCA." }, url: "https://zatca.gov.sa", platform: "زاتكا" },
+    { name: { ar: "إذا بتوظف: سجّل في قوى", en: "If you hire: register in Qiwa" }, detail: { ar: "هذي الخطوة عند التوظيف فقط.", en: "Only needed when you hire employees." }, url: "https://qiwa.sa", platform: "قوى" }
+  );
+  return steps;
+}
+
 function BusinessRoute({ lang }: { lang: Lang }) {
   const ar = lang === "ar";
-  const [entity, setEntity] = useState("unknown");
-  const [activity, setActivity] = useState("");
+  const [kind, setKind] = useState<RouteKind>("online");
+  const [form, setForm] = useState<RouteForm>("sole");
+  const kinds: { id: RouteKind; label: Localized }[] = [
+    { id: "online", label: { ar: "متجر إلكتروني", en: "Online store" } },
+    { id: "physical", label: { ar: "محل بمقر", en: "Physical shop" } },
+    { id: "services", label: { ar: "خدمات", en: "Services" } },
+  ];
+  const forms: { id: RouteForm; label: Localized }[] = [
+    { id: "sole", label: { ar: "لوحدي", en: "On my own" } },
+    { id: "company", label: { ar: "مع شركاء", en: "With partners" } },
+  ];
+  const steps = businessSteps(kind, form);
   return (
     <section className="business-route" aria-labelledby="business-route-title">
       <div className="business-route-heading">
-        <span className="eyebrow">{ar ? "مسار استكشافي مشروط" : "CONDITIONAL STARTER ROUTE"}</span>
-        <h3 id="business-route-title">{ar ? "تبدأ بفهم النشاط والشكل النظامي" : "Start by clarifying activity and legal form"}</h3>
-        <p>{ar ? "هذا المسار لا يحدد أهلية منشأتك ولا يحسم المتطلبات. راجع الروابط الرسمية وتأكد من انطباق كل خطوة على حالتك." : "This route does not determine your eligibility or final requirements. Check official sources and confirm each step applies to you."}</p>
+        <span className="eyebrow">{ar ? "ابدأ مشروعك" : "START YOUR PROJECT"}</span>
+        <h3 id="business-route-title">{ar ? "اختر مشروعك، ونرتب لك الخطوات" : "Pick your project and we'll order the steps"}</h3>
       </div>
-      <label>
-        <span>{ar ? "الشكل النظامي الذي تستكشفه" : "Legal form you are exploring"}</span>
-        <select value={entity} onChange={(event) => setEntity(event.target.value)}>
-          <option value="unknown">{ar ? "لم أحدد بعد" : "Not decided"}</option>
-          <option value="sole">{ar ? "مؤسسة فردية" : "Sole proprietorship"}</option>
-          <option value="company">{ar ? "شركة" : "Company"}</option>
-        </select>
-      </label>
-      <label>
-        <span>{ar ? "النشاط (اختياري، يبقى في هذه الجلسة)" : "Activity (optional, stays in this session)"}</span>
-        <input value={activity} onChange={(event) => setActivity(event.target.value)} maxLength={100} placeholder={ar ? "مثال: تجارة إلكترونية" : "e.g. online retail"} />
-      </label>
-      <ol>
-        <li><strong>{ar ? "تحقق من النشاط" : "Check the activity"}</strong><span>{activity ? (ar ? `تحقق من تصنيف «${activity}» لدى الجهة المختصة، فقد تتطلب بعض الأنشطة موافقة مسبقة.` : `Check how “${activity}” is classified; some activities may need prior approval.`) : (ar ? "حدّد النشاط أولًا؛ بعض الأنشطة قد تتطلب موافقة مسبقة من جهة مختصة." : "Identify the activity first; some activities may require prior approval.")}</span></li>
-        {entity === "unknown" ? <li><strong>{ar ? "اختر المسار النظامي" : "Choose a legal route"}</strong><span>{ar ? "تختلف خدمة المؤسسة الفردية عن تأسيس الشركة. لا تبدأ بطلب قبل تحديد النوع ومراجعة مصدره الرسمي." : "Sole-proprietor registration differs from company formation. Review the relevant official source before applying."}</span></li> : entity === "sole" ? <li><strong>{ar ? "راجع قيد المؤسسة الفردية" : "Review sole-proprietor registration"}</strong><span>{ar ? "تصف وزارة التجارة خدمة قيد سجل تجاري لمؤسسة فردية؛ راجع شروطها الحالية ومدى انطباقها." : "The Ministry of Commerce describes a sole-proprietorship CR service; check current terms and applicability."}</span></li> : <li><strong>{ar ? "راجع تأسيس الشركة" : "Review company formation"}</strong><span>{ar ? "توضح وزارة التجارة مسار تأسيس شركة، مع اختلاف الإجراءات حسب النوع النظامي." : "The Ministry of Commerce outlines company formation; the procedure varies by legal type."}</span></li>}
-        <li><strong>{ar ? "افحص الرخص والالتزامات عند انطباقها" : "Check applicable licenses and obligations"}</strong><span>{ar ? "تحقق من متطلبات بلدي بحسب النشاط والموقع، ومن معايير زاتكا الضريبية للمنشأة." : "Check Balady requirements for the activity and location, and ZATCA criteria for the business."}</span></li>
-        <li><strong>{ar ? "انتقل لخدمات العمل عند الحاجة" : "Use work services when relevant"}</strong><span>{ar ? "قوى مرتبطة بخدمات قطاع العمل؛ ليست خطوة لازمة لكل منشأة عند التأسيس." : "Qiwa covers work-sector services; it is not a mandatory formation step for every business."}</span></li>
+      <div className="route-question">
+        <span>{ar ? "وش نوع مشروعك؟" : "What kind of project?"}</span>
+        <div className="route-choices" role="group">
+          {kinds.map((item) => (
+            <button key={item.id} type="button" className={kind === item.id ? "selected" : ""} aria-pressed={kind === item.id} onClick={() => setKind(item.id)}>
+              {item.label[lang]}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="route-question">
+        <span>{ar ? "بتبدأ لوحدك أو مع شركاء؟" : "Alone or with partners?"}</span>
+        <div className="route-choices" role="group">
+          {forms.map((item) => (
+            <button key={item.id} type="button" className={form === item.id ? "selected" : ""} aria-pressed={form === item.id} onClick={() => setForm(item.id)}>
+              {item.label[lang]}
+            </button>
+          ))}
+        </div>
+      </div>
+      <ol className="service-steps">
+        {steps.map((step, i) => (
+          <li key={step.name.en}>
+            <span className="service-step-num">{i + 1}</span>
+            <PlatformLogo url={step.url} name={step.platform} />
+            <div className="service-step-text">
+              <strong>{step.name[lang]}</strong>
+              <p>{step.detail[lang]}</p>
+            </div>
+            <a href={step.url} target="_blank" rel="noopener noreferrer" aria-label={ar ? `فتح ${step.name.ar}` : `Open ${step.name.en}`}>
+              <ArrowUpRight size={16} />
+            </a>
+          </li>
+        ))}
       </ol>
-      <small>{ar ? "لا تُدخل رقم هوية أو بيانات دخول أو معلومات مالية. لا تُحفظ المدخلات بعد إغلاق الصفحة أو تحديثها." : "Do not enter identity, login, or financial details. Inputs are not retained after closing or refreshing the page."}</small>
+      <small>{ar ? "خطوات استرشادية؛ تأكد من المتطلبات في المنصة الرسمية قبل التقديم." : "A guide only; confirm requirements on the official platform before applying."}</small>
     </section>
   );
 }

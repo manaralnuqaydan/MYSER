@@ -4238,6 +4238,18 @@ html[dir="ltr"] .nav .active:after {
 .business-route li strong { font-size: 13px; }
 .business-route li span { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.75; }
 .business-route > small { display: block; color: #6c756a; font-size: 11px; line-height: 1.7; }
+.route-question { margin: 14px 0 0; }
+.route-question > span { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.route-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.route-choices button { min-height: 40px; padding: 8px 16px; border: 1px solid #cbd4c5; border-radius: 999px; background: #fff; color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+.route-choices button.selected { background: var(--green); border-color: var(--green); color: #fff; }
+.route-choices button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.business-route ol.service-steps { margin: 18px 0 12px; padding-inline-start: 0; }
+.business-route ol.service-steps li { padding-inline-start: 0; color: inherit; }
+.business-route ol.service-steps li strong { display: block; }
+.business-route ol.service-steps li span.service-step-num { display: grid; margin: 0; color: #fff; font-size: 12px; }
+.business-route ol.service-steps li span.platform-logo { display: grid; margin: 0; font-size: 16px; color: var(--green-strong); }
+.business-route ol.service-steps .service-step-text p { margin: 2px 0 0; display: block; overflow: visible; }
 .official-source-note { margin: 14px 0; padding: 14px; border-inline-start: 3px solid var(--gold); border-radius: 8px; background: #f6f4eb; }
 .official-source-note > strong { font-size: 13px; }
 .official-source-note p { margin: 5px 0 8px; font-size: 13px; line-height: 1.8; }
