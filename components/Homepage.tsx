@@ -109,6 +109,8 @@ export default function Homepage() {
   const [lang, setLang] = useState<Lang>("ar");
   const t = copy[lang];
   const ar = lang === "ar";
+  const conciergeSoon = () =>
+    setToast(ar ? "خدمة المعقّب ستتوفر قريبًا · هذا عرض تجريبي" : "The facilitator service is coming soon · This is a demo");
   const reduce = useReducedMotion();
   const [menu, setMenu] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -1022,13 +1024,7 @@ export default function Homepage() {
                     {directorySectors[sector ?? -1]?.id === "business" ? (
                       <BusinessRoute
                         lang={lang}
-                        onConcierge={() =>
-                          setToast(
-                            ar
-                              ? "خدمة المعقّب ستتوفر قريبًا · هذا عرض تجريبي"
-                              : "The facilitator service is coming soon · This is a demo"
-                          )
-                        }
+                        onConcierge={conciergeSoon}
                       />
                     ) : (
                       <>
@@ -1082,6 +1078,9 @@ export default function Homepage() {
                         </div>
                       )}
                     </div>
+                    {directorySectors[sector ?? -1]?.id === "work" && (
+                      <ConciergeCard lang={lang} onRequest={conciergeSoon} />
+                    )}
                       </>
                     )}
                   </>
@@ -1491,6 +1490,28 @@ function businessSteps(kind: RouteKind, form: RouteForm): RouteStep[] {
   return steps;
 }
 
+function ConciergeCard({ lang, onRequest }: { lang: Lang; onRequest: () => void }) {
+  const ar = lang === "ar";
+  return (
+    <div className="route-concierge">
+      <span className="route-concierge-icon" aria-hidden="true">
+        <Headset size={22} strokeWidth={1.8} />
+      </span>
+      <div className="route-concierge-text">
+        <strong>{ar ? "معقّب لمرحلة تجارتك" : "A facilitator for every stage of your business"}</strong>
+        <p>
+          {ar
+            ? "مختص يرافقك في جميع مراحل منشأتك، من التأسيس والتراخيص إلى متابعة الإجراءات مع الجهات حتى اكتمالها."
+            : "A specialist who supports you through every stage of your business, from formation and licensing to following up with authorities until each step is complete."}
+        </p>
+      </div>
+      <button type="button" onClick={onRequest}>
+        {ar ? "اطلب معقّبًا" : "Request a facilitator"}
+      </button>
+    </div>
+  );
+}
+
 function BusinessRoute({ lang, onConcierge }: { lang: Lang; onConcierge: () => void }) {
   const ar = lang === "ar";
   const [kind, setKind] = useState<RouteKind>("online");
@@ -1547,22 +1568,7 @@ function BusinessRoute({ lang, onConcierge }: { lang: Lang; onConcierge: () => v
         ))}
       </ol>
       <small>{ar ? "خطوات استرشادية؛ تأكد من المتطلبات في المنصة الرسمية قبل التقديم." : "A guide only; confirm requirements on the official platform before applying."}</small>
-      <div className="route-concierge">
-        <span className="route-concierge-icon" aria-hidden="true">
-          <Headset size={22} strokeWidth={1.8} />
-        </span>
-        <div className="route-concierge-text">
-          <strong>{ar ? "معقّب لمرحلة تجارتك" : "A facilitator for every stage of your business"}</strong>
-          <p>
-            {ar
-              ? "مختص يرافقك في جميع مراحل منشأتك، من التأسيس والتراخيص إلى متابعة الإجراءات مع الجهات حتى اكتمالها."
-              : "A specialist who supports you through every stage of your business, from formation and licensing to following up with authorities until each step is complete."}
-          </p>
-        </div>
-        <button type="button" onClick={onConcierge}>
-          {ar ? "اطلب معقّبًا" : "Request a facilitator"}
-        </button>
-      </div>
+      <ConciergeCard lang={lang} onRequest={onConcierge} />
     </section>
   );
 }
