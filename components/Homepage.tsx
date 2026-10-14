@@ -51,6 +51,7 @@ import { contentLang, isNative, langDir, languages, uiCopy, type UiCopy, type Ui
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
 import PhoneMockups from "./PhoneMockups";
+import ConciergeDesk from "./ConciergeDesk";
 // Renders **bold** segments inside assistant text as <strong>, so raw asterisks never show in the chat.
 function renderInline(text: string): ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
@@ -115,6 +116,12 @@ export default function Homepage() {
     item ? t.sectors[item.id] ?? item.name[lang] : undefined;
   const [langMenu, setLangMenu] = useState(false);
   const conciergeSoon = () => setToast(t.conciergeSoon);
+  function openDesk() {
+    setModal("desk");
+    setAccountMenu(false);
+    setMenu(false);
+    setChatOpen(false);
+  }
   const reduce = useReducedMotion();
   const [menu, setMenu] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -122,7 +129,7 @@ export default function Homepage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [typing, setTyping] = useState(false);
   const [modal, setModal] = useState<
-    "services" | "meeting" | "privacy" | "terms" | "login" | "support" | null
+    "services" | "meeting" | "privacy" | "terms" | "login" | "support" | "desk" | null
   >(null);
   const [authView, setAuthView] = useState<"signin" | "signup">("signin");
   const [accountMenu, setAccountMenu] = useState(false);
@@ -371,6 +378,15 @@ export default function Homepage() {
             </a>
             <a href="#services" onClick={() => setMenu(false)}>
               {t.services}
+            </a>
+            <a
+              href="#desk"
+              onClick={(e) => {
+                e.preventDefault();
+                openDesk();
+              }}
+            >
+              {t.desk}
             </a>
             <button
               onClick={() => {
@@ -826,7 +842,7 @@ export default function Homepage() {
             }}
           >
             <motion.div
-              className={`modal ${chatOpen ? "chat-modal" : ""} ${modal === "meeting" ? "meeting-modal" : ""}`}
+              className={`modal ${chatOpen ? "chat-modal" : ""} ${modal === "meeting" ? "meeting-modal" : ""} ${modal === "desk" ? "desk-modal" : ""}`}
               ref={dialogRef}
               role="dialog"
               aria-modal="true"
@@ -850,6 +866,8 @@ export default function Homepage() {
                           ? "GovMeet"
                           : modal === "support"
                             ? ar ? "خدمة العملاء" : "Customer service"
+                          : modal === "desk"
+                            ? t.deskTitle
                           : modal === "login"
                             ? authView === "signin"
                               ? ar ? "تسجيل الدخول" : "Sign in"
@@ -1069,7 +1087,7 @@ export default function Homepage() {
                       <BusinessRoute
                         lang={lang}
                         t={t}
-                        onConcierge={conciergeSoon}
+                        onConcierge={openDesk}
                       />
                     ) : (
                       <>
@@ -1124,7 +1142,7 @@ export default function Homepage() {
                       )}
                     </div>
                     {directorySectors[sector ?? -1]?.id === "work" && (
-                      <ConciergeCard t={t} onRequest={conciergeSoon} />
+                      <ConciergeCard t={t} onRequest={openDesk} />
                     )}
                       </>
                     )}
@@ -1294,6 +1312,7 @@ export default function Homepage() {
                   )}
                 </div>
               )}
+              {modal === "desk" && <ConciergeDesk lang={lang} onToast={setToast} onNew={conciergeSoon} />}
               {modal === "support" && (
                 <form
                   className="auth-panel"

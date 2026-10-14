@@ -68,6 +68,8 @@ type Extra = {
   conciergeText: string;
   conciergeButton: string;
   conciergeSoon: string;
+  desk: string;
+  deskTitle: string;
   sectors: Record<string, string>;
 };
 
@@ -81,6 +83,8 @@ const extra: Record<Lang, Extra> = {
     conciergeText: "مختص يرافقك في جميع مراحل منشأتك، من التأسيس والتراخيص إلى متابعة الإجراءات مع الجهات حتى اكتمالها.",
     conciergeButton: "اطلب معقّبًا",
     conciergeSoon: "خدمة المعقّب ستتوفر قريبًا · هذا عرض تجريبي",
+    desk: "المعقّب",
+    deskTitle: "مكتب المعقّب",
     sectors: {},
   },
   en: {
@@ -93,6 +97,8 @@ const extra: Record<Lang, Extra> = {
       "A specialist who supports you through every stage of your business, from formation and licensing to following up with authorities until each step is complete.",
     conciergeButton: "Request a facilitator",
     conciergeSoon: "The facilitator service is coming soon · This is a demo",
+    desk: "Facilitator",
+    deskTitle: "Facilitator desk",
     sectors: {},
   },
 };
@@ -101,6 +107,35 @@ export type UiCopy = (typeof copy)["en"] & Extra;
 
 const translations: Record<Exclude<UiLang, Lang>, Partial<UiCopy>> = {
   am, bn, de, es, fa, fr, hi, id, it, ja, ko, ml, ms, ne, ps, pt, ru, si, so, sw, ta, tl, tr, ur, zh,
+};
+
+/** Nav label for the facilitator desk in each translated language. */
+const deskLabels: Record<Exclude<UiLang, Lang>, string> = {
+  ur: "سہولت کار",
+  hi: "सहायक",
+  bn: "সহায়তাকারী",
+  tl: "Tagapag-asikaso",
+  id: "Pendamping",
+  ms: "Pengurus Urusan",
+  tr: "İşlem Takipçisi",
+  fa: "کارگزار",
+  fr: "Facilitateur",
+  es: "Gestor",
+  pt: "Despachante",
+  de: "Behördenservice",
+  it: "Facilitatore",
+  ru: "Помощник",
+  zh: "代办专员",
+  ja: "手続き代行",
+  ko: "대행 전문가",
+  sw: "Mwezeshaji",
+  am: "አስፈጻሚ",
+  so: "Fududiye",
+  ne: "सहजकर्ता",
+  ta: "உதவியாளர்",
+  ml: "സഹായി",
+  si: "සහායක",
+  ps: "مرستندوی",
 };
 
 /** The language detailed content (services, journeys, assistant) is shown in. */
@@ -114,7 +149,7 @@ export function isNative(code: UiLang): code is Lang {
 
 export function uiCopy(code: UiLang): UiCopy {
   if (isNative(code)) return { ...copy[code], ...extra[code] } as UiCopy;
-  return { ...copy.en, ...extra.en, ...translations[code] } as UiCopy;
+  return { ...copy.en, ...extra.en, ...translations[code], desk: deskLabels[code] } as UiCopy;
 }
 
 export function langDir(code: UiLang): "rtl" | "ltr" {
