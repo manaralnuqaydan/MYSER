@@ -1,5 +1,5 @@
 import type { Lang } from "./content";
-import { describeActivity, isActivityAsk, matchActivity, runActivity, type ActivityReply } from "./activities";
+import { describeActivity, isActivityAsk, matchActivity, runActivity, type ActivityReply, type ChatPlatform } from "./activities";
 
 /**
  * Goal-to-Action journeys.
@@ -23,6 +23,7 @@ export type JourneyReply = {
   followUpQuestions: string[];
   suggestedSectorId?: string;
   journey: JourneyState;
+  platforms?: ChatPlatform[];
 };
 
 type Step = { ar: string; en: string; detailAr: string; detailEn: string; source?: Source };
@@ -491,6 +492,7 @@ export function runJourney(
     sources: r.sources,
     followUpQuestions: r.followUpQuestions,
     suggestedSectorId: r.suggestedSectorId,
+    platforms: r.platforms,
     journey: { id: "activity", stage: r.asking ? "ask" : "roadmap", answers: {} },
   });
   // Activity helper: suggests the business activity, what opening it takes and the documents

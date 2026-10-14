@@ -180,7 +180,10 @@ export type ActivityReply = {
   followUpQuestions: string[];
   suggestedSectorId: string;
   asking: boolean;
+  platforms?: ChatPlatform[];
 };
+
+export type ChatPlatform = { name: string; purpose: string; url: string };
 
 const EXAMPLES: Text[] = [
   { ar: "أبي أفتح شركة تسويق مع شركاء", en: "I want to open a marketing company with partners" },
@@ -281,6 +284,7 @@ export function describeActivity(activity: Activity, q: string, ar: boolean): Ac
     followUpQuestions: [L(startChip), ar ? "أبي أحدد نشاط ثاني" : "Help me with another activity"],
     suggestedSectorId: "business",
     asking: false,
+    platforms: activityPlan(activity, company).map((p) => ({ name: L(p.platform), purpose: L(p.purpose), url: p.url })),
   };
 }
 

@@ -4735,3 +4735,13 @@ html[dir="ltr"] .nav .active:after {
 .route-permits li strong { font-weight: 600; color: var(--ink); }
 .route-permits li small { margin-inline-start: auto; color: #6b7a6b; font-size: 12px; white-space: nowrap; }
 @media (max-width: 560px) { .route-permits li { flex-wrap: wrap; } .route-permits li small { margin-inline-start: 23px; } }
+.chat-msg-platforms { margin-top: 12px; padding-top: 12px; border-top: 1px solid #e6e2d6; }
+.chat-msg-platforms small { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 700; color: #5d6b5d; }
+.chat-msg-platforms ol { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.chat-msg-platforms li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid #e6e2d6; border-radius: 12px; background: #fff; }
+.chat-msg-platforms li .platform-logo { width: 44px; height: 36px; flex: none; }
+.chat-msg-platforms li .platform-logo img { max-width: 36px; max-height: 28px; }
+.chat-msg-platforms li > div { flex: 1; min-width: 0; }
+.chat-msg-platforms li strong { display: block; font-size: 13px; color: var(--ink); }
+.chat-msg-platforms li p { margin: 2px 0 0; font-size: 12px; color: #5d6b5d; }
+.chat-msg-platforms li a { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid #e0d6bf; border-radius: 50%; color: var(--green); }

@@ -13,6 +13,7 @@ export type ChatMessage = {
   followUpQuestions?: string[];
   isVerified?: boolean;
   journey?: JourneyState;
+  platforms?: { name: string; purpose: string; url: string }[];
 };
 
 export type KnowledgeCategory =

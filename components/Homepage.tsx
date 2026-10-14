@@ -289,6 +289,7 @@ export default function Homepage() {
             suggestedSectorId: journeyRes.suggestedSectorId,
             followUpQuestions: journeyRes.followUpQuestions,
             journey: journeyRes.journey,
+            platforms: journeyRes.platforms,
             isVerified: true,
           },
         ]);
@@ -985,7 +986,27 @@ export default function Homepage() {
                                   return <p key={pIdx}>{renderInline(trimmedP)}</p>;
                                 })}
                               </div>
-                              {m.sources && m.sources.length > 0 && (
+                              {m.platforms && m.platforms.length > 0 && (
+                                <div className="chat-msg-platforms">
+                                  <small>{ar ? "المنصات اللي تزورها بالترتيب" : "Platforms to visit, in order"}</small>
+                                  <ol>
+                                    {m.platforms.map((pl, pIdx) => (
+                                      <li key={pl.url + pIdx}>
+                                        <span className="service-step-num">{pIdx + 1}</span>
+                                        <PlatformLogo url={pl.url} name={pl.name} />
+                                        <div>
+                                          <strong>{pl.name}</strong>
+                                          <p>{pl.purpose}</p>
+                                        </div>
+                                        <a href={pl.url} target="_blank" rel="noopener noreferrer" aria-label={pl.name}>
+                                          <ArrowUpRight size={14} />
+                                        </a>
+                                      </li>
+                                    ))}
+                                  </ol>
+                                </div>
+                              )}
+                              {m.sources && m.sources.length > 0 && !m.platforms?.length && (
                                 <div className="chat-msg-sources">
                                   <small>{ar ? "المصادر الرسمية الموثقة" : "Verified official sources"}</small>
                                   <div className="sources-list">
