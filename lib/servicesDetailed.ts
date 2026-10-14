@@ -349,7 +349,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "verified",
     note: {
-      ar: "معبر دليل استرشادي؛ لا يحل محل الاتصال الفوري بالطوارئ (911 / 993 / 199033) عند وقوع الحادث.",
+      ar: "مَعبر دليل استرشادي؛ لا يحل محل الاتصال الفوري بالطوارئ (911 / 993 / 199033) عند وقوع الحادث.",
       en: "MAABAR is an advisory directory; always call emergency lines (911 / 993 / 199033) immediately at accident scenes."
     },
     requiredAuthorities: [
@@ -972,7 +972,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "verified",
     note: {
-      ar: "لا تدخل بيانات صحية سرية أو أعراضًا طارئة داخل معبر؛ الحالات الطارئة تطلب الاتصال المباشر بالرقم 997 أو 937.",
+      ar: "لا تدخل بيانات صحية سرية أو أعراضًا طارئة داخل مَعبر؛ الحالات الطارئة تطلب الاتصال المباشر بالرقم 997 أو 937.",
       en: "Do not enter medical data into MAABAR; for emergency situations, call 997 (Ambulance) or 937 (Health Help Center) directly."
     },
     requiredAuthorities: [
@@ -1055,7 +1055,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "destination-limited",
     note: {
-      ar: "محتوى معبر في القطاع العدلي إرشادي وتوجيهي للمنصة الرسمية ولا يُعد استشارة قانونية مهنية.",
+      ar: "محتوى مَعبر في القطاع العدلي إرشادي وتوجيهي للمنصة الرسمية ولا يُعد استشارة قانونية مهنية.",
       en: "MAABAR's justice directory content is orientational and does not constitute formal legal counsel."
     },
     requiredAuthorities: [
@@ -1137,7 +1137,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "verified",
     note: {
-      ar: "معبر يشرح الإجراء العام؛ لا يطلع على أي قضية ولا يطلب أرقام هويات أو صكوك ولا يقدم رأياً قانونياً فاصلاً.",
+      ar: "مَعبر يشرح الإجراء العام؛ لا يطلع على أي قضية ولا يطلب أرقام هويات أو صكوك ولا يقدم رأياً قانونياً فاصلاً.",
       en: "MAABAR explains general procedure only; it cannot access cases, never requests IDs, and does not provide legal opinions."
     },
     requiredAuthorities: [

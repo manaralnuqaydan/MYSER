@@ -773,7 +773,7 @@ export default function Homepage() {
       <section className="closing-banner">
         <div className="closing-pattern" />
         <div className="container">
-          <span className="eyebrow">MAABAR / معبر</span>
+          <span className="eyebrow">MAABAR / مَعبر</span>
           <h2 className="multiline">{t.ctaTitle}</h2>
           <p>{t.ctaSub}</p>
           <button className="button button-gold" onClick={() => openServices()}>
@@ -854,7 +854,7 @@ export default function Homepage() {
             >
               <div className="modal-heading">
                 <div>
-                  {modal !== "desk" && <span className="eyebrow">MAABAR / معبر</span>}
+                  {modal !== "desk" && <span className="eyebrow">MAABAR / مَعبر</span>}
                   <h2 id="dialog-title">
                     {chatOpen
                       ? t.smart
@@ -867,7 +867,7 @@ export default function Homepage() {
                           : modal === "support"
                             ? ar ? "خدمة العملاء" : "Customer service"
                           : modal === "desk"
-                            ? ar ? "معبر" : "MAABAR"
+                            ? <Brand link={false} />
                           : modal === "login"
                             ? authView === "signin"
                               ? ar ? "تسجيل الدخول" : "Sign in"
@@ -918,7 +918,7 @@ export default function Homepage() {
                           <div className="chat-col">
                             {m.role === "assistant" && (
                               <div className="chat-msg-header">
-                                <span className="chat-role-label">{ar ? "معبر" : "MAABAR"}</span>
+                                <span className="chat-role-label">{ar ? "مَعبر" : "MAABAR"}</span>
                                 <span className="chat-verified">
                                   <ShieldCheck size={13} />
                                   {ar ? "إرشاد موثق" : "Verified guide"}
@@ -1357,7 +1357,7 @@ export default function Homepage() {
                         <span>{ar ? "نوع الاستفسار" : "Topic"}</span>
                         <select defaultValue="guide">
                           <option value="guide">{ar ? "استفسار عن خدمة في الدليل" : "Question about a listed service"}</option>
-                          <option value="tech">{ar ? "مشكلة تقنية في معبر" : "Technical issue in MAABAR"}</option>
+                          <option value="tech">{ar ? "مشكلة تقنية في مَعبر" : "Technical issue in MAABAR"}</option>
                           <option value="feedback">{ar ? "اقتراح أو ملاحظة" : "Suggestion or feedback"}</option>
                         </select>
                       </label>
@@ -1444,7 +1444,7 @@ export default function Homepage() {
                   </button>
                   <p className="auth-note">
                     {ar
-                      ? "نموذج تجريبي: لا يتصل معبر بنفاذ أو بأي جهة حكومية، ولا تُرسل البيانات المدخلة إلى أي مكان."
+                      ? "نموذج تجريبي: لا يتصل مَعبر بنفاذ أو بأي جهة حكومية، ولا تُرسل البيانات المدخلة إلى أي مكان."
                       : "Demo only: MAABAR is not connected to Nafath or any government system, and nothing you type is sent anywhere."}
                   </p>
                 </form>

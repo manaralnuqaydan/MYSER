@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "MAABAR | معبر — حياة أسهل، مستقبل أذكى",
+  title: "MAABAR | مَعبر — حياة أسهل، مستقبل أذكى",
   description:
     "منصة سعودية تجريبية موحدة للخدمات الحكومية، مدعومة بالذكاء الاصطناعي. A smarter way to navigate government services.",
 };

@@ -245,7 +245,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
           { ar: "اختر الإجراء المتاح لك", en: "Choose the option available to you", detailAr: "السداد، أو الاعتراض إذا ظهر لك خيار الاعتراض ضمن مدته.", detailEn: "Pay, or object if an objection option appears within its period.", source: src.balady },
           { ar: "تابع الحالة", en: "Track the status", detailAr: "تابع نتيجة الاعتراض أو تأكيد السداد في بلدي.", detailEn: "Track the objection result or payment confirmation in Balady." },
         ],
-        noteAr: "معبر لا يؤكد وجود مخالفة ولا أحقيتك في الاعتراض؛ القرار للجهة المصدرة.",
+        noteAr: "مَعبر لا يؤكد وجود مخالفة ولا أحقيتك في الاعتراض؛ القرار للجهة المصدرة.",
         noteEn: "MAABAR does not confirm that a violation exists or that you are eligible to object; the issuing authority decides.",
       };
     }
@@ -258,7 +258,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
           { ar: "إذا كانت بلدية", en: "If it is a municipal violation", detailAr: "استعلم عنها في بلدي.", detailEn: "Look it up in Balady.", source: src.balady },
           { ar: "إذا ما زلت لا تعرف الجهة", en: "If you still don't know the authority", detailAr: "ابحث عن الجهة في المنصة الوطنية وتواصل معها من قنواتها الرسمية.", detailEn: "Find the authority on the national portal and contact it through its official channels.", source: src.govsa },
         ],
-        noteAr: "لا تضغط روابط أو تدفع عبر رسائل غير رسمية. معبر لا يؤكد وجود مخالفة؛ المصدر الرسمي هو المرجع.",
+        noteAr: "لا تضغط روابط أو تدفع عبر رسائل غير رسمية. مَعبر لا يؤكد وجود مخالفة؛ المصدر الرسمي هو المرجع.",
         noteEn: "Do not click links or pay through unofficial messages. MAABAR does not confirm a violation exists; the official source is the reference.",
       };
     }
@@ -270,7 +270,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
         { ar: "اختر الإجراء المتاح لك", en: "Choose the option available to you", detailAr: "السداد عبر سداد من تطبيق بنكك، أو الاعتراض من أبشر إذا ظهر لك خيار الاعتراض ضمن مدته.", detailEn: "Pay through SADAD in your bank app, or object in Absher if an objection option appears within its period.", source: src.absher },
         { ar: "تابع الحالة", en: "Track the status", detailAr: "تابع نتيجة الاعتراض أو تأكيد السداد في أبشر.", detailEn: "Track the objection result or payment confirmation in Absher." },
       ],
-      noteAr: "معبر لا يؤكد وجود مخالفة ولا أحقيتك في الاعتراض؛ القرار للجهة المصدرة.",
+      noteAr: "مَعبر لا يؤكد وجود مخالفة ولا أحقيتك في الاعتراض؛ القرار للجهة المصدرة.",
       noteEn: "MAABAR does not confirm that a violation exists or that you are eligible to object; the issuing authority decides.",
     };
   }
@@ -278,7 +278,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
   // legal
   const login: Step = { ar: "سجّل دخولك في ناجز عبر نفاذ", en: "Sign in to Najiz with Nafath", detailAr: "الدخول يكون بحسابك الشخصي من الموقع أو التطبيق الرسمي.", detailEn: "Sign in with your own account on the official site or app.", source: src.najiz };
   const legalNote = {
-    noteAr: "معبر يشرح الخطوات بلغة بسيطة، ولا يقدم استشارة قانونية ولا يتوقع نتيجة، ولا ينفذ أي طلب نيابة عنك. إذا كان موضوعك معقدًا فاستشر محاميًا مرخصًا.",
+    noteAr: "مَعبر يشرح الخطوات بلغة بسيطة، ولا يقدم استشارة قانونية ولا يتوقع نتيجة، ولا ينفذ أي طلب نيابة عنك. إذا كان موضوعك معقدًا فاستشر محاميًا مرخصًا.",
     noteEn: "MAABAR explains the steps in plain language; it gives no legal advice, predicts no outcome, and submits nothing on your behalf. For complex matters, consult a licensed lawyer.",
   };
   if (a.need === "follow") {

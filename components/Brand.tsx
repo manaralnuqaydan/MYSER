@@ -1,15 +1,18 @@
 export default function Brand({
   light = false,
   compact = false,
+  link = true,
 }: {
   light?: boolean;
   compact?: boolean;
+  link?: boolean;
 }) {
+  const Tag = link ? "a" : "span";
   return (
-    <a
-      href="#home"
+    <Tag
+      href={link ? "#home" : undefined}
       className={`brand ${light ? "light" : ""}`}
-      aria-label="MAABAR | معبر"
+      aria-label="MAABAR | مَعبر"
     >
       <span className="brand-symbol">
         <svg viewBox="0 0 42 48" fill="none" aria-hidden="true">
@@ -26,10 +29,10 @@ export default function Brand({
       </span>
       {!compact && (
         <span className="brand-name">
-          <strong>معبر</strong>
+          <strong>مَعبر</strong>
           <span>M A A B A R</span>
         </span>
       )}
-    </a>
+    </Tag>
   );
 }
