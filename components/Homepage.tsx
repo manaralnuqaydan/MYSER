@@ -36,6 +36,7 @@ import {
   ShieldCheck,
   Smartphone,
   Sparkles,
+  BadgeCheck,
   Users,
   Video,
   VideoOff,
@@ -47,7 +48,7 @@ import { assistantFallback, assistantScenarios, copy, curatedServices, directory
 import { detailedServices } from "@/lib/servicesDetailed";
 import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
 import { runJourney } from "@/lib/journeys";
-import { ACTIVITIES, activityPlan } from "@/lib/activities";
+import { ACTIVITIES, activityPermits, activityPlan } from "@/lib/activities";
 import { contentLang, isNative, langDir, languages, uiCopy, type UiCopy, type UiLang } from "@/lib/i18n";
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
@@ -1668,6 +1669,19 @@ function BusinessRoute({ lang, t, onConcierge, onAskAdvisor }: { lang: Lang; t: 
           <strong className="route-plan-title">
             {ar ? `خطة المنصات لنشاط «${activity.label.ar}»` : `Platform plan for ${activity.label.en}`}
           </strong>
+          <div className="route-permits">
+            <span>{ar ? "التصاريح والتراخيص اللي تطلعها" : "Permits and licenses to get"}</span>
+            <ul>
+              {activityPermits(activityPlan(activity, form === "company")).map((x) => (
+                <li key={x.permit.en}>
+                  <BadgeCheck size={15} />
+                  <strong>{x.permit[lang]}</strong>
+                  <small>{x.platform[lang]}</small>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <span className="route-plan-sub">{ar ? "المنصات بالترتيب" : "Platforms in order"}</span>
           <ol className="service-steps">
             {activityPlan(activity, form === "company").map((step, i) => (
               <li key={step.platform.en + i}>

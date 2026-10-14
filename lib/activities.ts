@@ -24,7 +24,7 @@ export type Activity = {
   platforms?: PlanStep[];
 };
 
-export type PlanStep = { platform: Text; purpose: Text; url: string };
+export type PlanStep = { platform: Text; purpose: Text; url: string; permits?: Text[] };
 
 const src = {
   business: { ar: "المركز السعودي للأعمال", en: "Saudi Business Center", url: "https://business.sa" },
@@ -37,13 +37,21 @@ const src = {
   salamah: { ar: "سلامة (الدفاع المدني)", en: "Salamah (Civil Defense)", url: "https://salamah.998.gov.sa" },
 } satisfies Record<string, Source>;
 
-const plan = (s: Source, ar: string, en: string): PlanStep => ({ platform: { ar: s.ar, en: s.en }, purpose: { ar, en }, url: s.url });
+const plan = (s: Source, ar: string, en: string, permits?: Text[]): PlanStep => ({ platform: { ar: s.ar, en: s.en }, purpose: { ar, en }, url: s.url, permits });
 const shopPlan = (health: boolean): PlanStep[] => [
-  plan(src.ejar, "توثيق عقد إيجار المحل", "Register the shop lease"),
-  plan(src.balady, health ? "الرخصة البلدية والاشتراطات الصحية" : "الرخصة البلدية للنشاط", health ? "Municipal license and health requirements" : "Municipal activity license"),
-  plan(src.salamah, "تصريح السلامة للمحل", "Safety permit for the shop"),
+  plan(src.ejar, "توثيق عقد إيجار المحل", "Register the shop lease", [{ ar: "عقد إيجار تجاري موثّق", en: "Registered commercial lease" }]),
+  plan(
+    src.balady,
+    health ? "الرخصة البلدية والاشتراطات الصحية" : "الرخصة البلدية للنشاط",
+    health ? "Municipal license and health requirements" : "Municipal activity license",
+    [
+      { ar: "الرخصة البلدية للنشاط", en: "Municipal activity license" },
+      ...(health ? [{ ar: "الشهادات الصحية للعاملين", en: "Health certificates for workers" }] : []),
+    ]
+  ),
+  plan(src.salamah, "تصريح السلامة للمحل", "Safety permit for the shop", [{ ar: "تصريح السلامة من الدفاع المدني", en: "Civil Defense safety permit" }]),
 ];
-const storePlan = plan(src.business, "توثيق المتجر الإلكتروني", "Register the online store");
+const storePlan = plan(src.business, "توثيق المتجر الإلكتروني", "Register the online store", [{ ar: "شهادة توثيق المتجر الإلكتروني", en: "Online store certificate" }]);
 
 const premises = [
   { ar: "وثّق عقد إيجار المقر في إيجار", en: "Register the premises lease in Ejar", source: src.ejar },
@@ -56,7 +64,7 @@ export const ACTIVITIES: Activity[] = [
     label: { ar: "تسويق وإعلان", en: "Marketing and ads" },
     name: { ar: "خدمات التسويق والإعلان", en: "Marketing and advertising services" },
     words: ["تسويق", "تسويقية", "تسويقي", "إعلان", "اعلان", "إعلانات", "اعلانات", "دعاية", "سوشيال", "مؤثر", "marketing", "advertis", "social media"],
-    platforms: [plan(src.gcam, "الترخيص الإعلامي إذا يشمل نشاطك الإعلان عبر المنصات", "Media license if you advertise on social platforms")],
+    platforms: [plan(src.gcam, "الترخيص الإعلامي إذا يشمل نشاطك الإعلان عبر المنصات", "Media license if you advertise on social platforms", [{ ar: "ترخيص إعلامي (إذا انطبق)", en: "Media license (if it applies)" }])],
     extraSteps: [
       { ar: "تحقق إن كان نشاطك الإعلاني، مثل الإعلان عبر المنصات، يحتاج ترخيصًا إعلاميًا", en: "Check whether your advertising, such as ads on social platforms, needs a media license", source: src.gcam },
     ],
@@ -95,7 +103,7 @@ export const ACTIVITIES: Activity[] = [
     label: { ar: "عطور وتجميل", en: "Perfume and beauty" },
     name: { ar: "بيع العطور ومستحضرات التجميل بالتجزئة", en: "Retail sale of perfume and cosmetics" },
     words: ["عطور", "عطر", "بخور", "مكياج", "مستحضرات", "perfume", "cosmetic", "makeup"],
-    platforms: [storePlan, plan(src.sfda, "تسجيل المستحضرات إذا تستوردها أو تصنعها", "Register products if you import or make them")],
+    platforms: [storePlan, plan(src.sfda, "تسجيل المستحضرات إذا تستوردها أو تصنعها", "Register products if you import or make them", [{ ar: "تسجيل المنتجات (إذا انطبق)", en: "Product registration (if it applies)" }])],
   },
   {
     id: "electronics", kind: "online",
@@ -133,15 +141,24 @@ const COMPANY_WORDS = ["شركة", "شركه", "شريك", "شركاء", "compan
 const TRIGGER_WORDS = ["أحدد نشاط", "احدد نشاط", "حدد نشاط", "حدّد نشاط", "نشاطي", "رمز النشاط", "دليل الأنشطة", "my activity", "which activity", "business activity"];
 
 /** The government platforms to visit for an activity, in order. */
+/** Every permit or license in the plan, with the platform that issues it. */
+export function activityPermits(steps: PlanStep[]) {
+  return steps.flatMap((s) => (s.permits ?? []).map((permit) => ({ permit, platform: s.platform, url: s.url })));
+}
+
 export function activityPlan(activity: Activity, company: boolean): PlanStep[] {
   return [
     plan(
       src.business,
       company ? "عقد التأسيس والسجل التجاري، واختيار النشاط" : "السجل التجاري واختيار النشاط",
-      company ? "Articles of association, CR and activity" : "Commercial Registration and activity"
+      company ? "Articles of association, CR and activity" : "Commercial Registration and activity",
+      [
+        ...(company ? [{ ar: "عقد تأسيس الشركة", en: "Articles of association" }] : []),
+        { ar: "السجل التجاري", en: "Commercial Registration" },
+      ]
     ),
     ...(activity.platforms ?? []),
-    plan(src.zatca, "التسجيل في الضريبة إذا انطبقت عليك", "Tax registration if it applies"),
+    plan(src.zatca, "التسجيل في الضريبة إذا انطبقت عليك", "Tax registration if it applies", [{ ar: "شهادة التسجيل في ضريبة القيمة المضافة (إذا انطبقت)", en: "VAT registration certificate (if it applies)" }]),
     plan(src.qiwa, "عند التوظيف فقط", "Only when you hire"),
   ];
 }
@@ -250,6 +267,8 @@ export function describeActivity(activity: Activity, q: string, ar: boolean): Ac
       ar ? `فهمت إن مشروعك ${L(activity.label)}، وبتبدأه ${form}.` : `I understood your project is ${L(activity.label).toLowerCase()}, started as ${form}.`,
       `**${ar ? "متطلبات فتح المشروع" : "What opening it takes"}**`,
       steps.map((s, i) => `${i + 1}. ${L(s)}${s.source ? (ar ? ` (عبر ${s.source.ar})` : ` (via ${s.source.en})`) : ""}`).join("\n"),
+      `**${ar ? "التصاريح والتراخيص اللي تطلعها" : "Permits and licenses to get"}**`,
+      activityPermits(activityPlan(activity, company)).map((x) => `- ${L(x.permit)} (${ar ? "من" : "from"} ${L(x.platform)})`).join("\n"),
       `**${ar ? "المستندات اللي تجهزها" : "Documents to prepare"}**`,
       docs.map((d) => `- ${L(d)}`).join("\n"),
       `> ${

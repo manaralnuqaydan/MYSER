@@ -4727,3 +4727,11 @@ html[dir="ltr"] .nav .active:after {
 .route-activity-ai button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .route-plan { margin-top: 14px; }
 .route-plan-title { display: block; margin-bottom: 8px; font-size: 14px; color: var(--green); }
+.route-permits { margin-bottom: 14px; padding: 12px 14px; border-radius: 14px; background: #eef3ec; border: 1px solid #d6e2d2; }
+.route-permits > span, .route-plan-sub { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.route-permits ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.route-permits li { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.route-permits li svg { flex: none; color: var(--green); }
+.route-permits li strong { font-weight: 600; color: var(--ink); }
+.route-permits li small { margin-inline-start: auto; color: #6b7a6b; font-size: 12px; white-space: nowrap; }
+@media (max-width: 560px) { .route-permits li { flex-wrap: wrap; } .route-permits li small { margin-inline-start: 23px; } }
