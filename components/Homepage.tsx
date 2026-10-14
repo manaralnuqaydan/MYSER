@@ -1474,6 +1474,7 @@ const localLogos: Record<string, string> = {
   "splonline.com.sa": "platforms/spl.png",
   "business.sa": "platforms/sbc.png",
   "zatca.gov.sa": "platforms/zatca.png",
+  "gcam.gov.sa": "platforms/gcam.png",
   "qiwa.sa": "platforms/qiwa.png",
   "www.qiwa.sa": "platforms/qiwa.png",
 };
