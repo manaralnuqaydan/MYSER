@@ -4745,3 +4745,5 @@ html[dir="ltr"] .nav .active:after {
 .chat-msg-platforms li strong { display: block; font-size: 13px; color: var(--ink); }
 .chat-msg-platforms li p { margin: 2px 0 0; font-size: 12px; color: #5d6b5d; }
 .chat-msg-platforms li a { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid #e0d6bf; border-radius: 50%; color: var(--green); }
+.assistant-msg-title.with-icon { display: flex; align-items: center; gap: 6px; }
+.assistant-msg-title.with-icon svg { flex: none; color: #b08d4f; }

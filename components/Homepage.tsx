@@ -930,7 +930,7 @@ export default function Homepage() {
                             )}
                             <div className={`chat-message ${m.role}`}>
                               <div className="chat-msg-body">
-                                {splitBlocks(m.text).map((paragraph, pIdx) => {
+                                {splitBlocks(m.text).map((paragraph, pIdx, blocks) => {
                                   const trimmedP = paragraph.trim();
                                   if (!trimmedP) return null;
                                   if (trimmedP.startsWith("### ")) {
@@ -942,8 +942,11 @@ export default function Homepage() {
                                   }
                                   // A paragraph that is only a bold line acts as a section heading
                                   if (/^\*\*[^*]+\*\*$/.test(trimmedP)) {
+                                    const kind = sectionKind(trimmedP);
                                     return (
-                                      <h4 key={pIdx} className="assistant-msg-title">
+                                      <h4 key={pIdx} className={`assistant-msg-title${kind ? " with-icon" : ""}`}>
+                                        {kind === "docs" && <FileText size={16} />}
+                                        {kind === "permits" && <BadgeCheck size={16} />}
                                         {renderInline(trimmedP)}
                                       </h4>
                                     );
@@ -972,11 +975,13 @@ export default function Homepage() {
                                     );
                                   }
                                   if (lines.length > 1 && isUnorderedList) {
+                                    const section = pIdx > 0 ? sectionKind(blocks[pIdx - 1].trim()) : null;
+                                    const BulletIcon = section === "docs" ? FileText : section === "permits" ? BadgeCheck : Check;
                                     return (
                                       <ul key={pIdx} className="assistant-msg-bullets">
                                         {lines.map((l, lIdx) => (
                                           <li key={lIdx}>
-                                            <Check size={14} className="bullet-icon" />
+                                            <BulletIcon size={14} className="bullet-icon" />
                                             <span>{renderInline(l.trim().replace(/^[*•-]\s*/, ""))}</span>
                                           </li>
                                         ))}
@@ -1525,6 +1530,14 @@ const platformShortNames: Record<string, Localized> = {
   "salamah.998.gov.sa": { ar: "سلامة", en: "Salamah" },
   "mudad.com.sa": { ar: "مدد", en: "Mudad" },
 };
+
+// Section headings in advisor answers that get their own icon
+function sectionKind(block: string): "docs" | "permits" | null {
+  if (!/^\*\*[^*]+\*\*$/.test(block)) return null;
+  if (/المستندات|Documents/.test(block)) return "docs";
+  if (/التصاريح|Permits/.test(block)) return "permits";
+  return null;
+}
 
 function PlatformLogo({ url, name }: { url: string; name: string }) {
   const host = (() => {
