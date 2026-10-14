@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
+  Phone,
   Headset,
   Info,
   LogIn,
@@ -35,6 +36,7 @@ import {
   ShieldCheck,
   Smartphone,
   Sparkles,
+  BadgeCheck,
   Users,
   Video,
   VideoOff,
@@ -42,13 +44,16 @@ import {
   X,
 } from "lucide-react";
 
-import { assistantFallback, assistantScenarios, copy, curatedServices, directorySectors, type Lang } from "@/lib/content";
+import { assistantFallback, assistantScenarios, copy, curatedServices, directorySectors, type Lang, type Localized } from "@/lib/content";
 import { detailedServices } from "@/lib/servicesDetailed";
 import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
 import { runJourney } from "@/lib/journeys";
+import { ACTIVITIES, activityPermits, activityPlan } from "@/lib/activities";
+import { contentLang, isNative, langDir, languages, uiCopy, type UiCopy, type UiLang } from "@/lib/i18n";
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
 import PhoneMockups from "./PhoneMockups";
+import ConciergeDesk from "./ConciergeDesk";
 // Renders **bold** segments inside assistant text as <strong>, so raw asterisks never show in the chat.
 function renderInline(text: string): ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
@@ -103,14 +108,22 @@ const stepIcons = [
   ShieldCheck,
 ];
 const amounts = [200, 150, 500];
-const platformLogos: Record<string, string> = {
-  "أبشر": "platforms/absher.png",
-};
 
 export default function Homepage() {
-  const [lang, setLang] = useState<Lang>("ar");
-  const t = copy[lang];
+  const [uiLang, setUiLang] = useState<UiLang>("ar");
+  const lang: Lang = contentLang(uiLang);
+  const t = uiCopy(uiLang);
   const ar = lang === "ar";
+  const sectorName = (item: { id: string; name: Localized } | undefined) =>
+    item ? t.sectors[item.id] ?? item.name[lang] : undefined;
+  const [langMenu, setLangMenu] = useState(false);
+  const conciergeSoon = () => setToast(t.conciergeSoon);
+  function openDesk() {
+    setModal("desk");
+    setAccountMenu(false);
+    setMenu(false);
+    setChatOpen(false);
+  }
   const reduce = useReducedMotion();
   const [menu, setMenu] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -118,7 +131,7 @@ export default function Homepage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [typing, setTyping] = useState(false);
   const [modal, setModal] = useState<
-    "services" | "meeting" | "privacy" | "terms" | "login" | "support" | null
+    "services" | "meeting" | "privacy" | "terms" | "login" | "support" | "desk" | null
   >(null);
   const [authView, setAuthView] = useState<"signin" | "signup">("signin");
   const [accountMenu, setAccountMenu] = useState(false);
@@ -138,9 +151,9 @@ export default function Homepage() {
   const previousFocus = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = ar ? "rtl" : "ltr";
-  }, [lang, ar]);
+    document.documentElement.lang = uiLang;
+    document.documentElement.dir = langDir(uiLang);
+  }, [uiLang]);
   useEffect(() => {
     if (!toast) return;
     const id = setTimeout(() => setToast(""), 4000);
@@ -217,6 +230,20 @@ export default function Homepage() {
       document.removeEventListener("keydown", close);
     };
   }, [accountMenu]);
+  useEffect(() => {
+    if (!langMenu) return;
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent && e.key !== "Escape") return;
+      if (e instanceof MouseEvent && (e.target as HTMLElement).closest(".language-wrap")) return;
+      setLangMenu(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [langMenu]);
   function openSupport() {
     setSupportView("track");
     setModal("support");
@@ -262,6 +289,7 @@ export default function Homepage() {
             suggestedSectorId: journeyRes.suggestedSectorId,
             followUpQuestions: journeyRes.followUpQuestions,
             journey: journeyRes.journey,
+            platforms: journeyRes.platforms,
             isVerified: true,
           },
         ]);
@@ -305,9 +333,11 @@ export default function Homepage() {
       setTyping(false);
     }, 700);
   }
-  function switchLang() {
+  function switchLang(code: UiLang) {
+    setLangMenu(false);
+    if (code === uiLang) return;
     if (timer.current) clearTimeout(timer.current);
-    setLang(ar ? "en" : "ar");
+    setUiLang(code);
     setMessages([]);
     setInput("");
     setTyping(false);
@@ -352,6 +382,15 @@ export default function Homepage() {
             <a href="#services" onClick={() => setMenu(false)}>
               {t.services}
             </a>
+            <a
+              href="#desk"
+              onClick={(e) => {
+                e.preventDefault();
+                openDesk();
+              }}
+            >
+              {t.desk}
+            </a>
             <button
               onClick={() => {
                 setChatOpen(true);
@@ -364,21 +403,45 @@ export default function Homepage() {
               {t.about}
             </a>
             <button className="nav-login" onClick={openLogin}>
-              {ar ? "تسجيل الدخول / إنشاء حساب" : "Sign in / Create account"}
+              {t.signIn}
             </button>
             <button className="nav-login" onClick={openSupport}>
-              {ar ? "خدمة العملاء" : "Customer service"}
+              {t.support}
             </button>
           </nav>
           <div className="header-actions">
-            <button
-              className="language"
-              onClick={switchLang}
-              aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}
-            >
-              <Globe2 size={16} />
-              <span>{ar ? "English" : "العربية"}</span>
-            </button>
+            <div className="language-wrap">
+              <button
+                className="language"
+                onClick={() => setLangMenu(!langMenu)}
+                aria-expanded={langMenu}
+                aria-haspopup="menu"
+                aria-label={t.language}
+              >
+                <Globe2 size={16} />
+                <span>{languages.find((item) => item.code === uiLang)?.name}</span>
+                <ChevronDown size={14} />
+              </button>
+              {langMenu && (
+                <div className="language-menu" role="menu" aria-label={t.language}>
+                  <div className="language-list">
+                    {languages.map((item) => (
+                      <button
+                        key={item.code}
+                        role="menuitemradio"
+                        aria-checked={item.code === uiLang}
+                        className={item.code === uiLang ? "selected" : ""}
+                        lang={item.code}
+                        onClick={() => switchLang(item.code)}
+                      >
+                        {item.name}
+                      </button>
+                    ))}
+                  </div>
+                  {!isNative(uiLang) && <small>{t.contentFallback}</small>}
+                </div>
+              )}
+            </div>
             <div className="account-wrap">
               <button
                 className="account-button"
@@ -481,8 +544,8 @@ export default function Homepage() {
               </span>
               <h2>{t.help}</h2>
               <div className="request-chips">
-                {t.chips.map((c) => (
-                  <button key={c} onClick={() => answer(c)}>
+                {t.chips.map((c, i) => (
+                  <button key={c} onClick={() => answer(isNative(uiLang) ? c : copy.en.chips[i])}>
                     {c}
                     <ArrowUpLeft size={12} />
                   </button>
@@ -550,7 +613,7 @@ export default function Homepage() {
           </motion.div>
           <div className="sector-grid">
             {directorySectors.map((item, i) => {
-              const title = item.name[lang];
+              const title = sectorName(item) ?? item.name[lang];
               const Icon = sectorIcons[item.icon];
               const sectorCurated = curatedServices.filter((entry) => entry.sectorId === item.id);
               const sectorDetailed = detailedServices.filter((entry) => entry.sectorId === item.id);
@@ -643,9 +706,26 @@ export default function Homepage() {
                   }}
                 >
                   <span className="step-number">0{i + 1}</span>
-                  <div className="step-icon">
-                    <Icon size={27} strokeWidth={1.45} />
-                  </div>
+                  {i === 1 ? (
+                    <button
+                      type="button"
+                      className="step-icon step-call"
+                      aria-label={ar ? "اتصل بمستشار" : "Call an advisor"}
+                      onClick={() =>
+                        setToast(
+                          ar
+                            ? "الاتصال بمستشار سيتوفر قريبًا · هذا عرض تجريبي"
+                            : "Calling an advisor is coming soon · This is a demo"
+                        )
+                      }
+                    >
+                      <Phone size={22} strokeWidth={1.8} />
+                    </button>
+                  ) : (
+                    <div className="step-icon">
+                      <Icon size={27} strokeWidth={1.45} />
+                    </div>
+                  )}
                   <h3>{title}</h3>
                   <p>{t.stepDescriptions[i]}</p>
                   {i < 5 && <ChevronLeft className="step-arrow" size={16} />}
@@ -696,7 +776,7 @@ export default function Homepage() {
       <section className="closing-banner">
         <div className="closing-pattern" />
         <div className="container">
-          <span className="eyebrow">MAABAR / معبر</span>
+          <span className="eyebrow">MAABAR / مَعبر</span>
           <h2 className="multiline">{t.ctaTitle}</h2>
           <p>{t.ctaSub}</p>
           <button className="button button-gold" onClick={() => openServices()}>
@@ -765,7 +845,7 @@ export default function Homepage() {
             }}
           >
             <motion.div
-              className={`modal ${chatOpen ? "chat-modal" : ""} ${modal === "meeting" ? "meeting-modal" : ""}`}
+              className={`modal ${chatOpen ? "chat-modal" : ""} ${modal === "meeting" ? "meeting-modal" : ""} ${modal === "desk" ? "desk-modal" : ""}`}
               ref={dialogRef}
               role="dialog"
               aria-modal="true"
@@ -777,18 +857,20 @@ export default function Homepage() {
             >
               <div className="modal-heading">
                 <div>
-                  <span className="eyebrow">MAABAR / معبر</span>
+                  {modal !== "desk" && <span className="eyebrow">MAABAR / مَعبر</span>}
                   <h2 id="dialog-title">
                     {chatOpen
                       ? t.smart
                       : modal === "services"
         ? curatedServices.find((entry) => entry.id === service)?.name[lang] ||
-          (sector !== null ? directorySectors[sector]?.name[lang] : undefined) ||
+          (sector !== null ? sectorName(directorySectors[sector]) : undefined) ||
           t.all
                         : modal === "meeting"
                           ? "GovMeet"
                           : modal === "support"
                             ? ar ? "خدمة العملاء" : "Customer service"
+                          : modal === "desk"
+                            ? <Brand link={false} />
                           : modal === "login"
                             ? authView === "signin"
                               ? ar ? "تسجيل الدخول" : "Sign in"
@@ -820,8 +902,8 @@ export default function Homepage() {
                         <h3>{t.welcome}</h3>
                         <p>{t.help}</p>
                         <div className="chat-suggestions">
-                          {t.chips.map((c) => (
-                            <button key={c} onClick={() => answer(c)}>
+                          {t.chips.map((c, i) => (
+                            <button key={c} onClick={() => answer(isNative(uiLang) ? c : copy.en.chips[i])}>
                               {c}
                               {direction}
                             </button>
@@ -839,7 +921,7 @@ export default function Homepage() {
                           <div className="chat-col">
                             {m.role === "assistant" && (
                               <div className="chat-msg-header">
-                                <span className="chat-role-label">{ar ? "معبر" : "MAABAR"}</span>
+                                <span className="chat-role-label">{ar ? "مَعبر" : "MAABAR"}</span>
                                 <span className="chat-verified">
                                   <ShieldCheck size={13} />
                                   {ar ? "إرشاد موثق" : "Verified guide"}
@@ -848,7 +930,7 @@ export default function Homepage() {
                             )}
                             <div className={`chat-message ${m.role}`}>
                               <div className="chat-msg-body">
-                                {splitBlocks(m.text).map((paragraph, pIdx) => {
+                                {splitBlocks(m.text).map((paragraph, pIdx, blocks) => {
                                   const trimmedP = paragraph.trim();
                                   if (!trimmedP) return null;
                                   if (trimmedP.startsWith("### ")) {
@@ -860,8 +942,11 @@ export default function Homepage() {
                                   }
                                   // A paragraph that is only a bold line acts as a section heading
                                   if (/^\*\*[^*]+\*\*$/.test(trimmedP)) {
+                                    const kind = sectionKind(trimmedP);
                                     return (
-                                      <h4 key={pIdx} className="assistant-msg-title">
+                                      <h4 key={pIdx} className={`assistant-msg-title${kind ? " with-icon" : ""}`}>
+                                        {kind === "docs" && <FileText size={16} />}
+                                        {kind === "permits" && <BadgeCheck size={16} />}
                                         {renderInline(trimmedP)}
                                       </h4>
                                     );
@@ -890,11 +975,13 @@ export default function Homepage() {
                                     );
                                   }
                                   if (lines.length > 1 && isUnorderedList) {
+                                    const section = pIdx > 0 ? sectionKind(blocks[pIdx - 1].trim()) : null;
+                                    const BulletIcon = section === "docs" ? FileText : section === "permits" ? BadgeCheck : Check;
                                     return (
                                       <ul key={pIdx} className="assistant-msg-bullets">
                                         {lines.map((l, lIdx) => (
                                           <li key={lIdx}>
-                                            <Check size={14} className="bullet-icon" />
+                                            <BulletIcon size={14} className="bullet-icon" />
                                             <span>{renderInline(l.trim().replace(/^[*•-]\s*/, ""))}</span>
                                           </li>
                                         ))}
@@ -904,7 +991,27 @@ export default function Homepage() {
                                   return <p key={pIdx}>{renderInline(trimmedP)}</p>;
                                 })}
                               </div>
-                              {m.sources && m.sources.length > 0 && (
+                              {m.platforms && m.platforms.length > 0 && (
+                                <div className="chat-msg-platforms">
+                                  <small>{ar ? "المنصات اللي تزورها بالترتيب" : "Platforms to visit, in order"}</small>
+                                  <ol>
+                                    {m.platforms.map((pl, pIdx) => (
+                                      <li key={pl.url + pIdx}>
+                                        <span className="service-step-num">{pIdx + 1}</span>
+                                        <PlatformLogo url={pl.url} name={pl.name} />
+                                        <div>
+                                          <strong>{pl.name}</strong>
+                                          <p>{pl.purpose}</p>
+                                        </div>
+                                        <a href={pl.url} target="_blank" rel="noopener noreferrer" aria-label={pl.name}>
+                                          <ArrowUpRight size={14} />
+                                        </a>
+                                      </li>
+                                    ))}
+                                  </ol>
+                                </div>
+                              )}
+                              {m.sources && m.sources.length > 0 && !m.platforms?.length && (
                                 <div className="chat-msg-sources">
                                   <small>{ar ? "المصادر الرسمية الموثقة" : "Verified official sources"}</small>
                                   <div className="sources-list">
@@ -966,7 +1073,7 @@ export default function Homepage() {
                         className="button button-green chat-next"
                         onClick={() => openServices(chatTarget)}
                       >
-                        {directorySectors[chatTarget]?.name[lang]}
+                        {sectorName(directorySectors[chatTarget])}
                         {direction}
                       </button>
                     )}
@@ -1004,6 +1111,15 @@ export default function Homepage() {
               {modal === "services" &&
                 (!service ? (
                   <>
+                    {directorySectors[sector ?? -1]?.id === "business" ? (
+                      <BusinessRoute
+                        lang={lang}
+                        t={t}
+                        onConcierge={openDesk}
+                        onAskAdvisor={answer}
+                      />
+                    ) : (
+                      <>
                     <div className="service-search">
                       <Search size={18} />
                       <input
@@ -1013,9 +1129,6 @@ export default function Homepage() {
                         onChange={(e) => setQuery(e.target.value)}
                       />
                     </div>
-                    {directorySectors[sector ?? -1]?.id === "business" && (
-                      <BusinessRoute lang={lang} />
-                    )}
                     <div className="service-results">
                       {curatedServices
                         .filter((entry) => sector === null || directorySectors[sector]?.id === entry.sectorId)
@@ -1057,6 +1170,11 @@ export default function Homepage() {
                         </div>
                       )}
                     </div>
+                    {directorySectors[sector ?? -1]?.id === "work" && (
+                      <ConciergeCard t={t} onRequest={openDesk} />
+                    )}
+                      </>
+                    )}
                   </>
                 ) : request ? (
                   <div className="request-success">
@@ -1086,7 +1204,6 @@ export default function Homepage() {
                     {(() => {
                       const entry = curatedServices.find((item) => item.id === service);
                       const detailed = detailedServices.find((item) => item.id === service);
-                      const logo = platformLogos[entry?.platform.ar ?? ""];
                       if (!entry) return <p>{ar ? "تعذر العثور على الخدمة." : "Service not found."}</p>;
                       return (
                         <>
@@ -1096,11 +1213,6 @@ export default function Homepage() {
                                 ? (ar ? `مصدر رسمي مراجع · ${entry.verifiedAt}` : `Official source reviewed · ${entry.verifiedAt}`)
                                 : (ar ? "المصدر مراجع؛ الوجهة تحتاج تحققًا مباشرًا" : "Source reviewed; destination needs direct verification")}
                             </span>
-                            {logo ? (
-                              <img className="service-platform-logo" src={logo} alt={entry.platform[lang]} />
-                            ) : (
-                              <span className="service-platform-badge">{entry.platform[lang]}</span>
-                            )}
                           </div>
 
                           <p className="service-lead-summary">{entry.summary[lang]}</p>
@@ -1229,6 +1341,7 @@ export default function Homepage() {
                   )}
                 </div>
               )}
+              {modal === "desk" && <ConciergeDesk lang={lang} onToast={setToast} onNew={conciergeSoon} />}
               {modal === "support" && (
                 <form
                   className="auth-panel"
@@ -1273,7 +1386,7 @@ export default function Homepage() {
                         <span>{ar ? "نوع الاستفسار" : "Topic"}</span>
                         <select defaultValue="guide">
                           <option value="guide">{ar ? "استفسار عن خدمة في الدليل" : "Question about a listed service"}</option>
-                          <option value="tech">{ar ? "مشكلة تقنية في معبر" : "Technical issue in MAABAR"}</option>
+                          <option value="tech">{ar ? "مشكلة تقنية في مَعبر" : "Technical issue in MAABAR"}</option>
                           <option value="feedback">{ar ? "اقتراح أو ملاحظة" : "Suggestion or feedback"}</option>
                         </select>
                       </label>
@@ -1360,7 +1473,7 @@ export default function Homepage() {
                   </button>
                   <p className="auth-note">
                     {ar
-                      ? "نموذج تجريبي: لا يتصل معبر بنفاذ أو بأي جهة حكومية، ولا تُرسل البيانات المدخلة إلى أي مكان."
+                      ? "نموذج تجريبي: لا يتصل مَعبر بنفاذ أو بأي جهة حكومية، ولا تُرسل البيانات المدخلة إلى أي مكان."
                       : "Demo only: MAABAR is not connected to Nafath or any government system, and nothing you type is sent anywhere."}
                   </p>
                 </form>
@@ -1385,7 +1498,46 @@ const localLogos: Record<string, string> = {
   "business.absher.sa": "platforms/absher.png",
   "www.iam.gov.sa": "nafath-logo.png",
   "splonline.com.sa": "platforms/spl.png",
+  "business.sa": "platforms/sbc.png",
+  "zatca.gov.sa": "platforms/zatca.png",
+  "gcam.gov.sa": "platforms/gcam.png",
+  "qiwa.sa": "platforms/qiwa.png",
+  "www.qiwa.sa": "platforms/qiwa.png",
 };
+
+// Short platform names shown when no logo image is available
+const platformShortNames: Record<string, Localized> = {
+  "business.sa": { ar: "الأعمال", en: "SBC" },
+  "mc.gov.sa": { ar: "التجارة", en: "MC" },
+  "zatca.gov.sa": { ar: "هيئة الزكاة", en: "ZATCA" },
+  "qiwa.sa": { ar: "قوى", en: "Qiwa" },
+  "www.qiwa.sa": { ar: "قوى", en: "Qiwa" },
+  "balady.gov.sa": { ar: "بلدي", en: "Balady" },
+  "www.ejar.sa": { ar: "إيجار", en: "Ejar" },
+  "new.najiz.sa": { ar: "ناجز", en: "Najiz" },
+  "www.sadad.com": { ar: "سداد", en: "SADAD" },
+  "www.sehhaty.sa": { ar: "صحتي", en: "Sehhaty" },
+  "www.najm.sa": { ar: "نجم", en: "Najm" },
+  "www.moh.gov.sa": { ar: "الصحة", en: "MOH" },
+  "tawakkalna.sdaia.gov.sa": { ar: "توكلنا", en: "Tawakkalna" },
+  "noor.moe.gov.sa": { ar: "نور", en: "Noor" },
+  "efaa.sa": { ar: "إيفاء", en: "Efaa" },
+  "www.moi.gov.sa": { ar: "الداخلية", en: "MOI" },
+  "www.gosi.gov.sa": { ar: "التأمينات", en: "GOSI" },
+  "wasfaty.sa": { ar: "وصفتي", en: "Wasfaty" },
+  "taqdeer.sa": { ar: "تقدير", en: "Taqdeer" },
+  "srem.moj.gov.sa": { ar: "العقار", en: "SREM" },
+  "salamah.998.gov.sa": { ar: "سلامة", en: "Salamah" },
+  "mudad.com.sa": { ar: "مدد", en: "Mudad" },
+};
+
+// Section headings in advisor answers that get their own icon
+function sectionKind(block: string): "docs" | "permits" | null {
+  if (!/^\*\*[^*]+\*\*$/.test(block)) return null;
+  if (/المستندات|Documents/.test(block)) return "docs";
+  if (/التصاريح|Permits/.test(block)) return "permits";
+  return null;
+}
 
 function PlatformLogo({ url, name }: { url: string; name: string }) {
   const host = (() => {
@@ -1398,7 +1550,13 @@ function PlatformLogo({ url, name }: { url: string; name: string }) {
   const sources = [localLogos[host], host && `https://${host}/favicon.ico`].filter(Boolean) as string[];
   const [index, setIndex] = useState(0);
   if (index >= sources.length) {
-    return <span className="platform-logo platform-logo-fallback" aria-hidden="true">{name.replace(/^(منصة|نظام|منظومة|بوابة)\s+/, "").charAt(0)}</span>;
+    const short = platformShortNames[host];
+    const ar = /[\u0600-\u06FF]/.test(name);
+    return (
+      <span className="platform-logo platform-logo-fallback" aria-hidden="true">
+        {short ? short[ar ? "ar" : "en"] : name.replace(/^(منصة|نظام|منظومة|بوابة)\s+/, "").split(/\s+/)[0]}
+      </span>
+    );
   }
   return (
     <span className="platform-logo">
@@ -1407,36 +1565,193 @@ function PlatformLogo({ url, name }: { url: string; name: string }) {
   );
 }
 
-function BusinessRoute({ lang }: { lang: Lang }) {
+type RouteKind = "online" | "physical" | "services";
+type RouteForm = "sole" | "company";
+type RouteStep = { name: Localized; detail: Localized; url: string; platform: string };
+
+function businessSteps(kind: RouteKind, form: RouteForm, activity?: Localized): RouteStep[] {
+  const pick: Localized = activity
+    ? { ar: ` واختر نشاط «${activity.ar}» من دليل الأنشطة.`, en: ` Choose "${activity.en}" from the activity guide.` }
+    : { ar: "", en: "" };
+  const steps: RouteStep[] = [
+    form === "sole"
+      ? { name: { ar: "أصدر السجل التجاري", en: "Issue your Commercial Registration" }, detail: { ar: "سجل مؤسسة فردية من المركز السعودي للأعمال بعد الدخول بنفاذ." + pick.ar, en: "Register a sole proprietorship at the Saudi Business Center after signing in with Nafath." + pick.en }, url: "https://business.sa", platform: "مركز الأعمال" }
+      : { name: { ar: "أسس الشركة وأصدر السجل", en: "Form the company and issue its CR" }, detail: { ar: "اتفقوا على عقد التأسيس وأصدروا سجل الشركة من المركز السعودي للأعمال." + pick.ar, en: "Agree on the articles of association and issue the company CR at the Saudi Business Center." + pick.en }, url: "https://business.sa", platform: "مركز الأعمال" },
+  ];
+  if (kind === "physical") {
+    steps.push(
+      { name: { ar: "وثّق عقد إيجار المحل", en: "Register the shop lease" }, detail: { ar: "وثّق العقد التجاري لمقرك في إيجار.", en: "Register the commercial lease for your premises in Ejar." }, url: "https://www.ejar.sa", platform: "إيجار" },
+      { name: { ar: "استخرج الرخصة البلدية", en: "Get the municipal license" }, detail: { ar: "قدّم على رخصة النشاط من بلدي، وتحقق هناك من أي اشتراطات إضافية.", en: "Apply for the activity license in Balady and check any extra conditions there." }, url: "https://balady.gov.sa", platform: "بلدي" }
+    );
+  } else if (kind === "online") {
+    steps.push({ name: { ar: "وثّق متجرك الإلكتروني", en: "Register your online store" }, detail: { ar: "احصل على شهادة توثيق المتجر من المركز السعودي للأعمال.", en: "Get the online store certificate from the Saudi Business Center." }, url: "https://business.sa", platform: "مركز الأعمال" });
+  } else {
+    steps.push({ name: { ar: "تحقق من ترخيص خدمتك", en: "Check whether your service needs a license" }, detail: { ar: "بعض الخدمات المهنية تحتاج ترخيصًا من جهة مختصة قبل البدء.", en: "Some professional services need a license from a specific authority first." }, url: "https://business.sa", platform: "مركز الأعمال" });
+  }
+  steps.push(
+    { name: { ar: "سجّل في الضريبة إذا انطبقت عليك", en: "Register for tax if it applies" }, detail: { ar: "تحقق من حد التسجيل في ضريبة القيمة المضافة لدى هيئة الزكاة والضريبة والجمارك.", en: "Check the VAT registration threshold with ZATCA." }, url: "https://zatca.gov.sa", platform: "زاتكا" },
+    { name: { ar: "إذا بتوظف: سجّل في قوى", en: "If you hire: register in Qiwa" }, detail: { ar: "هذي الخطوة عند التوظيف فقط.", en: "Only needed when you hire employees." }, url: "https://qiwa.sa", platform: "قوى" }
+  );
+  return steps;
+}
+
+function ConciergeCard({ t, onRequest }: { t: UiCopy; onRequest: () => void }) {
+  return (
+    <div className="route-concierge">
+      <span className="route-concierge-icon" aria-hidden="true">
+        <Headset size={22} strokeWidth={1.8} />
+      </span>
+      <div className="route-concierge-text">
+        <strong>{t.conciergeTitle}</strong>
+        <p>{t.conciergeText}</p>
+      </div>
+      <button type="button" onClick={onRequest}>
+        {t.conciergeButton}
+      </button>
+    </div>
+  );
+}
+
+function BusinessRoute({ lang, t, onConcierge, onAskAdvisor }: { lang: Lang; t: UiCopy; onConcierge: () => void; onAskAdvisor: (text: string) => void }) {
   const ar = lang === "ar";
-  const [entity, setEntity] = useState("unknown");
-  const [activity, setActivity] = useState("");
+  const [kind, setKind] = useState<RouteKind>("online");
+  const [form, setForm] = useState<RouteForm>("sole");
+  const [activityId, setActivityId] = useState<string | null>(null);
+  const [describe, setDescribe] = useState("");
+  const activities = ACTIVITIES.filter((a) => a.kind === kind);
+  const activity = activities.find((a) => a.id === activityId);
+  function askAdvisor() {
+    const d = describe.trim();
+    const formText = form === "company" ? (ar ? " مع شركاء" : " with partners") : "";
+    onAskAdvisor(
+      ar
+        ? `أبي أحدد نشاطي التجاري${d ? `: ${d}${formText}` : ""}`
+        : `Help me pick my business activity${d ? `: ${d}${formText}` : ""}`
+    );
+  }
+  const kinds: { id: RouteKind; label: Localized }[] = [
+    { id: "online", label: { ar: "متجر إلكتروني", en: "Online store" } },
+    { id: "physical", label: { ar: "محل بمقر", en: "Physical shop" } },
+    { id: "services", label: { ar: "خدمات", en: "Services" } },
+  ];
+  const forms: { id: RouteForm; label: Localized }[] = [
+    { id: "sole", label: { ar: "لوحدي", en: "On my own" } },
+    { id: "company", label: { ar: "مع شركاء", en: "With partners" } },
+  ];
+  const steps = businessSteps(kind, form, activity?.name);
   return (
     <section className="business-route" aria-labelledby="business-route-title">
       <div className="business-route-heading">
-        <span className="eyebrow">{ar ? "مسار استكشافي مشروط" : "CONDITIONAL STARTER ROUTE"}</span>
-        <h3 id="business-route-title">{ar ? "تبدأ بفهم النشاط والشكل النظامي" : "Start by clarifying activity and legal form"}</h3>
-        <p>{ar ? "هذا المسار لا يحدد أهلية منشأتك ولا يحسم المتطلبات. راجع الروابط الرسمية وتأكد من انطباق كل خطوة على حالتك." : "This route does not determine your eligibility or final requirements. Check official sources and confirm each step applies to you."}</p>
+        <span className="eyebrow">{ar ? "ابدأ مشروعك" : "START YOUR PROJECT"}</span>
+        <h3 id="business-route-title">{ar ? "اختر مشروعك، ونرتب لك الخطوات" : "Pick your project and we'll order the steps"}</h3>
       </div>
-      <label>
-        <span>{ar ? "الشكل النظامي الذي تستكشفه" : "Legal form you are exploring"}</span>
-        <select value={entity} onChange={(event) => setEntity(event.target.value)}>
-          <option value="unknown">{ar ? "لم أحدد بعد" : "Not decided"}</option>
-          <option value="sole">{ar ? "مؤسسة فردية" : "Sole proprietorship"}</option>
-          <option value="company">{ar ? "شركة" : "Company"}</option>
-        </select>
-      </label>
-      <label>
-        <span>{ar ? "النشاط (اختياري، يبقى في هذه الجلسة)" : "Activity (optional, stays in this session)"}</span>
-        <input value={activity} onChange={(event) => setActivity(event.target.value)} maxLength={100} placeholder={ar ? "مثال: تجارة إلكترونية" : "e.g. online retail"} />
-      </label>
-      <ol>
-        <li><strong>{ar ? "تحقق من النشاط" : "Check the activity"}</strong><span>{activity ? (ar ? `تحقق من تصنيف «${activity}» لدى الجهة المختصة، فقد تتطلب بعض الأنشطة موافقة مسبقة.` : `Check how “${activity}” is classified; some activities may need prior approval.`) : (ar ? "حدّد النشاط أولًا؛ بعض الأنشطة قد تتطلب موافقة مسبقة من جهة مختصة." : "Identify the activity first; some activities may require prior approval.")}</span></li>
-        {entity === "unknown" ? <li><strong>{ar ? "اختر المسار النظامي" : "Choose a legal route"}</strong><span>{ar ? "تختلف خدمة المؤسسة الفردية عن تأسيس الشركة. لا تبدأ بطلب قبل تحديد النوع ومراجعة مصدره الرسمي." : "Sole-proprietor registration differs from company formation. Review the relevant official source before applying."}</span></li> : entity === "sole" ? <li><strong>{ar ? "راجع قيد المؤسسة الفردية" : "Review sole-proprietor registration"}</strong><span>{ar ? "تصف وزارة التجارة خدمة قيد سجل تجاري لمؤسسة فردية؛ راجع شروطها الحالية ومدى انطباقها." : "The Ministry of Commerce describes a sole-proprietorship CR service; check current terms and applicability."}</span></li> : <li><strong>{ar ? "راجع تأسيس الشركة" : "Review company formation"}</strong><span>{ar ? "توضح وزارة التجارة مسار تأسيس شركة، مع اختلاف الإجراءات حسب النوع النظامي." : "The Ministry of Commerce outlines company formation; the procedure varies by legal type."}</span></li>}
-        <li><strong>{ar ? "افحص الرخص والالتزامات عند انطباقها" : "Check applicable licenses and obligations"}</strong><span>{ar ? "تحقق من متطلبات بلدي بحسب النشاط والموقع، ومن معايير زاتكا الضريبية للمنشأة." : "Check Balady requirements for the activity and location, and ZATCA criteria for the business."}</span></li>
-        <li><strong>{ar ? "انتقل لخدمات العمل عند الحاجة" : "Use work services when relevant"}</strong><span>{ar ? "قوى مرتبطة بخدمات قطاع العمل؛ ليست خطوة لازمة لكل منشأة عند التأسيس." : "Qiwa covers work-sector services; it is not a mandatory formation step for every business."}</span></li>
-      </ol>
-      <small>{ar ? "لا تُدخل رقم هوية أو بيانات دخول أو معلومات مالية. لا تُحفظ المدخلات بعد إغلاق الصفحة أو تحديثها." : "Do not enter identity, login, or financial details. Inputs are not retained after closing or refreshing the page."}</small>
+      <div className="route-question">
+        <span>{ar ? "وش نوع مشروعك؟" : "What kind of project?"}</span>
+        <div className="route-choices" role="group">
+          {kinds.map((item) => (
+            <button key={item.id} type="button" className={kind === item.id ? "selected" : ""} aria-pressed={kind === item.id} onClick={() => { setKind(item.id); setActivityId(null); }}>
+              {item.label[lang]}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="route-question">
+        <span>{ar ? "وش نشاطك؟" : "What's your activity?"}</span>
+        <div className="route-choices" role="group">
+          {activities.map((item) => (
+            <button key={item.id} type="button" className={activityId === item.id ? "selected" : ""} aria-pressed={activityId === item.id} onClick={() => setActivityId(activityId === item.id ? null : item.id)}>
+              {item.label[lang]}
+            </button>
+          ))}
+        </div>
+        <form
+          className="route-activity-ai"
+          onSubmit={(e) => {
+            e.preventDefault();
+            askAdvisor();
+          }}
+        >
+          <label htmlFor="route-activity-input">
+            <Sparkles size={15} />
+            {ar ? "مو متأكد من نشاطك؟ وصف مشروعك للمرشد الذكي، ويحدد لك النشاط والمتطلبات والمستندات." : "Not sure? Describe your project to the smart advisor and it will suggest the activity, requirements and documents."}
+          </label>
+          <div>
+            <input
+              id="route-activity-input"
+              value={describe}
+              maxLength={200}
+              onChange={(e) => setDescribe(e.target.value)}
+              placeholder={ar ? "مثال: شركة تسويق إلكتروني تدير حسابات العملاء" : "e.g. a digital marketing agency managing client accounts"}
+            />
+            <button type="submit">
+              {ar ? "حدّد نشاطي" : "Find my activity"}
+            </button>
+          </div>
+        </form>
+      </div>
+      <div className="route-question">
+        <span>{ar ? "بتبدأ لوحدك أو مع شركاء؟" : "Alone or with partners?"}</span>
+        <div className="route-choices" role="group">
+          {forms.map((item) => (
+            <button key={item.id} type="button" className={form === item.id ? "selected" : ""} aria-pressed={form === item.id} onClick={() => setForm(item.id)}>
+              {item.label[lang]}
+            </button>
+          ))}
+        </div>
+      </div>
+      {activity ? (
+        <div className="route-plan">
+          <strong className="route-plan-title">
+            {ar ? `خطة المنصات لنشاط «${activity.label.ar}»` : `Platform plan for ${activity.label.en}`}
+          </strong>
+          <div className="route-permits">
+            <span>{ar ? "التصاريح والتراخيص اللي تطلعها" : "Permits and licenses to get"}</span>
+            <ul>
+              {activityPermits(activityPlan(activity, form === "company")).map((x) => (
+                <li key={x.permit.en}>
+                  <BadgeCheck size={15} />
+                  <strong>{x.permit[lang]}</strong>
+                  <small>{x.platform[lang]}</small>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <span className="route-plan-sub">{ar ? "المنصات بالترتيب" : "Platforms in order"}</span>
+          <ol className="service-steps">
+            {activityPlan(activity, form === "company").map((step, i) => (
+              <li key={step.platform.en + i}>
+                <span className="service-step-num">{i + 1}</span>
+                <PlatformLogo url={step.url} name={step.platform.ar} />
+                <div className="service-step-text">
+                  <strong>{step.platform[lang]}</strong>
+                  <p>{step.purpose[lang]}</p>
+                </div>
+                <a href={step.url} target="_blank" rel="noopener noreferrer" aria-label={ar ? `فتح ${step.platform.ar}` : `Open ${step.platform.en}`}>
+                  <ArrowUpRight size={16} />
+                </a>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : (
+            <ol className="service-steps">
+          {steps.map((step, i) => (
+            <li key={step.name.en}>
+              <span className="service-step-num">{i + 1}</span>
+              <PlatformLogo url={step.url} name={step.platform} />
+              <div className="service-step-text">
+                <strong>{step.name[lang]}</strong>
+                <p>{step.detail[lang]}</p>
+              </div>
+              <a href={step.url} target="_blank" rel="noopener noreferrer" aria-label={ar ? `فتح ${step.name.ar}` : `Open ${step.name.en}`}>
+                <ArrowUpRight size={16} />
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+      <small>{ar ? "خطوات استرشادية؛ تأكد من المتطلبات في المنصة الرسمية قبل التقديم." : "A guide only; confirm requirements on the official platform before applying."}</small>
+      <ConciergeCard t={t} onRequest={onConcierge} />
     </section>
   );
 }

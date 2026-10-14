@@ -349,7 +349,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "verified",
     note: {
-      ar: "معبر دليل استرشادي؛ لا يحل محل الاتصال الفوري بالطوارئ (911 / 993 / 199033) عند وقوع الحادث.",
+      ar: "مَعبر دليل استرشادي؛ لا يحل محل الاتصال الفوري بالطوارئ (911 / 993 / 199033) عند وقوع الحادث.",
       en: "MAABAR is an advisory directory; always call emergency lines (911 / 993 / 199033) immediately at accident scenes."
     },
     requiredAuthorities: [
@@ -453,7 +453,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     requiredAuthorities: [
       { ar: "المركز السعودي للأعمال / وزارة التجارة", en: "Saudi Business Center / Ministry of Commerce" },
       { ar: "وزارة الشؤون البلدية والقروية والإسكان (بلدي / إيجار)", en: "MOMRAH (Balady / Ejar Network)" },
-      { ar: "هيئة الزكاة والضريبة والجمارك (زاتكا)", en: "Zakat, Tax and Customs Authority (ZATCA)" },
+      { ar: "هيئة الزكاة والضريبة والجمارك", en: "Zakat, Tax and Customs Authority (ZATCA)" },
       { ar: "المؤسسة العامة للتأمينات الاجتماعية (GOSI)", en: "General Organization for Social Insurance (GOSI)" },
       { ar: "وزارة الموارد البشرية والتنمية الاجتماعية (قوى)", en: "Ministry of Human Resources (Qiwa)" }
     ],
@@ -480,7 +480,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
         url: "https://balady.gov.sa/"
       },
       {
-        name: { ar: "بوابة زاتكا (ZATCA)", en: "ZATCA Portal" },
+        name: { ar: "هيئة الزكاة والضريبة والجمارك", en: "ZATCA Portal" },
         authority: { ar: "هيئة الزكاة والضريبة والجمارك", en: "Zakat, Tax & Customs Authority" },
         role: { ar: "تفعيل الشهادة الضريبية والزكوية وإعداد منظومة الفوترة الإلكترونية (فاتورة).", en: "Activating Zakat certificate and integrating E-Invoicing (Fatoora)." },
         whenNeeded: { ar: "فور إصدار السجل للالتزام السنوي وتركيب الفوترة قبل أول عملية بيع.", en: "Upon CR issuance for statutory compliance and point-of-sale invoicing." },
@@ -551,7 +551,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     requiredAuthorities: [
       { ar: "المركز السعودي للأعمال / وزارة التجارة", en: "Saudi Business Center / Ministry of Commerce" },
       { ar: "وزارة العدل (توثيق عقود التأسيس)", en: "Ministry of Justice (Articles Notarization)" },
-      { ar: "هيئة الزكاة والضريبة والجمارك (زاتكا)", en: "Zakat, Tax & Customs Authority (ZATCA)" },
+      { ar: "هيئة الزكاة والضريبة والجمارك", en: "Zakat, Tax & Customs Authority (ZATCA)" },
       { ar: "المؤسسة العامة للتأمينات الاجتماعية (GOSI)", en: "Social Insurance (GOSI)" },
       { ar: "وزارة الموارد البشرية والتنمية الاجتماعية (قوى)", en: "Ministry of Human Resources (Qiwa)" }
     ],
@@ -571,7 +571,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
         url: "https://www.iam.gov.sa/"
       },
       {
-        name: { ar: "بوابة زاتكا (ZATCA)", en: "ZATCA Portal" },
+        name: { ar: "هيئة الزكاة والضريبة والجمارك", en: "ZATCA Portal" },
         authority: { ar: "هيئة الزكاة والضريبة والجمارك", en: "Zakat, Tax & Customs Authority" },
         role: { ar: "استكمال التسجيل الضريبي الزكوي للشركة وإعداد الرقم الضريبي للفوترة الإلكترونية.", en: "Corporate tax profile activation and e-invoicing credential setup." },
         whenNeeded: { ar: "مباشرة بعد صدور سجل الشركة وقبل بدء أي معاملات مالية أو فواتير.", en: "Directly after CR issuance prior to conducting commercial sales transactions." },
@@ -673,7 +673,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     id: "vat-registration",
     sectorId: "business",
     name: { ar: "التسجيل في ضريبة القيمة المضافة للمنشآت", en: "VAT Registration for Businesses" },
-    platform: { ar: "هيئة الزكاة والضريبة والجمارك (زاتكا)", en: "ZATCA" },
+    platform: { ar: "هيئة الزكاة والضريبة والجمارك", en: "ZATCA" },
     summary: {
       ar: "تسجيل المنشأة في نظام ضريبة القيمة المضافة وإصدار الشهادة الضريبية للبدء في تحصيل وإقرار ضريبة الـ 15% المقررة نظامًا.",
       en: "Registering the enterprise in the VAT system, issuing VAT certificate to collect and file statutory 15% value-added tax."
@@ -700,7 +700,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
       { ar: "الالتزام بتطبيق منظومة الفوترة الإلكترونية (فاتورة) فور تفعيل الرقم الضريبي.", en: "Mandatory integration with E-Invoicing (Fatoora) platform upon registration." }
     ],
     procedureSteps: [
-      { ar: "تسجيل الدخول في بوابة زاتكا (zatca.gov.sa) عبر حساب المنشأة.", en: "Log in to ZATCA portal (zatca.gov.sa) under the enterprise account." },
+      { ar: "تسجيل الدخول في بوابة هيئة الزكاة والضريبة والجمارك (zatca.gov.sa) عبر حساب المنشأة.", en: "Log in to ZATCA portal (zatca.gov.sa) under the enterprise account." },
       { ar: "الانتقال إلى «الخدمات الضريبية» $\\leftarrow$ «التسجيل في ضريبة القيمة المضافة».", en: "Navigate to Tax Services $\\rightarrow$ Register for Value Added Tax." },
       { ar: "تعبئة البيانات المالية ومصادر الإيرادات وإرفاق الإثباتات المحاسبية.", en: "Fill financial income disclosures and attach accounting verification documents." },
       { ar: "استلام شهادة التسجيل بالرقم الضريبي فور دراسة واعتماد الطلب.", en: "Receive authenticated VAT registration certificate upon application review." }
@@ -714,7 +714,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
       en: "Phase 2 E-Invoicing integration waves are staggered periodically by ZATCA according to enterprise revenue brackets."
     },
     url: "https://zatca.gov.sa/",
-    sourceTitle: { ar: "زاتكا: دليل التسجيل في ضريبة القيمة المضافة للمنشآت", en: "ZATCA: Guide to VAT Registration for Enterprises" },
+    sourceTitle: { ar: "هيئة الزكاة والضريبة والجمارك: دليل التسجيل في ضريبة القيمة المضافة للمنشآت", en: "ZATCA: Guide to VAT Registration for Enterprises" },
     sourceUrl: "https://zatca.gov.sa/ar/eServices/Pages/eServices-001.aspx",
     verifiedAt: "2026-10-11",
     verified: "verified",
@@ -723,13 +723,13 @@ export const detailedServices: CuratedServiceDetailed[] = [
       en: "Failing to register after crossing the mandatory threshold incurs statutory penalties; monitor revenue regularly."
     },
     requiredAuthorities: [
-      { ar: "هيئة الزكاة والضريبة والجمارك (زاتكا)", en: "Zakat, Tax and Customs Authority (ZATCA)" },
+      { ar: "هيئة الزكاة والضريبة والجمارك", en: "Zakat, Tax and Customs Authority (ZATCA)" },
       { ar: "البنك المركزي السعودي (نظام سداد)", en: "Saudi Central Bank (SADAD)" },
       { ar: "المركز السعودي للأعمال", en: "Saudi Business Center" }
     ],
     multiPlatformChain: [
       {
-        name: { ar: "بوابة زاتكا الإلكترونية (zatca.gov.sa)", en: "ZATCA Online Portal" },
+        name: { ar: "البوابة الإلكترونية لهيئة الزكاة والضريبة والجمارك", en: "ZATCA Online Portal" },
         authority: { ar: "هيئة الزكاة والضريبة والجمارك", en: "Zakat, Tax & Customs Authority" },
         role: { ar: "تقديم طلب التسجيل الضريبي، رفع المستندات المالية، وإصدار شهادة ضريبة القيمة المضافة والرقم الضريبي.", en: "Tax registration submission, financial disclosure upload, VAT certificate and TIN issuance." },
         whenNeeded: { ar: "عند بلوغ حد المبيعات الإلزامي (375 ألف ريال) أو الاختياري (187.5 ألف ريال).", en: "Upon reaching mandatory (SAR 375k) or voluntary (SAR 187.5k) revenue thresholds." },
@@ -972,7 +972,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "verified",
     note: {
-      ar: "لا تدخل بيانات صحية سرية أو أعراضًا طارئة داخل معبر؛ الحالات الطارئة تطلب الاتصال المباشر بالرقم 997 أو 937.",
+      ar: "لا تدخل بيانات صحية سرية أو أعراضًا طارئة داخل مَعبر؛ الحالات الطارئة تطلب الاتصال المباشر بالرقم 997 أو 937.",
       en: "Do not enter medical data into MAABAR; for emergency situations, call 997 (Ambulance) or 937 (Health Help Center) directly."
     },
     requiredAuthorities: [
@@ -1055,7 +1055,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "destination-limited",
     note: {
-      ar: "محتوى معبر في القطاع العدلي إرشادي وتوجيهي للمنصة الرسمية ولا يُعد استشارة قانونية مهنية.",
+      ar: "محتوى مَعبر في القطاع العدلي إرشادي وتوجيهي للمنصة الرسمية ولا يُعد استشارة قانونية مهنية.",
       en: "MAABAR's justice directory content is orientational and does not constitute formal legal counsel."
     },
     requiredAuthorities: [
@@ -1137,7 +1137,7 @@ export const detailedServices: CuratedServiceDetailed[] = [
     verifiedAt: "2026-10-11",
     verified: "verified",
     note: {
-      ar: "معبر يشرح الإجراء العام؛ لا يطلع على أي قضية ولا يطلب أرقام هويات أو صكوك ولا يقدم رأياً قانونياً فاصلاً.",
+      ar: "مَعبر يشرح الإجراء العام؛ لا يطلع على أي قضية ولا يطلب أرقام هويات أو صكوك ولا يقدم رأياً قانونياً فاصلاً.",
       en: "MAABAR explains general procedure only; it cannot access cases, never requests IDs, and does not provide legal opinions."
     },
     requiredAuthorities: [

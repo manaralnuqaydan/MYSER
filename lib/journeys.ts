@@ -1,4 +1,5 @@
 import type { Lang } from "./content";
+import { describeActivity, isActivityAsk, matchActivity, runActivity, type ActivityReply, type ChatPlatform } from "./activities";
 
 /**
  * Goal-to-Action journeys.
@@ -7,7 +8,7 @@ import type { Lang } from "./content";
  * source for each step and keeps track of progress inside the conversation.
  */
 
-export type JourneyId = "project" | "violation" | "legal" | "general";
+export type JourneyId = "project" | "violation" | "legal" | "general" | "activity";
 
 export type JourneyState = {
   id: JourneyId;
@@ -22,6 +23,7 @@ export type JourneyReply = {
   followUpQuestions: string[];
   suggestedSectorId?: string;
   journey: JourneyState;
+  platforms?: ChatPlatform[];
 };
 
 type Step = { ar: string; en: string; detailAr: string; detailEn: string; source?: Source };
@@ -245,7 +247,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
           { ar: "اختر الإجراء المتاح لك", en: "Choose the option available to you", detailAr: "السداد، أو الاعتراض إذا ظهر لك خيار الاعتراض ضمن مدته.", detailEn: "Pay, or object if an objection option appears within its period.", source: src.balady },
           { ar: "تابع الحالة", en: "Track the status", detailAr: "تابع نتيجة الاعتراض أو تأكيد السداد في بلدي.", detailEn: "Track the objection result or payment confirmation in Balady." },
         ],
-        noteAr: "معبر لا يؤكد وجود مخالفة ولا أحقيتك في الاعتراض؛ القرار للجهة المصدرة.",
+        noteAr: "مَعبر لا يؤكد وجود مخالفة ولا أحقيتك في الاعتراض؛ القرار للجهة المصدرة.",
         noteEn: "MAABAR does not confirm that a violation exists or that you are eligible to object; the issuing authority decides.",
       };
     }
@@ -258,7 +260,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
           { ar: "إذا كانت بلدية", en: "If it is a municipal violation", detailAr: "استعلم عنها في بلدي.", detailEn: "Look it up in Balady.", source: src.balady },
           { ar: "إذا ما زلت لا تعرف الجهة", en: "If you still don't know the authority", detailAr: "ابحث عن الجهة في المنصة الوطنية وتواصل معها من قنواتها الرسمية.", detailEn: "Find the authority on the national portal and contact it through its official channels.", source: src.govsa },
         ],
-        noteAr: "لا تضغط روابط أو تدفع عبر رسائل غير رسمية. معبر لا يؤكد وجود مخالفة؛ المصدر الرسمي هو المرجع.",
+        noteAr: "لا تضغط روابط أو تدفع عبر رسائل غير رسمية. مَعبر لا يؤكد وجود مخالفة؛ المصدر الرسمي هو المرجع.",
         noteEn: "Do not click links or pay through unofficial messages. MAABAR does not confirm a violation exists; the official source is the reference.",
       };
     }
@@ -270,7 +272,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
         { ar: "اختر الإجراء المتاح لك", en: "Choose the option available to you", detailAr: "السداد عبر سداد من تطبيق بنكك، أو الاعتراض من أبشر إذا ظهر لك خيار الاعتراض ضمن مدته.", detailEn: "Pay through SADAD in your bank app, or object in Absher if an objection option appears within its period.", source: src.absher },
         { ar: "تابع الحالة", en: "Track the status", detailAr: "تابع نتيجة الاعتراض أو تأكيد السداد في أبشر.", detailEn: "Track the objection result or payment confirmation in Absher." },
       ],
-      noteAr: "معبر لا يؤكد وجود مخالفة ولا أحقيتك في الاعتراض؛ القرار للجهة المصدرة.",
+      noteAr: "مَعبر لا يؤكد وجود مخالفة ولا أحقيتك في الاعتراض؛ القرار للجهة المصدرة.",
       noteEn: "MAABAR does not confirm that a violation exists or that you are eligible to object; the issuing authority decides.",
     };
   }
@@ -278,7 +280,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
   // legal
   const login: Step = { ar: "سجّل دخولك في ناجز عبر نفاذ", en: "Sign in to Najiz with Nafath", detailAr: "الدخول يكون بحسابك الشخصي من الموقع أو التطبيق الرسمي.", detailEn: "Sign in with your own account on the official site or app.", source: src.najiz };
   const legalNote = {
-    noteAr: "معبر يشرح الخطوات بلغة بسيطة، ولا يقدم استشارة قانونية ولا يتوقع نتيجة، ولا ينفذ أي طلب نيابة عنك. إذا كان موضوعك معقدًا فاستشر محاميًا مرخصًا.",
+    noteAr: "مَعبر يشرح الخطوات بلغة بسيطة، ولا يقدم استشارة قانونية ولا يتوقع نتيجة، ولا ينفذ أي طلب نيابة عنك. إذا كان موضوعك معقدًا فاستشر محاميًا مرخصًا.",
     noteEn: "MAABAR explains the steps in plain language; it gives no legal advice, predicts no outcome, and submits nothing on your behalf. For complex matters, consult a licensed lawyer.",
   };
   if (a.need === "follow") {
@@ -317,7 +319,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
   };
 }
 
-const PREP: Record<Exclude<JourneyId, "general">, { ar: string[]; en: string[] }> = {
+const PREP: Record<Exclude<JourneyId, "general" | "activity">, { ar: string[]; en: string[] }> = {
   project: {
     ar: ["- هويتك الوطنية وحساب نفاذ فعّال", "- النشاط الذي تريد ممارسته بدقة", "- الاسم التجاري المقترح (أكثر من خيار)", "- بيانات الشركاء وحصصهم إن وجدوا", "- عنوان المقر أو عقد الإيجار للمحل الفعلي", "- حساب بنكي للمنشأة بعد إصدار السجل"],
     en: ["- National ID and an active Nafath account", "- The exact activity you plan to run", "- Proposed trade names (more than one)", "- Partner details and shares, if any", "- Premises address or lease for a physical shop", "- A business bank account after the CR is issued"],
@@ -356,6 +358,7 @@ const SECTOR: Record<JourneyId, string | undefined> = {
   violation: "traffic",
   legal: "justice",
   general: undefined,
+  activity: "business",
 };
 
 function doneChip(n: number, ar: boolean) {
@@ -433,7 +436,7 @@ function showProgress(state: JourneyState, done: number, ar: boolean): JourneyRe
 }
 
 function showPrep(state: JourneyState, ar: boolean): JourneyReply {
-  const id = state.id as Exclude<JourneyId, "general">;
+  const id = state.id as Exclude<JourneyId, "general" | "activity">;
   const next = (state.done ?? 0) + 1;
   const total = roadmap(state.id, state.answers).steps.length;
   return {
@@ -484,7 +487,28 @@ export function runJourney(
   const last = [...history].reverse().find((m) => m.role === "assistant");
   const state = last?.journey;
 
-  if (state && state.id !== "general") {
+  const asActivity = (r: ActivityReply): JourneyReply => ({
+    text: r.text,
+    sources: r.sources,
+    followUpQuestions: r.followUpQuestions,
+    suggestedSectorId: r.suggestedSectorId,
+    platforms: r.platforms,
+    journey: { id: "activity", stage: r.asking ? "ask" : "roadmap", answers: {} },
+  });
+  // Activity helper: suggests the business activity, what opening it takes and the documents
+  if (state?.id === "activity" && state.stage === "ask") {
+    const r = runActivity(q, true, lang);
+    if (r) return asActivity(r);
+  }
+  if (state?.id === "project" && state.stage === "ask" && matchActivity(q)) {
+    return asActivity(describeActivity(matchActivity(q)!, q, ar));
+  }
+  if (isActivityAsk(q)) {
+    const r = runActivity(q, false, lang);
+    if (r) return asActivity(r);
+  }
+
+  if (state && state.id !== "general" && state.id !== "activity") {
     if (state.stage === "roadmap") {
       const doneMatch = q.match(/(أنجزت|انجزت|خلصت|سويت|finished|done)[^\d]*(\d+)/);
       if (doneMatch) return showProgress(state, Number(doneMatch[2]), ar);
@@ -503,6 +527,8 @@ export function runJourney(
   }
 
   const goal = detectGoal(q);
+  const activity = goal === "project" || has(q, ["شركة", "شركه", "مؤسسة", "مشروع", "company"]) ? matchActivity(q) : undefined;
+  if (activity) return asActivity(describeActivity(activity, q, ar));
   if (goal) return start(goal, q, ar, state?.id !== "general");
   // Anything else goes to the regular advisor.
   return null;

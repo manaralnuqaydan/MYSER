@@ -13,6 +13,7 @@ export type ChatMessage = {
   followUpQuestions?: string[];
   isVerified?: boolean;
   journey?: JourneyState;
+  platforms?: { name: string; purpose: string; url: string }[];
 };
 
 export type KnowledgeCategory =
@@ -206,14 +207,14 @@ export function generateLocalAgentResponse(
         ? "4. **الشهادات الصحية للعاملين:** استخراج الشهادات الصحية لكافة المشتغلين في إعداد وتقديم المأكولات والمشروبات عبر فحص طبي معتمد من منصة بلدي."
         : "4. **Worker Health Certificates:** Issue health cards for food and beverage handling personnel via certified medical screenings on Balady.",
       ar
-        ? "5. **الالتزامات الضريبية والعمالية:** تسجيل المنشأة لدى هيئة الزكاة والضريبة والجمارك (زاتكا) لإصدار الشهادة الضريبية وتركيب الفوترة الإلكترونية، وتوثيق عقود العمل عبر منصة «قوى» عند استقطاب عمالة."
+        ? "5. **الالتزامات الضريبية والعمالية:** تسجيل المنشأة لدى هيئة الزكاة والضريبة والجمارك لإصدار الشهادة الضريبية وتركيب الفوترة الإلكترونية، وتوثيق عقود العمل عبر منصة «قوى» عند استقطاب عمالة."
         : "5. **Tax & Labor Compliance:** Register with ZATCA for tax certification and E-Invoicing, and authenticate labor contracts via 'Qiwa' upon hiring."
     ];
 
     const sources = [
       { title: ar ? "المركز السعودي للأعمال (تأسيس وسجل تجاري)" : "Saudi Business Center (CR)", url: "https://mc.gov.sa/ar/eservices/pages/ServiceDetails.aspx?sID=38" },
       { title: ar ? "منصة بلدي (الرخصة التجارية البلدية)" : "Balady (Municipal License)", url: "https://balady.gov.sa/" },
-      { title: ar ? "هيئة الزكاة والضريبة والجمارك (زاتكا)" : "ZATCA (Tax & Invoicing)", url: "https://zatca.gov.sa/" }
+      { title: ar ? "هيئة الزكاة والضريبة والجمارك" : "ZATCA (Tax & Invoicing)", url: "https://zatca.gov.sa/" }
     ];
 
     const text = ar
@@ -351,7 +352,7 @@ Traffic collision handling is not limited to a single platform like Absher; it i
 * إذا كان لديك اعتراض أو سداد سابق، يمكنك الضغط على «منازعة تنفيذ» داخل ناجز مع إرفاق الإثباتات.
 
 > **تنبيه نظامي وأمني مشدد:**
-> * معبر دليل توجيهي لا يطّلع على قضاياك أو بياناتك الخاصة، ولا يُغني عن استشارة محامٍ مرخص.
+> * مَعبر دليل توجيهي لا يطّلع على قضاياك أو بياناتك الخاصة، ولا يُغني عن استشارة محامٍ مرخص.
 > * أي رسالة تطلب تحويل مبالغ لحسابات شخصية أو بطاقات بنكية خارج نظام «سداد» هي محاولة احتيال، ويجب الإبلاغ عنها عبر تطبيق **«كلنا أمن»**.`
       : `### Guidance on Judicial Notices & Court Subpoenas
 
@@ -522,7 +523,7 @@ A unified national authentication framework governed by SDAIA, providing secure 
 
   // 4. UNKNOWN / GENERAL QUERY - Fallback with honest transparency
   const fallbackText = ar
-    ? `أهلاً بك في معبر. 
+    ? `أهلاً بك في مَعبر. 
 فهمت استفسارك حول: «${userQuery}».
 
 لم يتم رصد هذا الموضوع بدقة في قاعدة الخدمات الحكومية الموثقة حاليًا في هذه الجلسة المحلية. 
