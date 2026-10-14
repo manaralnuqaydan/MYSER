@@ -4725,3 +4725,5 @@ html[dir="ltr"] .nav .active:after {
 .route-activity-ai input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
 .route-activity-ai button { flex: none; min-height: 40px; padding: 8px 16px; border: 0; border-radius: 10px; background: var(--green); color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .route-activity-ai button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.route-plan { margin-top: 14px; }
+.route-plan-title { display: block; margin-bottom: 8px; font-size: 14px; color: var(--green); }

@@ -21,7 +21,10 @@ export type Activity = {
   words: string[];
   extraSteps?: (Text & { source?: Source })[];
   extraDocs?: Text[];
+  platforms?: PlanStep[];
 };
+
+export type PlanStep = { platform: Text; purpose: Text; url: string };
 
 const src = {
   business: { ar: "المركز السعودي للأعمال", en: "Saudi Business Center", url: "https://business.sa" },
@@ -30,7 +33,17 @@ const src = {
   zatca: { ar: "هيئة الزكاة والضريبة والجمارك", en: "ZATCA", url: "https://zatca.gov.sa" },
   qiwa: { ar: "قوى", en: "Qiwa", url: "https://qiwa.sa" },
   gcam: { ar: "الهيئة العامة لتنظيم الإعلام", en: "General Authority for Media Regulation", url: "https://gcam.gov.sa" },
+  sfda: { ar: "هيئة الغذاء والدواء", en: "SFDA", url: "https://www.sfda.gov.sa" },
+  salamah: { ar: "سلامة (الدفاع المدني)", en: "Salamah (Civil Defense)", url: "https://salamah.998.gov.sa" },
 } satisfies Record<string, Source>;
+
+const plan = (s: Source, ar: string, en: string): PlanStep => ({ platform: { ar: s.ar, en: s.en }, purpose: { ar, en }, url: s.url });
+const shopPlan = (health: boolean): PlanStep[] => [
+  plan(src.ejar, "توثيق عقد إيجار المحل", "Register the shop lease"),
+  plan(src.balady, health ? "الرخصة البلدية والاشتراطات الصحية" : "الرخصة البلدية للنشاط", health ? "Municipal license and health requirements" : "Municipal activity license"),
+  plan(src.salamah, "تصريح السلامة للمحل", "Safety permit for the shop"),
+];
+const storePlan = plan(src.business, "توثيق المتجر الإلكتروني", "Register the online store");
 
 const premises = [
   { ar: "وثّق عقد إيجار المقر في إيجار", en: "Register the premises lease in Ejar", source: src.ejar },
@@ -43,6 +56,7 @@ export const ACTIVITIES: Activity[] = [
     label: { ar: "تسويق وإعلان", en: "Marketing and ads" },
     name: { ar: "خدمات التسويق والإعلان", en: "Marketing and advertising services" },
     words: ["تسويق", "تسويقية", "تسويقي", "إعلان", "اعلان", "إعلانات", "اعلانات", "دعاية", "سوشيال", "مؤثر", "marketing", "advertis", "social media"],
+    platforms: [plan(src.gcam, "الترخيص الإعلامي إذا يشمل نشاطك الإعلان عبر المنصات", "Media license if you advertise on social platforms")],
     extraSteps: [
       { ar: "تحقق إن كان نشاطك الإعلاني، مثل الإعلان عبر المنصات، يحتاج ترخيصًا إعلاميًا", en: "Check whether your advertising, such as ads on social platforms, needs a media license", source: src.gcam },
     ],
@@ -74,24 +88,28 @@ export const ACTIVITIES: Activity[] = [
     label: { ar: "ملابس وأزياء", en: "Clothing" },
     name: { ar: "بيع الملابس والأزياء بالتجزئة", en: "Retail sale of clothing and fashion" },
     words: ["ملابس", "عبايات", "عباية", "أزياء", "ازياء", "فساتين", "clothes", "clothing", "fashion", "abaya"],
+    platforms: [storePlan],
   },
   {
     id: "perfume", kind: "online",
     label: { ar: "عطور وتجميل", en: "Perfume and beauty" },
     name: { ar: "بيع العطور ومستحضرات التجميل بالتجزئة", en: "Retail sale of perfume and cosmetics" },
     words: ["عطور", "عطر", "بخور", "مكياج", "مستحضرات", "perfume", "cosmetic", "makeup"],
+    platforms: [storePlan, plan(src.sfda, "تسجيل المستحضرات إذا تستوردها أو تصنعها", "Register products if you import or make them")],
   },
   {
     id: "electronics", kind: "online",
     label: { ar: "إلكترونيات", en: "Electronics" },
     name: { ar: "بيع الأجهزة الإلكترونية والجوالات بالتجزئة", en: "Retail sale of electronics and phones" },
     words: ["إلكترونيات", "الكترونيات", "جوالات", "جوال", "اكسسوارات", "electronics", "phones", "gadgets"],
+    platforms: [storePlan],
   },
   {
     id: "cafe", kind: "physical",
     label: { ar: "مقهى أو مطعم", en: "Cafe or restaurant" },
     name: { ar: "تقديم المشروبات والوجبات (مقهى أو مطعم)", en: "Serving drinks and meals (cafe or restaurant)" },
     words: ["مقهى", "كافيه", "كوفي", "قهوة", "مطعم", "مطاعم", "cafe", "coffee", "restaurant"],
+    platforms: shopPlan(true),
     extraSteps: [{ ar: "تحقق من الاشتراطات الصحية لمحلات الأغذية قبل التشغيل", en: "Check the health requirements for food outlets before opening", source: src.balady }],
     extraDocs: [{ ar: "مخطط المحل وتجهيزاته", en: "The shop layout and fit-out plan" }],
   },
@@ -100,17 +118,33 @@ export const ACTIVITIES: Activity[] = [
     label: { ar: "بقالة", en: "Grocery" },
     name: { ar: "بيع المواد الغذائية بالتجزئة (بقالة)", en: "Retail sale of food items (grocery)" },
     words: ["بقالة", "بقاله", "تموينات", "سوبرماركت", "grocery", "supermarket"],
+    platforms: shopPlan(true),
   },
   {
     id: "salon", kind: "physical",
     label: { ar: "صالون", en: "Salon" },
     name: { ar: "صالونات الحلاقة والتجميل", en: "Barber and beauty salons" },
     words: ["صالون", "حلاقة", "حلاق", "مشغل", "salon", "barber"],
+    platforms: shopPlan(true),
   },
 ];
 
 const COMPANY_WORDS = ["شركة", "شركه", "شريك", "شركاء", "company", "partner"];
 const TRIGGER_WORDS = ["أحدد نشاط", "احدد نشاط", "حدد نشاط", "حدّد نشاط", "نشاطي", "رمز النشاط", "دليل الأنشطة", "my activity", "which activity", "business activity"];
+
+/** The government platforms to visit for an activity, in order. */
+export function activityPlan(activity: Activity, company: boolean): PlanStep[] {
+  return [
+    plan(
+      src.business,
+      company ? "عقد التأسيس والسجل التجاري، واختيار النشاط" : "السجل التجاري واختيار النشاط",
+      company ? "Articles of association, CR and activity" : "Commercial Registration and activity"
+    ),
+    ...(activity.platforms ?? []),
+    plan(src.zatca, "التسجيل في الضريبة إذا انطبقت عليك", "Tax registration if it applies"),
+    plan(src.qiwa, "عند التوظيف فقط", "Only when you hire"),
+  ];
+}
 
 const has = (q: string, words: string[]) => words.some((w) => q.includes(w));
 
@@ -173,6 +207,8 @@ export function describeActivity(activity: Activity, q: string, ar: boolean): Ac
       : { ar: "سجّل مؤسسة فردية بعد الدخول بنفاذ", en: "Register a sole proprietorship after signing in with Nafath", source: src.business },
     { ar: `اختر نشاط «${activity.name.ar}» من دليل الأنشطة عند إصدار السجل`, en: `Choose "${activity.name.en}" from the activity guide when issuing the CR`, source: src.business },
     ...(physical ? premises : []),
+    ...(physical ? [{ ar: "استخرج تصريح السلامة للمحل", en: "Get the shop safety permit", source: src.salamah }] : []),
+    ...(activity.id === "perfume" ? [{ ar: "إذا تستورد أو تصنع المستحضرات، سجّلها لدى هيئة الغذاء والدواء", en: "If you import or make the products, register them with the SFDA", source: src.sfda }] : []),
     ...(online ? [{ ar: "وثّق متجرك الإلكتروني", en: "Register your online store", source: src.business }] : []),
     ...(activity.extraSteps ?? []),
     { ar: "سجّل في ضريبة القيمة المضافة إذا تجاوزت إيراداتك حد التسجيل", en: "Register for VAT if your revenue passes the threshold", source: src.zatca },

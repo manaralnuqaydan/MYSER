@@ -47,7 +47,7 @@ import { assistantFallback, assistantScenarios, copy, curatedServices, directory
 import { detailedServices } from "@/lib/servicesDetailed";
 import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
 import { runJourney } from "@/lib/journeys";
-import { ACTIVITIES } from "@/lib/activities";
+import { ACTIVITIES, activityPlan } from "@/lib/activities";
 import { contentLang, isNative, langDir, languages, uiCopy, type UiCopy, type UiLang } from "@/lib/i18n";
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
@@ -1663,21 +1663,44 @@ function BusinessRoute({ lang, t, onConcierge, onAskAdvisor }: { lang: Lang; t: 
           ))}
         </div>
       </div>
-      <ol className="service-steps">
-        {steps.map((step, i) => (
-          <li key={step.name.en}>
-            <span className="service-step-num">{i + 1}</span>
-            <PlatformLogo url={step.url} name={step.platform} />
-            <div className="service-step-text">
-              <strong>{step.name[lang]}</strong>
-              <p>{step.detail[lang]}</p>
-            </div>
-            <a href={step.url} target="_blank" rel="noopener noreferrer" aria-label={ar ? `فتح ${step.name.ar}` : `Open ${step.name.en}`}>
-              <ArrowUpRight size={16} />
-            </a>
-          </li>
-        ))}
-      </ol>
+      {activity ? (
+        <div className="route-plan">
+          <strong className="route-plan-title">
+            {ar ? `خطة المنصات لنشاط «${activity.label.ar}»` : `Platform plan for ${activity.label.en}`}
+          </strong>
+          <ol className="service-steps">
+            {activityPlan(activity, form === "company").map((step, i) => (
+              <li key={step.platform.en + i}>
+                <span className="service-step-num">{i + 1}</span>
+                <PlatformLogo url={step.url} name={step.platform.ar} />
+                <div className="service-step-text">
+                  <strong>{step.platform[lang]}</strong>
+                  <p>{step.purpose[lang]}</p>
+                </div>
+                <a href={step.url} target="_blank" rel="noopener noreferrer" aria-label={ar ? `فتح ${step.platform.ar}` : `Open ${step.platform.en}`}>
+                  <ArrowUpRight size={16} />
+                </a>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : (
+            <ol className="service-steps">
+          {steps.map((step, i) => (
+            <li key={step.name.en}>
+              <span className="service-step-num">{i + 1}</span>
+              <PlatformLogo url={step.url} name={step.platform} />
+              <div className="service-step-text">
+                <strong>{step.name[lang]}</strong>
+                <p>{step.detail[lang]}</p>
+              </div>
+              <a href={step.url} target="_blank" rel="noopener noreferrer" aria-label={ar ? `فتح ${step.name.ar}` : `Open ${step.name.en}`}>
+                <ArrowUpRight size={16} />
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
       <small>{ar ? "خطوات استرشادية؛ تأكد من المتطلبات في المنصة الرسمية قبل التقديم." : "A guide only; confirm requirements on the official platform before applying."}</small>
       <ConciergeCard t={t} onRequest={onConcierge} />
     </section>
