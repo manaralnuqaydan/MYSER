@@ -854,7 +854,7 @@ export default function Homepage() {
             >
               <div className="modal-heading">
                 <div>
-                  <span className="eyebrow">MAABAR / معبر</span>
+                  {modal !== "desk" && <span className="eyebrow">MAABAR / معبر</span>}
                   <h2 id="dialog-title">
                     {chatOpen
                       ? t.smart
@@ -867,7 +867,7 @@ export default function Homepage() {
                           : modal === "support"
                             ? ar ? "خدمة العملاء" : "Customer service"
                           : modal === "desk"
-                            ? t.deskTitle
+                            ? ar ? "معبر" : "MAABAR"
                           : modal === "login"
                             ? authView === "signin"
                               ? ar ? "تسجيل الدخول" : "Sign in"
