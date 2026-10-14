@@ -47,6 +47,7 @@ import { assistantFallback, assistantScenarios, copy, curatedServices, directory
 import { detailedServices } from "@/lib/servicesDetailed";
 import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
 import { runJourney } from "@/lib/journeys";
+import { contentLang, isNative, langDir, languages, uiCopy, type UiCopy, type UiLang } from "@/lib/i18n";
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
 import PhoneMockups from "./PhoneMockups";
@@ -106,11 +107,14 @@ const stepIcons = [
 const amounts = [200, 150, 500];
 
 export default function Homepage() {
-  const [lang, setLang] = useState<Lang>("ar");
-  const t = copy[lang];
+  const [uiLang, setUiLang] = useState<UiLang>("ar");
+  const lang: Lang = contentLang(uiLang);
+  const t = uiCopy(uiLang);
   const ar = lang === "ar";
-  const conciergeSoon = () =>
-    setToast(ar ? "خدمة المعقّب ستتوفر قريبًا · هذا عرض تجريبي" : "The facilitator service is coming soon · This is a demo");
+  const sectorName = (item: { id: string; name: Localized } | undefined) =>
+    item ? t.sectors[item.id] ?? item.name[lang] : undefined;
+  const [langMenu, setLangMenu] = useState(false);
+  const conciergeSoon = () => setToast(t.conciergeSoon);
   const reduce = useReducedMotion();
   const [menu, setMenu] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
@@ -138,9 +142,9 @@ export default function Homepage() {
   const previousFocus = useRef<HTMLElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = ar ? "rtl" : "ltr";
-  }, [lang, ar]);
+    document.documentElement.lang = uiLang;
+    document.documentElement.dir = langDir(uiLang);
+  }, [uiLang]);
   useEffect(() => {
     if (!toast) return;
     const id = setTimeout(() => setToast(""), 4000);
@@ -217,6 +221,20 @@ export default function Homepage() {
       document.removeEventListener("keydown", close);
     };
   }, [accountMenu]);
+  useEffect(() => {
+    if (!langMenu) return;
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent && e.key !== "Escape") return;
+      if (e instanceof MouseEvent && (e.target as HTMLElement).closest(".language-wrap")) return;
+      setLangMenu(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [langMenu]);
   function openSupport() {
     setSupportView("track");
     setModal("support");
@@ -305,9 +323,11 @@ export default function Homepage() {
       setTyping(false);
     }, 700);
   }
-  function switchLang() {
+  function switchLang(code: UiLang) {
+    setLangMenu(false);
+    if (code === uiLang) return;
     if (timer.current) clearTimeout(timer.current);
-    setLang(ar ? "en" : "ar");
+    setUiLang(code);
     setMessages([]);
     setInput("");
     setTyping(false);
@@ -364,21 +384,45 @@ export default function Homepage() {
               {t.about}
             </a>
             <button className="nav-login" onClick={openLogin}>
-              {ar ? "تسجيل الدخول / إنشاء حساب" : "Sign in / Create account"}
+              {t.signIn}
             </button>
             <button className="nav-login" onClick={openSupport}>
-              {ar ? "خدمة العملاء" : "Customer service"}
+              {t.support}
             </button>
           </nav>
           <div className="header-actions">
-            <button
-              className="language"
-              onClick={switchLang}
-              aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}
-            >
-              <Globe2 size={16} />
-              <span>{ar ? "English" : "العربية"}</span>
-            </button>
+            <div className="language-wrap">
+              <button
+                className="language"
+                onClick={() => setLangMenu(!langMenu)}
+                aria-expanded={langMenu}
+                aria-haspopup="menu"
+                aria-label={t.language}
+              >
+                <Globe2 size={16} />
+                <span>{languages.find((item) => item.code === uiLang)?.name}</span>
+                <ChevronDown size={14} />
+              </button>
+              {langMenu && (
+                <div className="language-menu" role="menu" aria-label={t.language}>
+                  <div className="language-list">
+                    {languages.map((item) => (
+                      <button
+                        key={item.code}
+                        role="menuitemradio"
+                        aria-checked={item.code === uiLang}
+                        className={item.code === uiLang ? "selected" : ""}
+                        lang={item.code}
+                        onClick={() => switchLang(item.code)}
+                      >
+                        {item.name}
+                      </button>
+                    ))}
+                  </div>
+                  {!isNative(uiLang) && <small>{t.contentFallback}</small>}
+                </div>
+              )}
+            </div>
             <div className="account-wrap">
               <button
                 className="account-button"
@@ -481,8 +525,8 @@ export default function Homepage() {
               </span>
               <h2>{t.help}</h2>
               <div className="request-chips">
-                {t.chips.map((c) => (
-                  <button key={c} onClick={() => answer(c)}>
+                {t.chips.map((c, i) => (
+                  <button key={c} onClick={() => answer(isNative(uiLang) ? c : copy.en.chips[i])}>
                     {c}
                     <ArrowUpLeft size={12} />
                   </button>
@@ -550,7 +594,7 @@ export default function Homepage() {
           </motion.div>
           <div className="sector-grid">
             {directorySectors.map((item, i) => {
-              const title = item.name[lang];
+              const title = sectorName(item) ?? item.name[lang];
               const Icon = sectorIcons[item.icon];
               const sectorCurated = curatedServices.filter((entry) => entry.sectorId === item.id);
               const sectorDetailed = detailedServices.filter((entry) => entry.sectorId === item.id);
@@ -800,7 +844,7 @@ export default function Homepage() {
                       ? t.smart
                       : modal === "services"
         ? curatedServices.find((entry) => entry.id === service)?.name[lang] ||
-          (sector !== null ? directorySectors[sector]?.name[lang] : undefined) ||
+          (sector !== null ? sectorName(directorySectors[sector]) : undefined) ||
           t.all
                         : modal === "meeting"
                           ? "GovMeet"
@@ -837,8 +881,8 @@ export default function Homepage() {
                         <h3>{t.welcome}</h3>
                         <p>{t.help}</p>
                         <div className="chat-suggestions">
-                          {t.chips.map((c) => (
-                            <button key={c} onClick={() => answer(c)}>
+                          {t.chips.map((c, i) => (
+                            <button key={c} onClick={() => answer(isNative(uiLang) ? c : copy.en.chips[i])}>
                               {c}
                               {direction}
                             </button>
@@ -983,7 +1027,7 @@ export default function Homepage() {
                         className="button button-green chat-next"
                         onClick={() => openServices(chatTarget)}
                       >
-                        {directorySectors[chatTarget]?.name[lang]}
+                        {sectorName(directorySectors[chatTarget])}
                         {direction}
                       </button>
                     )}
@@ -1024,6 +1068,7 @@ export default function Homepage() {
                     {directorySectors[sector ?? -1]?.id === "business" ? (
                       <BusinessRoute
                         lang={lang}
+                        t={t}
                         onConcierge={conciergeSoon}
                       />
                     ) : (
@@ -1079,7 +1124,7 @@ export default function Homepage() {
                       )}
                     </div>
                     {directorySectors[sector ?? -1]?.id === "work" && (
-                      <ConciergeCard lang={lang} onRequest={conciergeSoon} />
+                      <ConciergeCard t={t} onRequest={conciergeSoon} />
                     )}
                       </>
                     )}
@@ -1490,29 +1535,24 @@ function businessSteps(kind: RouteKind, form: RouteForm): RouteStep[] {
   return steps;
 }
 
-function ConciergeCard({ lang, onRequest }: { lang: Lang; onRequest: () => void }) {
-  const ar = lang === "ar";
+function ConciergeCard({ t, onRequest }: { t: UiCopy; onRequest: () => void }) {
   return (
     <div className="route-concierge">
       <span className="route-concierge-icon" aria-hidden="true">
         <Headset size={22} strokeWidth={1.8} />
       </span>
       <div className="route-concierge-text">
-        <strong>{ar ? "معقّب لمرحلة تجارتك" : "A facilitator for every stage of your business"}</strong>
-        <p>
-          {ar
-            ? "مختص يرافقك في جميع مراحل منشأتك، من التأسيس والتراخيص إلى متابعة الإجراءات مع الجهات حتى اكتمالها."
-            : "A specialist who supports you through every stage of your business, from formation and licensing to following up with authorities until each step is complete."}
-        </p>
+        <strong>{t.conciergeTitle}</strong>
+        <p>{t.conciergeText}</p>
       </div>
       <button type="button" onClick={onRequest}>
-        {ar ? "اطلب معقّبًا" : "Request a facilitator"}
+        {t.conciergeButton}
       </button>
     </div>
   );
 }
 
-function BusinessRoute({ lang, onConcierge }: { lang: Lang; onConcierge: () => void }) {
+function BusinessRoute({ lang, t, onConcierge }: { lang: Lang; t: UiCopy; onConcierge: () => void }) {
   const ar = lang === "ar";
   const [kind, setKind] = useState<RouteKind>("online");
   const [form, setForm] = useState<RouteForm>("sole");
@@ -1568,7 +1608,7 @@ function BusinessRoute({ lang, onConcierge }: { lang: Lang; onConcierge: () => v
         ))}
       </ol>
       <small>{ar ? "خطوات استرشادية؛ تأكد من المتطلبات في المنصة الرسمية قبل التقديم." : "A guide only; confirm requirements on the official platform before applying."}</small>
-      <ConciergeCard lang={lang} onRequest={onConcierge} />
+      <ConciergeCard t={t} onRequest={onConcierge} />
     </section>
   );
 }

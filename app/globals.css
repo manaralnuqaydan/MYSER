@@ -4567,3 +4567,57 @@ html[dir="ltr"] .nav .active:after {
 .step-icon.step-call svg {
   filter: none;
 }
+
+.language-wrap {
+  position: relative;
+}
+.language svg:last-child {
+  opacity: 0.75;
+}
+.language-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  inset-inline-end: 0;
+  width: min(360px, calc(100vw - 32px));
+  padding: 8px;
+  background: #f8f7ef;
+  border: 1px solid #d2d8bd;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px #001f2040;
+  z-index: 30;
+}
+.language-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  max-height: min(420px, 60vh);
+  overflow-y: auto;
+}
+.language-list button {
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: center;
+}
+.language-list button:hover {
+  background: #ecefe1;
+}
+.language-list button.selected {
+  background: var(--green);
+  color: #fff;
+}
+.language-list button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+.language-menu small {
+  display: block;
+  margin: 8px 6px 2px;
+  padding-top: 8px;
+  border-top: 1px solid #dfe3d2;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
