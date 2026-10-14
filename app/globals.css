@@ -4715,3 +4715,13 @@ html[dir="ltr"] .nav .active:after {
   .desk-bar { grid-template-columns: 120px minmax(0, 1fr) 20px; }
   .desk-stages li { font-size: 11px; }
 }
+
+/* Activity picker with the smart advisor */
+.route-activity-ai { margin-top: 10px; padding: 12px; border: 1px dashed #c9a96e; border-radius: 14px; background: #fbf7ee; }
+.route-activity-ai label { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 12.5px; color: #6b5a33; }
+.route-activity-ai label svg { flex: none; color: #b08d4f; }
+.route-activity-ai > div { display: flex; gap: 8px; }
+.route-activity-ai input { flex: 1; min-width: 0; min-height: 40px; padding: 8px 12px; border: 1px solid #cbd4c5; border-radius: 10px; background: #fff; color: var(--ink); font: inherit; font-size: 13px; }
+.route-activity-ai input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+.route-activity-ai button { flex: none; min-height: 40px; padding: 8px 16px; border: 0; border-radius: 10px; background: var(--green); color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.route-activity-ai button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }

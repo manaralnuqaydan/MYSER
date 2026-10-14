@@ -47,6 +47,7 @@ import { assistantFallback, assistantScenarios, copy, curatedServices, directory
 import { detailedServices } from "@/lib/servicesDetailed";
 import { generateLocalAgentResponse, type ChatMessage } from "@/lib/agent";
 import { runJourney } from "@/lib/journeys";
+import { ACTIVITIES } from "@/lib/activities";
 import { contentLang, isNative, langDir, languages, uiCopy, type UiCopy, type UiLang } from "@/lib/i18n";
 import Brand from "./Brand";
 import SectorArt from "./SectorArt";
@@ -1088,6 +1089,7 @@ export default function Homepage() {
                         lang={lang}
                         t={t}
                         onConcierge={openDesk}
+                        onAskAdvisor={answer}
                       />
                     ) : (
                       <>
@@ -1531,11 +1533,14 @@ type RouteKind = "online" | "physical" | "services";
 type RouteForm = "sole" | "company";
 type RouteStep = { name: Localized; detail: Localized; url: string; platform: string };
 
-function businessSteps(kind: RouteKind, form: RouteForm): RouteStep[] {
+function businessSteps(kind: RouteKind, form: RouteForm, activity?: Localized): RouteStep[] {
+  const pick: Localized = activity
+    ? { ar: ` واختر نشاط «${activity.ar}» من دليل الأنشطة.`, en: ` Choose "${activity.en}" from the activity guide.` }
+    : { ar: "", en: "" };
   const steps: RouteStep[] = [
     form === "sole"
-      ? { name: { ar: "أصدر السجل التجاري", en: "Issue your Commercial Registration" }, detail: { ar: "سجل مؤسسة فردية من المركز السعودي للأعمال بعد الدخول بنفاذ.", en: "Register a sole proprietorship at the Saudi Business Center after signing in with Nafath." }, url: "https://business.sa", platform: "مركز الأعمال" }
-      : { name: { ar: "أسس الشركة وأصدر السجل", en: "Form the company and issue its CR" }, detail: { ar: "اتفقوا على عقد التأسيس وأصدروا سجل الشركة من المركز السعودي للأعمال.", en: "Agree on the articles of association and issue the company CR at the Saudi Business Center." }, url: "https://business.sa", platform: "مركز الأعمال" },
+      ? { name: { ar: "أصدر السجل التجاري", en: "Issue your Commercial Registration" }, detail: { ar: "سجل مؤسسة فردية من المركز السعودي للأعمال بعد الدخول بنفاذ." + pick.ar, en: "Register a sole proprietorship at the Saudi Business Center after signing in with Nafath." + pick.en }, url: "https://business.sa", platform: "مركز الأعمال" }
+      : { name: { ar: "أسس الشركة وأصدر السجل", en: "Form the company and issue its CR" }, detail: { ar: "اتفقوا على عقد التأسيس وأصدروا سجل الشركة من المركز السعودي للأعمال." + pick.ar, en: "Agree on the articles of association and issue the company CR at the Saudi Business Center." + pick.en }, url: "https://business.sa", platform: "مركز الأعمال" },
   ];
   if (kind === "physical") {
     steps.push(
@@ -1571,10 +1576,23 @@ function ConciergeCard({ t, onRequest }: { t: UiCopy; onRequest: () => void }) {
   );
 }
 
-function BusinessRoute({ lang, t, onConcierge }: { lang: Lang; t: UiCopy; onConcierge: () => void }) {
+function BusinessRoute({ lang, t, onConcierge, onAskAdvisor }: { lang: Lang; t: UiCopy; onConcierge: () => void; onAskAdvisor: (text: string) => void }) {
   const ar = lang === "ar";
   const [kind, setKind] = useState<RouteKind>("online");
   const [form, setForm] = useState<RouteForm>("sole");
+  const [activityId, setActivityId] = useState<string | null>(null);
+  const [describe, setDescribe] = useState("");
+  const activities = ACTIVITIES.filter((a) => a.kind === kind);
+  const activity = activities.find((a) => a.id === activityId);
+  function askAdvisor() {
+    const d = describe.trim();
+    const formText = form === "company" ? (ar ? " مع شركاء" : " with partners") : "";
+    onAskAdvisor(
+      ar
+        ? `أبي أحدد نشاطي التجاري${d ? `: ${d}${formText}` : ""}`
+        : `Help me pick my business activity${d ? `: ${d}${formText}` : ""}`
+    );
+  }
   const kinds: { id: RouteKind; label: Localized }[] = [
     { id: "online", label: { ar: "متجر إلكتروني", en: "Online store" } },
     { id: "physical", label: { ar: "محل بمقر", en: "Physical shop" } },
@@ -1584,7 +1602,7 @@ function BusinessRoute({ lang, t, onConcierge }: { lang: Lang; t: UiCopy; onConc
     { id: "sole", label: { ar: "لوحدي", en: "On my own" } },
     { id: "company", label: { ar: "مع شركاء", en: "With partners" } },
   ];
-  const steps = businessSteps(kind, form);
+  const steps = businessSteps(kind, form, activity?.name);
   return (
     <section className="business-route" aria-labelledby="business-route-title">
       <div className="business-route-heading">
@@ -1595,11 +1613,45 @@ function BusinessRoute({ lang, t, onConcierge }: { lang: Lang; t: UiCopy; onConc
         <span>{ar ? "وش نوع مشروعك؟" : "What kind of project?"}</span>
         <div className="route-choices" role="group">
           {kinds.map((item) => (
-            <button key={item.id} type="button" className={kind === item.id ? "selected" : ""} aria-pressed={kind === item.id} onClick={() => setKind(item.id)}>
+            <button key={item.id} type="button" className={kind === item.id ? "selected" : ""} aria-pressed={kind === item.id} onClick={() => { setKind(item.id); setActivityId(null); }}>
               {item.label[lang]}
             </button>
           ))}
         </div>
+      </div>
+      <div className="route-question">
+        <span>{ar ? "وش نشاطك؟" : "What's your activity?"}</span>
+        <div className="route-choices" role="group">
+          {activities.map((item) => (
+            <button key={item.id} type="button" className={activityId === item.id ? "selected" : ""} aria-pressed={activityId === item.id} onClick={() => setActivityId(activityId === item.id ? null : item.id)}>
+              {item.label[lang]}
+            </button>
+          ))}
+        </div>
+        <form
+          className="route-activity-ai"
+          onSubmit={(e) => {
+            e.preventDefault();
+            askAdvisor();
+          }}
+        >
+          <label htmlFor="route-activity-input">
+            <Sparkles size={15} />
+            {ar ? "مو متأكد من نشاطك؟ وصف مشروعك للمرشد الذكي، ويحدد لك النشاط والمتطلبات والمستندات." : "Not sure? Describe your project to the smart advisor and it will suggest the activity, requirements and documents."}
+          </label>
+          <div>
+            <input
+              id="route-activity-input"
+              value={describe}
+              maxLength={200}
+              onChange={(e) => setDescribe(e.target.value)}
+              placeholder={ar ? "مثال: شركة تسويق إلكتروني تدير حسابات العملاء" : "e.g. a digital marketing agency managing client accounts"}
+            />
+            <button type="submit">
+              {ar ? "حدّد نشاطي" : "Find my activity"}
+            </button>
+          </div>
+        </form>
       </div>
       <div className="route-question">
         <span>{ar ? "بتبدأ لوحدك أو مع شركاء؟" : "Alone or with partners?"}</span>

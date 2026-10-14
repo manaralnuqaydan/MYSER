@@ -1,4 +1,5 @@
 import type { Lang } from "./content";
+import { describeActivity, isActivityAsk, matchActivity, runActivity, type ActivityReply } from "./activities";
 
 /**
  * Goal-to-Action journeys.
@@ -7,7 +8,7 @@ import type { Lang } from "./content";
  * source for each step and keeps track of progress inside the conversation.
  */
 
-export type JourneyId = "project" | "violation" | "legal" | "general";
+export type JourneyId = "project" | "violation" | "legal" | "general" | "activity";
 
 export type JourneyState = {
   id: JourneyId;
@@ -317,7 +318,7 @@ function roadmap(id: JourneyId, a: Record<string, string>): { titleAr: string; t
   };
 }
 
-const PREP: Record<Exclude<JourneyId, "general">, { ar: string[]; en: string[] }> = {
+const PREP: Record<Exclude<JourneyId, "general" | "activity">, { ar: string[]; en: string[] }> = {
   project: {
     ar: ["- هويتك الوطنية وحساب نفاذ فعّال", "- النشاط الذي تريد ممارسته بدقة", "- الاسم التجاري المقترح (أكثر من خيار)", "- بيانات الشركاء وحصصهم إن وجدوا", "- عنوان المقر أو عقد الإيجار للمحل الفعلي", "- حساب بنكي للمنشأة بعد إصدار السجل"],
     en: ["- National ID and an active Nafath account", "- The exact activity you plan to run", "- Proposed trade names (more than one)", "- Partner details and shares, if any", "- Premises address or lease for a physical shop", "- A business bank account after the CR is issued"],
@@ -356,6 +357,7 @@ const SECTOR: Record<JourneyId, string | undefined> = {
   violation: "traffic",
   legal: "justice",
   general: undefined,
+  activity: "business",
 };
 
 function doneChip(n: number, ar: boolean) {
@@ -433,7 +435,7 @@ function showProgress(state: JourneyState, done: number, ar: boolean): JourneyRe
 }
 
 function showPrep(state: JourneyState, ar: boolean): JourneyReply {
-  const id = state.id as Exclude<JourneyId, "general">;
+  const id = state.id as Exclude<JourneyId, "general" | "activity">;
   const next = (state.done ?? 0) + 1;
   const total = roadmap(state.id, state.answers).steps.length;
   return {
@@ -484,7 +486,27 @@ export function runJourney(
   const last = [...history].reverse().find((m) => m.role === "assistant");
   const state = last?.journey;
 
-  if (state && state.id !== "general") {
+  const asActivity = (r: ActivityReply): JourneyReply => ({
+    text: r.text,
+    sources: r.sources,
+    followUpQuestions: r.followUpQuestions,
+    suggestedSectorId: r.suggestedSectorId,
+    journey: { id: "activity", stage: r.asking ? "ask" : "roadmap", answers: {} },
+  });
+  // Activity helper: suggests the business activity, what opening it takes and the documents
+  if (state?.id === "activity" && state.stage === "ask") {
+    const r = runActivity(q, true, lang);
+    if (r) return asActivity(r);
+  }
+  if (state?.id === "project" && state.stage === "ask" && matchActivity(q)) {
+    return asActivity(describeActivity(matchActivity(q)!, q, ar));
+  }
+  if (isActivityAsk(q)) {
+    const r = runActivity(q, false, lang);
+    if (r) return asActivity(r);
+  }
+
+  if (state && state.id !== "general" && state.id !== "activity") {
     if (state.stage === "roadmap") {
       const doneMatch = q.match(/(أنجزت|انجزت|خلصت|سويت|finished|done)[^\d]*(\d+)/);
       if (doneMatch) return showProgress(state, Number(doneMatch[2]), ar);
@@ -503,6 +525,8 @@ export function runJourney(
   }
 
   const goal = detectGoal(q);
+  const activity = goal === "project" || has(q, ["شركة", "شركه", "مؤسسة", "مشروع", "company"]) ? matchActivity(q) : undefined;
+  if (activity) return asActivity(describeActivity(activity, q, ar));
   if (goal) return start(goal, q, ar, state?.id !== "general");
   // Anything else goes to the regular advisor.
   return null;
